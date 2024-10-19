@@ -16,7 +16,6 @@ class User(db.Model, SerializerMixin):
 
     serialize_rules = ('-reviews.user', '-rankings.user')
 
-
 class Player(db.Model):
     __tablename__ = 'players'
     id = db.Column(db.Integer, primary_key=True)
@@ -28,3 +27,33 @@ class Player(db.Model):
     rankings = db.relationship('Ranking', back_populates='player', cascade='all, delete-orphan')
 
     serialize_rules = ('-reviews.player', '-rankings.player')
+
+class Review(db.Model):
+    __tablename__ = 'reviews'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
+    user = db.relationship('User', back_populates='reviews')
+    player = db.relationship('Player', back_populates='reviews')
+
+    serialize_rules = ('-user.reviews', '-player.reviews')
+
+class Ranking(db.Model):
+    __tablename__ = 'rankings'
+    id = db.Column(db.Integer, primary_key=True)
+    rank = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    player_id = db.Column(db.Integer, db.ForeignKey('players.id'), nullable=False)
+    user = db.relationship('User', back_populates='rankings')
+    player = db.relationship('Player', back_populates='rankings')
+
+    serialize_rules = ('-user.rankings', '-player.rankings')
+
+    @validates('rank')
+    def validate_rank(self, key, rank):
+        total_players = Player.query.count()
+        rank = int(rank)
+        if rank < 1 or rank > total_players:
+            raise ValueError(f"Rank must be between 1 and {total_players}")
+        return rank
