@@ -126,5 +126,44 @@ class ReviewResource(Resource):
         db.session.commit()
         return '', 204
 
+class RankingResource(Resource):
+    def get(self, id=None):
+        if id:
+            ranking = Ranking.query.get(id)
+            if ranking:
+                return to_dict(ranking, ['id', 'rank', 'user_id', 'player_id']), 200
+            return {"error": "Ranking not found"}, 404
+        rankings = Ranking.query.all()
+        return [to_dict(ranking, ['id', 'rank', 'user_id', 'player_id']) for ranking in rankings], 200
+
+    def post(self):
+        data = request.get_json()
+        ranking = Ranking(
+            rank=data.get('rank'),
+            user_id=data.get('user_id'),
+            player_id=data.get('player_id')
+        )
+        db.session.add(ranking)
+        db.session.commit()
+        return to_dict(ranking, ['id', 'rank', 'user_id', 'player_id']), 201
+
+    def put(self, id):
+        ranking = Ranking.query.get(id)
+        if not ranking:
+            return {"error": "Ranking not found"}, 404
+        data = request.get_json()
+        for field in data:
+            setattr(ranking, field, data[field])
+        db.session.commit()
+        return to_dict(ranking, ['id', 'rank', 'user_id', 'player_id']), 200
+
+    def delete(self, id):
+        ranking = Ranking.query.get(id)
+        if not ranking:
+            return {"error": "Ranking not found"}, 404
+        db.session.delete(ranking)
+        db.session.commit()
+        return '', 204
+
 if __name__ == "__main__":
   app.run(port=5555, debug=True)
