@@ -90,5 +90,41 @@ class PlayerResource(Resource):
         db.session.commit()
         return '', 204
 
+
+class ReviewResource(Resource):
+    def get(self, id=None):
+        if id:
+            review = Review.query.get(id)
+            if review:
+                return to_dict(review, ['id', 'content', 'user_id', 'player_id']), 200
+            return {"error": "Review not found"}, 404
+        reviews = Review.query.all()
+        return [to_dict(review, ['id', 'content', 'user_id', 'player_id']) for review in reviews], 200
+
+    def post(self):
+        data = request.get_json()
+        review = Review(**data)
+        db.session.add(review)
+        db.session.commit()
+        return to_dict(review, ['id', 'content', 'user_id', 'player_id']), 201
+
+    def put(self, id):
+        review = Review.query.get(id)
+        if not review:
+            return {"error": "Review not found"}, 404
+        data = request.get_json()
+        for field in data:
+            setattr(review, field, data[field])
+        db.session.commit()
+        return to_dict(review, ['id', 'content', 'user_id', 'player_id']), 200
+
+    def delete(self, id):
+        review = Review.query.get(id)
+        if not review:
+            return {"error": "Review not found"}, 404
+        db.session.delete(review)
+        db.session.commit()
+        return '', 204
+
 if __name__ == "__main__":
   app.run(port=5555, debug=True)
