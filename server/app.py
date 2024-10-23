@@ -45,5 +45,50 @@ class UserResource(Resource):
         db.session.commit()
         return '', 204
 
+
+class PlayerResource(Resource):
+    def get(self, id=None):
+        if id:
+            player = Player.query.get(id)
+            if player:
+                player_data = to_dict(player, ['id', 'name', 'position', 'team', 'stats'])
+                
+                ranks = [ranking.rank for ranking in player.rankings]
+                if ranks:
+                    average_rank = sum(ranks) / len(ranks)
+                else:
+                    average_rank = None
+                
+                player_data['average_rank'] = average_rank
+                return player_data, 200
+            return {"error": "Player not found"}, 404
+        players = Player.query.all()
+        return [to_dict(player, ['id', 'name', 'position', 'team', 'stats']) for player in players], 200
+
+    def post(self):
+        data = request.get_json()
+        player = Player(**data)
+        db.session.add(player)
+        db.session.commit()
+        return to_dict(player, ['id', 'name', 'position', 'team', 'stats']), 201
+
+    def put(self, id):
+        player = Player.query.get(id)
+        if not player:
+            return {"error": "Player not found"}, 404
+        data = request.get_json()
+        for field in data:
+            setattr(player, field, data[field])
+        db.session.commit()
+        return to_dict(player, ['id', 'name', 'position', 'team', 'stats']), 200
+
+    def delete(self, id):
+        player = Player.query.get(id)
+        if not player:
+            return {"error": "Player not found"}, 404
+        db.session.delete(player)
+        db.session.commit()
+        return '', 204
+
 if __name__ == "__main__":
   app.run(port=5555, debug=True)
