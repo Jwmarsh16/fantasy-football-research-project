@@ -7,6 +7,14 @@ from models import User, Player, Review, Ranking
 
 
 
+@app.route('/')
+def index():
+    return '<h1>Project Server</h1>'
+
+# Utility function to serialize model instances
+def to_dict(instance, fields):
+    return {field: getattr(instance, field) for field in fields}
+
 class UserResource(Resource):
     def get(self, id=None):
         if id:
