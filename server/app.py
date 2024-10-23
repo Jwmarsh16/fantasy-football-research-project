@@ -165,5 +165,10 @@ class RankingResource(Resource):
         db.session.commit()
         return '', 204
 
+api.add_resource(UserResource, '/users', '/users/<int:id>')
+api.add_resource(PlayerResource, '/players', '/players/<int:id>')
+api.add_resource(ReviewResource, '/reviews', '/reviews/<int:id>')
+api.add_resource(RankingResource, '/rankings', '/rankings/<int:id>')
+
 if __name__ == "__main__":
   app.run(port=5555, debug=True)
