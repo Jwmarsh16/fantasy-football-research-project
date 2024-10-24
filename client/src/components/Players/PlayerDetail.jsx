@@ -1,64 +1,68 @@
+// PlayerDetail.jsx - Updated to use Redux and Axios for managing player details, reviews, and rankings
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getPlayer, addRanking, addReview, getReviews, getPlayers } from './api';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { setPlayer, setReviews, setMaxRank } from '../slices/playerSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 function PlayerDetail() {
   const { id } = useParams();
-  const [player, setPlayer] = useState(null);
-  const [reviews, setReviews] = useState([]);
+  const dispatch = useDispatch();
+  const player = useSelector((state) => state.player.currentPlayer);
+  const reviews = useSelector((state) => state.player.reviews);
+  const maxRank = useSelector((state) => state.player.maxRank);
   const [showReviews, setShowReviews] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [maxRank, setMaxRank] = useState(20); // default max rank
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getPlayer(id);
-        setPlayer(data);
-        const playersData = await getPlayers();
-        setMaxRank(playersData.length);
+        const playerResponse = await axios.get(`/api/players/${id}`);
+        dispatch(setPlayer(playerResponse.data));
+        const playersResponse = await axios.get('/api/players');
+        dispatch(setMaxRank(playersResponse.data.length));
       } catch (error) {
-        console.error("Failed to fetch player data:", error);
-        setError("Failed to fetch player data.");
+        console.error('Failed to fetch player data:', error);
+        setError('Failed to fetch player data.');
       }
     }
     fetchData();
-  }, [id]);
+  }, [id, dispatch]);
 
   const handleRankingSubmit = async (values, { resetForm }) => {
     try {
-      await addRanking({ ...values, player_id: id });
+      await axios.post('/api/rankings', { ...values, player_id: id });
       setSuccess('Ranking added successfully!');
       resetForm();
     } catch (error) {
-      console.error("Failed to add ranking:", error);
-      setError("Failed to add ranking.");
+      console.error('Failed to add ranking:', error);
+      setError('Failed to add ranking.');
     }
   };
 
   const handleReviewSubmit = async (values, { resetForm }) => {
     try {
-      await addReview({ ...values, player_id: id });
+      await axios.post('/api/reviews', { ...values, player_id: id });
       setSuccess('Review added successfully!');
       resetForm();
     } catch (error) {
-      console.error("Failed to add review:", error);
-      setError("Failed to add review.");
+      console.error('Failed to add review:', error);
+      setError('Failed to add review.');
     }
   };
 
   const handleToggleReviews = async () => {
     if (!showReviews) {
       try {
-        const data = await getReviews();
-        const playerReviews = data.filter(review => review.player_id === parseInt(id));
-        setReviews(playerReviews);
+        const response = await axios.get('/api/reviews');
+        const playerReviews = response.data.filter((review) => review.player_id === parseInt(id));
+        dispatch(setReviews(playerReviews));
       } catch (error) {
-        console.error("Failed to fetch reviews:", error);
-        setError("Failed to fetch reviews.");
+        console.error('Failed to fetch reviews:', error);
+        setError('Failed to fetch reviews.');
       }
     }
     setShowReviews(!showReviews);
@@ -134,7 +138,7 @@ function PlayerDetail() {
         <div>
           <h2>Reviews</h2>
           <ul>
-            {reviews.map(review => (
+            {reviews.map((review) => (
               <li key={review.id}>{review.content} (User ID: {review.user_id})</li>
             ))}
           </ul>
