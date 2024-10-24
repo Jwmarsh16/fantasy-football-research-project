@@ -1,29 +1,30 @@
+// App.jsx - Updated to use React Router v6
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import NavBar from './NavBar';
-import PlayerList from './PlayerList';
-import PlayerDetail from './PlayerDetail';
-import AddReview from './AddReview';
-import UserProfile from './UserProfile';
-import UserList from './UserList'; 
-import Register from './Register';
-import Login from './Login';
-import Home from './Home';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import NavBar from './components/NavBar';
+import PlayerList from './pages/PlayerList';
+import PlayerDetail from './components/player/PlayerDetail';
+import AddReview from './components/player/AddReview';
+import UserProfile from './pages/UserProfile';
+import UserList from './pages/UserList'; 
+import Register from './components/user/Register';
+import Login from './components/user/Login';
+import Home from './pages/Home';
 
 function App() {
   return (
     <Router>
       <NavBar />
-      <Switch>
-        <Route path="/players/:id" component={PlayerDetail} />
-        <Route path="/players" component={PlayerList} />
-        <Route path="/add-review/:playerId" component={AddReview} />
-        <Route path="/profile/:id" component={UserProfile} />
-        <Route path="/users" component={UserList} /> 
-        <Route path="/register" component={Register} />
-        <Route path="/login" component={Login} />
-        <Route path="/" component={Home} exact />
-      </Switch>
+      <Routes>
+        <Route path="/players/:id" element={<PlayerDetail />} />
+        <Route path="/players" element={<PlayerList />} />
+        <Route path="/add-review/:playerId" element={<AddReview />} />
+        <Route path="/profile/:id" element={<UserProfile />} />
+        <Route path="/users" element={<UserList />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Home />} />
+      </Routes>
     </Router>
   );
 }

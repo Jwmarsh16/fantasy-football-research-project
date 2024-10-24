@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { setUsers, fetchUsers, setFilteredUser } from '../slices/userSlice';
+import { setUsers, fetchUsers, setFilteredUser } from '../redux/slices/userSlice';
 import { Link } from 'react-router-dom';
 
 function UserList() {

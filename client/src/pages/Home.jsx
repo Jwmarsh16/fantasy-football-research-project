@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { setUserDetails } from '../slices/userSlice';
+import { setUserDetails } from '../redux/slices/userSlice';
 
 function Home() {
   const dispatch = useDispatch();

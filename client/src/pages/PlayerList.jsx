@@ -1,7 +1,7 @@
 // PlayerList.jsx - Updated to use Axios and Redux for fetching player data
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPlayers } from '../slices/playerSlice';
+import { fetchPlayers } from '../redux/slices/playerSlice';
 import { Link } from 'react-router-dom';
 
 function PlayerList() {

@@ -1,7 +1,7 @@
 // AddReview.jsx - Updated to use Formik, Yup, Axios, and Redux for adding reviews
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { addReview } from '../slices/reviewSlice';
+import { addReview } from '../../redux/slices/reviewSlice';
 import { useParams } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';

@@ -1,7 +1,7 @@
 // Register.jsx - Updated to use Axios and Redux for user registration
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser } from '../slices/authSlice';
+import { registerUser } from '../../redux/slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 

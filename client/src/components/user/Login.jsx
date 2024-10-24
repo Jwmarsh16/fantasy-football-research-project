@@ -1,7 +1,7 @@
 // Login.jsx - Updated to use Axios and Redux for user login
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../slices/authSlice';
+import { loginUser } from '../../redux/slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 

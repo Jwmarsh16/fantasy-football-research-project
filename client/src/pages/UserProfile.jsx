@@ -1,7 +1,7 @@
 // UserProfile.jsx - Updated to use Axios and Redux for fetching user data
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers, setCurrentUser } from '../slices/userSlice';
+import { fetchUsers, setCurrentUser } from '../redux/slices/userSlice';
 import { useParams } from 'react-router-dom';
 
 function UserProfile() {

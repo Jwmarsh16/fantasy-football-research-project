@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { setPlayer, setReviews, setMaxRank } from '../slices/playerSlice';
+import { setPlayer, setReviews, setMaxRank } from '../../redux/slices/playerSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
