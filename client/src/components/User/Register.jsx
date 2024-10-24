@@ -1,51 +1,74 @@
+// Register.jsx - Updated to use Axios and Redux for user registration
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 function Register() {
+  const dispatch = useDispatch();
+  const authStatus = useSelector((state) => state.auth.status);
+  const authError = useSelector((state) => state.auth.error);
+
   const initialValues = {
-    username: '',
+    name: '',
     email: '',
-    password: ''
+    password: '',
   };
 
   const validationSchema = Yup.object({
-    username: Yup.string().required('Required'),
-    email: Yup.string().email('Invalid email format').required('Required'),
-    password: Yup.string().required('Required')
+    name: Yup.string().required('Name is required'),
+    email: Yup.string().email('Invalid email address').required('Email is required'),
+    password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
   });
 
-  const onSubmit = async (values) => {
-    const response = await fetch('http://localhost:5555/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(values)
-    });
-    const data = await response.json();
-    console.log(data);
+  const handleSubmit = (values) => {
+    dispatch(registerUser(values));
   };
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      <Form>
-        <div>
-          <label htmlFor="username">Username</label>
-          <Field type="text" id="username" name="username" />
-          <ErrorMessage name="username" component="div" />
-        </div>
-        <div>
-          <label htmlFor="email">Email</label>
-          <Field type="email" id="email" name="email" />
-          <ErrorMessage name="email" component="div" />
-        </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <Field type="password" id="password" name="password" />
-          <ErrorMessage name="password" component="div" />
-        </div>
-        <button type="submit">Register</button>
-      </Form>
-    </Formik>
+    <div>
+      <h2>Register</h2>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ isSubmitting }) => (
+          <Form>
+            <div>
+              <Field
+                type="text"
+                name="name"
+                placeholder="Name"
+              />
+              <ErrorMessage name="name" component="div" className="error" />
+            </div>
+            <div>
+              <Field
+                type="email"
+                name="email"
+                placeholder="Email"
+              />
+              <ErrorMessage name="email" component="div" className="error" />
+            </div>
+            <div>
+              <Field
+                type="password"
+                name="password"
+                placeholder="Password"
+              />
+              <ErrorMessage name="password" component="div" className="error" />
+            </div>
+            <button type="submit" disabled={isSubmitting}>
+              Register
+            </button>
+          </Form>
+        )}
+      </Formik>
+      {authStatus === 'loading' && <p>Registering...</p>}
+      {authStatus === 'failed' && <p>Error: {authError}</p>}
+    </div>
   );
 }
 
