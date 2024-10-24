@@ -1,29 +1,44 @@
+// UserList.jsx - Updated to use Redux and Axios for fetching the list of users
 import React, { useState, useEffect } from 'react';
-import { getUsers, getUserById } from './api';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { setUsers, fetchUsers, setFilteredUser } from '../slices/userSlice';
 import { Link } from 'react-router-dom';
 
 function UserList() {
-  const [users, setUsers] = useState([]);
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.user.users);
+  const filteredUser = useSelector((state) => state.user.filteredUser);
+  const status = useSelector((state) => state.user.status);
   const [searchId, setSearchId] = useState('');
-  const [filteredUser, setFilteredUser] = useState(null);
 
   useEffect(() => {
-    async function fetchUsers() {
-      const data = await getUsers();
-      setUsers(data);
+    if (status === 'idle') {
+      dispatch(fetchUsers());
     }
-    fetchUsers();
-  }, []);
+  }, [status, dispatch]);
 
   const handleSearch = async (event) => {
     event.preventDefault();
     if (searchId) {
-      const user = await getUserById(searchId);
-      setFilteredUser(user);
+      try {
+        const response = await axios.get(`/api/users/${searchId}`);
+        dispatch(setFilteredUser(response.data));
+      } catch (error) {
+        console.error('Error fetching user by ID:', error);
+      }
     } else {
-      setFilteredUser(null);
+      dispatch(setFilteredUser(null));
     }
   };
+
+  if (status === 'loading') {
+    return <div>Loading users...</div>;
+  }
+
+  if (status === 'failed') {
+    return <div>Error loading users.</div>;
+  }
 
   return (
     <div className="container">
