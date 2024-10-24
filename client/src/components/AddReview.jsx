@@ -1,42 +1,59 @@
+// AddReview.jsx - Updated to use Formik, Yup, Axios, and Redux for adding reviews
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { addReview } from '../slices/reviewSlice';
+import { useParams } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useParams } from 'react-router-dom';
 
 function AddReview() {
+  const dispatch = useDispatch();
   const { playerId } = useParams();
 
   const initialValues = {
-    content: '',
-    user_id: '',
-    player_id: playerId
+    reviewText: '',
   };
 
   const validationSchema = Yup.object({
-    content: Yup.string().required('Required')
+    reviewText: Yup.string()
+      .required('Review text is required')
+      .min(10, 'Review must be at least 10 characters long'),
   });
 
-  const onSubmit = async (values) => {
-    const response = await fetch(`http://localhost:5555/reviews`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(values)
-    });
-    const data = await response.json();
-    console.log(data);
+  const handleSubmit = (values, { resetForm }) => {
+    const newReview = {
+      playerId: parseInt(playerId),
+      content: values.reviewText,
+    };
+    dispatch(addReview(newReview));
+    resetForm();
   };
 
   return (
-    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={onSubmit}>
-      <Form>
-        <div>
-          <label htmlFor="content">Review</label>
-          <Field type="text" id="content" name="content" />
-          <ErrorMessage name="content" component="div" />
-        </div>
-        <button type="submit">Add Review</button>
-      </Form>
-    </Formik>
+    <div>
+      <h2>Add Review</h2>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ isSubmitting }) => (
+          <Form>
+            <div>
+              <Field
+                as="textarea"
+                name="reviewText"
+                placeholder="Write your review here..."
+              />
+              <ErrorMessage name="reviewText" component="div" className="error" />
+            </div>
+            <button type="submit" disabled={isSubmitting}>
+              Submit Review
+            </button>
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 }
 
