@@ -1,24 +1,27 @@
+// Ranking.jsx - Updated to use Redux and Axios for managing rankings
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { setMaxRank } from '../slices/playerSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { getPlayers } from './api'; // Ensure this function is defined in your api.js
 
 function Ranking() {
-  const [maxRank, setMaxRank] = useState(20); // Default max rank, updated dynamically
+  const dispatch = useDispatch();
+  const maxRank = useSelector((state) => state.player.maxRank);
 
   useEffect(() => {
     // Fetch players to determine max rank
     async function fetchPlayers() {
       try {
-        const playersData = await getPlayers();
-        setMaxRank(playersData.length); // Set max rank based on number of players
+        const playersData = await axios.get('/api/players');
+        dispatch(setMaxRank(playersData.data.length)); // Set max rank based on number of players
       } catch (error) {
         console.error('Failed to fetch players:', error);
       }
     }
-
     fetchPlayers();
-  }, []);
+  }, [dispatch]);
 
   const initialValues = {
     rank: '',
@@ -39,13 +42,12 @@ function Ranking() {
   };
 
   const onSubmit = async (values) => {
-    const response = await fetch(`http://localhost:5555/rankings`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(values)
-    });
-    const data = await response.json();
-    console.log(data);
+    try {
+      const response = await axios.post('/api/rankings', values);
+      console.log(response.data);
+    } catch (error) {
+      console.error('Failed to submit ranking:', error);
+    }
   };
 
   return (
