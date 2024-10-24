@@ -1,6 +1,8 @@
 from config import app, db
 from faker import Faker
 
+from random import randint, sample, choice as rc
+
 from models import db, User, Player, Review, Ranking
 
 if __name__ == '__main__':
