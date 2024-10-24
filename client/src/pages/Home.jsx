@@ -22,15 +22,18 @@ function Home() {
   }, [user, userDetails, dispatch]);
 
   return (
-    <div>
-      <h1>Welcome back to your Fantasy Football Portal!</h1>
+    <div className="home-page">
+      <h1 className="home-title">Welcome back to your Fantasy Football Portal!</h1>
       {user ? (
-        <div>
-          <p>Logged in as: {user.name}</p>
-          {userDetails && <p>Details: {userDetails.email}</p>}
+        <div className="user-info">
+          <p className="user-greeting">Logged in as: <span className="user-name">{user.name}</span></p>
+          {userDetails && <p className="user-details">Details: <span className="user-email">{userDetails.email}</span></p>}
         </div>
       ) : (
-        <p>Please login or register to continue your journey.</p>
+        <div className="auth-prompt">
+          <p className="login-message">Please login or register to continue your journey.</p>
+          <button className="auth-button">Login/Register</button>
+        </div>
       )}
     </div>
   );
