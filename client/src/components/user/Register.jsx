@@ -1,4 +1,4 @@
-// Register.jsx - Updated to use Axios and Redux for user registration
+// Register.jsx - Integrated with Flask backend using Axios for user registration
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../redux/slices/authSlice';
@@ -22,8 +22,17 @@ function Register() {
     password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
   });
 
-  const handleSubmit = (values) => {
-    dispatch(registerUser(values));
+  const handleSubmit = (values, { setSubmitting }) => {
+    dispatch(registerUser(values)).unwrap()
+      .then((response) => {
+        console.log('User successfully registered:', response);
+      })
+      .catch((error) => {
+        console.error('Registration failed:', error);
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -61,7 +70,7 @@ function Register() {
               <ErrorMessage name="password" component="div" className="error" />
             </div>
             <button type="submit" disabled={isSubmitting}>
-              Register
+              {isSubmitting ? 'Registering...' : 'Register'}
             </button>
           </Form>
         )}
