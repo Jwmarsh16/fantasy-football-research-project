@@ -1,50 +1,42 @@
-import React, { useState, useEffect } from 'react';
+// UserProfile.jsx - Updated to use Axios and Redux for fetching user data
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers, setCurrentUser } from '../slices/userSlice';
 import { useParams } from 'react-router-dom';
-import { getUserById } from './api';
 
 function UserProfile() {
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.user.users);
+  const status = useSelector((state) => state.user.status);
   const { id } = useParams();
-  const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
+  const currentUser = users.find((user) => user.id === parseInt(id));
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        console.log("Fetching user data...");
-        const data = await getUserById(id);
-        console.log("User data fetched:", data);
-        setUser(data);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-        setError("Failed to fetch user data.");
-      }
+    if (status === 'idle') {
+      dispatch(fetchUsers());
+    } else if (currentUser) {
+      dispatch(setCurrentUser(currentUser));
     }
-    fetchData();
-  }, [id]);
+  }, [status, dispatch, currentUser]);
 
-  if (error) return <div>{error}</div>;
-  if (!user) return <div>Loading...</div>;
+  if (status === 'loading') {
+    return <div>Loading user profile...</div>;
+  }
+
+  if (status === 'failed') {
+    return <div>Error loading user profile.</div>;
+  }
 
   return (
     <div>
-      <h1>{user.username}'s Profile</h1>
-      <p>Email: {user.email}</p>
-      <h2>Reviews</h2>
-      <ul>
-        {user.reviews.map(review => (
-          <li key={review.id}>
-            {review.content} (Player ID: {review.player_id})
-          </li>
-        ))}
-      </ul>
-      <h2>Rankings</h2>
-      <ul>
-        {user.rankings.map(ranking => (
-          <li key={ranking.id}>
-            Player ID: {ranking.player_id}, Rank: {ranking.rank}
-          </li>
-        ))}
-      </ul>
+      {currentUser ? (
+        <div>
+          <h2>{currentUser.name}</h2>
+          <p>Email: {currentUser.email}</p>
+        </div>
+      ) : (
+        <div>User not found.</div>
+      )}
     </div>
   );
 }
