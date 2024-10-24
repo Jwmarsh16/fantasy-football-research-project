@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPlayers } from '../slices/playerSlice';
+import { Link } from 'react-router-dom';
 
 function PlayerList() {
   const dispatch = useDispatch();
@@ -27,7 +28,9 @@ function PlayerList() {
       <h2>Player List</h2>
       <ul>
         {players.map((player) => (
-          <li key={player.id}>{player.name}</li>
+          <li key={player.id}>
+            <Link to={`/players/${player.id}`}>{player.name}</Link>
+          </li>
         ))}
       </ul>
     </div>
