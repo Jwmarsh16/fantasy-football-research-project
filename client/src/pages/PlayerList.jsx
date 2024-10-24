@@ -1,26 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { getPlayers } from './api';
-import { Link } from 'react-router-dom';
+// PlayerList.jsx - Updated to use Axios and Redux for fetching player data
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchPlayers } from '../slices/playerSlice';
 
 function PlayerList() {
-  const [players, setPlayers] = useState([]);
+  const dispatch = useDispatch();
+  const players = useSelector((state) => state.player.players);
+  const status = useSelector((state) => state.player.status);
 
   useEffect(() => {
-    async function fetchData() {
-      const data = await getPlayers();
-      setPlayers(data);
+    if (status === 'idle') {
+      dispatch(fetchPlayers());
     }
-    fetchData();
-  }, []);
+  }, [status, dispatch]);
+
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
+  if (status === 'failed') {
+    return <div>Error loading players.</div>;
+  }
 
   return (
     <div>
-      <h1>Player List</h1>
+      <h2>Player List</h2>
       <ul>
-        {players.map(player => (
-          <li key={player.id}>
-            <Link to={`/players/${player.id}`}>{player.name} (ID: {player.id})</Link>
-          </li>
+        {players.map((player) => (
+          <li key={player.id}>{player.name}</li>
         ))}
       </ul>
     </div>
