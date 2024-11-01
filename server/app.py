@@ -15,8 +15,8 @@ from models import User, Player, Review, Ranking
 
 
 @app.route('/')
-def index():
-    return '<h1>Project Server</h1>'
+def serve_index():
+    return app.send_static_file('index.html')
 
 # Utility function to serialize model instances
 def to_dict(instance, fields):
@@ -264,13 +264,13 @@ class RankingResource(Resource):
         return '', 204
 
 # Adding resources to the API
-api.add_resource(RegisterResource, '/auth/register')
-api.add_resource(LoginResource, '/auth/login')
-api.add_resource(ProtectedResource, '/auth/protected')
-api.add_resource(UserResource, '/users', '/users/<int:id>')
-api.add_resource(PlayerResource, '/players', '/players/<int:id>')
-api.add_resource(ReviewResource, '/reviews', '/reviews/<int:id>')
-api.add_resource(RankingResource, '/rankings', '/rankings/<int:id>')
+api.add_resource(RegisterResource, '/api/auth/register')
+api.add_resource(LoginResource, '/api/auth/login')
+api.add_resource(ProtectedResource, '/api/auth/protected')
+api.add_resource(UserResource, '/api/users', '/api/users/<int:id>')
+api.add_resource(PlayerResource, '/api/players', '/api/players/<int:id>')
+api.add_resource(ReviewResource, '/api/reviews', '/api/reviews/<int:id>')
+api.add_resource(RankingResource, '/api/rankings', '/api/rankings/<int:id>')
 
 if __name__ == "__main__":
   app.run(port=5555, debug=True)
