@@ -32,9 +32,9 @@ class User(db.Model, SerializerMixin):
 class Player(db.Model):
     __tablename__ = 'players'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(40), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
     position = db.Column(db.String(20), nullable=False)
-    team = db.Column(db.String(20), nullable=False)
+    team = db.Column(db.String(50), nullable=False)
     stats = db.Column(db.JSON, nullable=False)
     reviews = db.relationship('Review', back_populates='player', cascade='all, delete-orphan')
     rankings = db.relationship('Ranking', back_populates='player', cascade='all, delete-orphan')
