@@ -4,7 +4,7 @@ from sqlalchemy.orm import validates
 from config import db
 import bcrypt
 
-# Models go here!
+# Models go here
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
