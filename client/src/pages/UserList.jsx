@@ -9,14 +9,16 @@ function UserList() {
   const users = useSelector((state) => state.user.users);
   const status = useSelector((state) => state.user.status);
   const [searchUsername, setSearchUsername] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState(users);
+  const [filteredUsers, setFilteredUsers] = useState([]);
 
+  // Fetch users whenever the component mounts
   useEffect(() => {
-    if (status === 'idle') {
+    if (users.length === 0) {
       dispatch(fetchUsers());
     }
-  }, [status, dispatch]);
+  }, [dispatch, users.length]);
 
+  // Update filtered users based on the search term
   useEffect(() => {
     if (searchUsername) {
       const filtered = users.filter((user) =>
@@ -28,10 +30,12 @@ function UserList() {
     }
   }, [searchUsername, users]);
 
+  // Handle loading state
   if (status === 'loading') {
     return <div className="loading-message">Loading users...</div>;
   }
 
+  // Handle error state
   if (status === 'failed') {
     return <div className="error-message">Error loading users.</div>;
   }
