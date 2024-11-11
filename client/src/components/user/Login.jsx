@@ -11,6 +11,7 @@ function Login() {
   const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
   const authError = useSelector((state) => state.auth.error);
+  const currentUser = useSelector((state) => state.auth.currentUser); // To get the logged-in user's data
 
   const initialValues = {
     email: '',
@@ -23,10 +24,16 @@ function Login() {
   });
 
   const handleSubmit = (values, { setSubmitting }) => {
-    dispatch(loginUser(values)).unwrap()
+    dispatch(loginUser(values))
+      .unwrap()
       .then((response) => {
         console.log('User successfully logged in:', response);
-        navigate('/profile'); // Navigate to profile page after successful login
+        // Assuming currentUser is set correctly in the auth state after login
+        if (currentUser && currentUser.id) {
+          navigate(`/profile/${currentUser.id}`); // Navigate to the user's specific profile page
+        } else {
+          navigate('/profile'); // Fallback if currentUser isn't loaded properly
+        }
       })
       .catch((error) => {
         console.error('Login failed:', error);
@@ -37,39 +44,41 @@ function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div className="login-page">
+      <h2 className="login-title">Login</h2>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
-          <Form>
-            <div>
+          <Form className="login-form">
+            <div className="form-field">
               <Field
                 type="email"
                 name="email"
                 placeholder="Email"
+                className="input-field"
               />
-              <ErrorMessage name="email" component="div" className="error" />
+              <ErrorMessage name="email" component="div" className="error-message" />
             </div>
-            <div>
+            <div className="form-field">
               <Field
                 type="password"
                 name="password"
                 placeholder="Password"
+                className="input-field"
               />
-              <ErrorMessage name="password" component="div" className="error" />
+              <ErrorMessage name="password" component="div" className="error-message" />
             </div>
-            <button type="submit" disabled={isSubmitting}>
+            <button type="submit" className="login-button" disabled={isSubmitting}>
               {isSubmitting ? 'Logging in...' : 'Login'}
             </button>
           </Form>
         )}
       </Formik>
-      {authStatus === 'loading' && <p>Logging in...</p>}
-      {authStatus === 'failed' && <p>Error: {authError}</p>}
+      {authStatus === 'loading' && <p className="loading-message">Logging in...</p>}
+      {authStatus === 'failed' && <p className="error-message">Error: {authError}</p>}
     </div>
   );
 }
