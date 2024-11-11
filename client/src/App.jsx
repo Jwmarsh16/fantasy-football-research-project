@@ -19,7 +19,8 @@ function App() {
         <Route path="/players/:id" element={<PlayerDetail />} />
         <Route path="/players" element={<PlayerList />} />
         <Route path="/add-review/:playerId" element={<AddReview />} />
-        <Route path="/profile/:userId" element={<Profile />} /> {/* Updated route for Profile */}
+        <Route path="/profile" element={<Profile />} /> {/* Add this route */}
+        <Route path="/profile/:userId" element={<Profile />} /> {/* Add specific profile route */}
         <Route path="/users" element={<UserList />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
