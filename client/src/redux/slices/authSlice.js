@@ -29,6 +29,17 @@ export const registerUser = createAsyncThunk('auth/registerUser', async (userDat
   }
 });
 
+// Async thunk to handle logout
+export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { rejectWithValue }) => {
+  try {
+    await axios.post('/api/auth/logout', {}, { withCredentials: true });
+    // No return value necessary as we're just clearing user state
+    return;
+  } catch (error) {
+    return rejectWithValue(error.response ? error.response.data.message : 'Logout failed');
+  }
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -37,14 +48,7 @@ const authSlice = createSlice({
     error: null,
     isAuthenticated: false, // Track authentication status
   },
-  reducers: {
-    logout: (state) => {
-      state.currentUser = null;
-      state.status = 'idle';
-      state.error = null;
-      state.isAuthenticated = false; // Set to false on logout
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // Login Cases
@@ -76,9 +80,21 @@ const authSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload;
         state.isAuthenticated = false;
+      })
+      // Logout Cases
+      .addCase(logoutUser.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.status = 'idle';
+        state.currentUser = null;
+        state.isAuthenticated = false; // Set to false on logout
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       });
   },
 });
 
-export const { logout } = authSlice.actions;
 export default authSlice.reducer;
