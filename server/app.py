@@ -2,6 +2,7 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity, unset_jwt_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
@@ -121,6 +122,14 @@ class LoginResource(Resource):
         except Exception as e:
             print(f"Error creating response: {e}")
             return jsonify({'message': 'Error creating response'}), 500
+
+# Logout Resource
+class LogoutResource(Resource):
+    @jwt_required()  # Requires a valid JWT token to access the logout endpoint
+    def post(self):
+        response = jsonify({"message": "Logout successful"})
+        unset_jwt_cookies(response)
+        return response, 200
 
 # Protected Resource Example
 class ProtectedResource(Resource):
@@ -290,6 +299,7 @@ class RankingResource(Resource):
 # Adding resources to the API
 api.add_resource(RegisterResource, '/api/auth/register')
 api.add_resource(LoginResource, '/api/auth/login')
+api.add_resource(LogoutResource, '/api/auth/logout')  # Adding LogoutResource here
 api.add_resource(ProtectedResource, '/api/auth/protected')
 api.add_resource(UserResource, '/api/users', '/api/users/<int:id>')
 api.add_resource(PlayerResource, '/api/players', '/api/players/<int:id>')
