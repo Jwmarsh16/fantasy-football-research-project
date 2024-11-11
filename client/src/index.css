@@ -133,20 +133,24 @@ button:hover {
 .user-greeting {
   font-size: 22px;
   margin-bottom: 20px; /* Increased margin to create space between greeting and next section */
-  color: #f368e0;
+  color: #1e90ff; /* Changed to Dodger Blue */
 }
+
 .user-name {
   font-weight: bold;
-  color: #ee5253;
+  color: #0074cc; /* Changed to Medium Blue */
 }
+
 .user-details {
   font-size: 18px;
-  color: #666;
+  color: #1e90ff; /* Changed to Steel Blue */
 }
+
 .user-email {
-  color: #ff9ff3;
+  color: #0074cc; /* Changed to Royal Blue */
   font-weight: bold;
 }
+
 .auth-prompt {
   margin-top: 40px;
   text-align: center;

@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom'; // Import useParams
 import { fetchUserById, setUserDetails } from '../redux/slices/userSlice';
 import { fetchRankings, deleteRanking } from '../redux/slices/rankingSlice';
 import { fetchReviews, deleteReview } from '../redux/slices/reviewSlice';
 import axios from 'axios';
 
 function Profile() {
+  const { userId } = useParams(); // Get userId from the URL
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.currentUser);
+  const currentUser = useSelector((state) => state.auth.currentUser); // Get logged-in user info
   const userDetails = useSelector((state) => state.user.userDetails);
   const reviews = useSelector((state) => state.review.reviews);
   const rankings = useSelector((state) => state.ranking.rankings);
   const [players, setPlayers] = useState([]);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    } else if (user && user.id) {
-      if (!userDetails || userDetails.id !== user.id) {
-        dispatch(fetchUserById(user.id))
+    if (!userId) {
+      navigate('/login'); // Redirect to login if userId is not present
+    } else {
+      // Fetch user details by ID if they haven't been loaded yet
+      if (!userDetails || userDetails.id !== parseInt(userId)) {
+        dispatch(fetchUserById(userId))
           .unwrap()
           .then((response) => {
             if (response) {
@@ -35,7 +37,7 @@ function Profile() {
       dispatch(fetchReviews());
       fetchPlayers();
     }
-  }, [user, userDetails, dispatch, navigate]);
+  }, [userId, userDetails, dispatch, navigate]);
 
   const fetchPlayers = async () => {
     try {
@@ -58,7 +60,7 @@ function Profile() {
 
       // Find the ranking for this player by the user
       const ranking = rankings.find(
-        (ranking) => ranking.user_id === user.id && ranking.player_id === playerId
+        (ranking) => ranking.user_id === parseInt(userId) && ranking.player_id === playerId
       );
 
       // If a ranking exists, delete it
@@ -74,10 +76,11 @@ function Profile() {
     return <p className="loading-message">Loading user details...</p>;
   }
 
+  // Combine reviews and rankings by player ID
   const combinedData = reviews
-    .filter((review) => review.user_id === user.id)
+    .filter((review) => review.user_id === parseInt(userId))
     .map((review) => {
-      const ranking = rankings.find((ranking) => ranking.user_id === user.id && ranking.player_id === review.player_id);
+      const ranking = rankings.find((ranking) => ranking.user_id === parseInt(userId) && ranking.player_id === review.player_id);
       return {
         ...review,
         rank: ranking ? ranking.rank : 'N/A',
@@ -99,12 +102,14 @@ function Profile() {
               <p className="review-player">{getPlayerDetails(data.player_id)}</p>
               <p className="review-content">Review: {data.content}</p>
               <p className="ranking-value">Ranking: {data.rank}</p>
-              <button
-                className="delete-button"
-                onClick={() => handleDeleteReviewAndRanking(data.id, data.player_id)}
-              >
-                Delete Review & Ranking
-              </button>
+              {currentUser && currentUser.id === parseInt(userId) && (
+                <button
+                  className="delete-button"
+                  onClick={() => handleDeleteReviewAndRanking(data.id, data.player_id)}
+                >
+                  Delete Review & Ranking
+                </button>
+              )}
             </div>
           ))
         ) : (

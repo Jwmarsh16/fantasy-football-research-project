@@ -1,16 +1,15 @@
 // UserList.jsx - Updated to use Redux and Axios for fetching the list of users
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
-import { setUsers, fetchUsers, setFilteredUser } from '../redux/slices/userSlice';
+import { fetchUsers } from '../redux/slices/userSlice';
 import { Link } from 'react-router-dom';
 
 function UserList() {
   const dispatch = useDispatch();
   const users = useSelector((state) => state.user.users);
-  const filteredUser = useSelector((state) => state.user.filteredUser);
   const status = useSelector((state) => state.user.status);
-  const [searchId, setSearchId] = useState('');
+  const [searchUsername, setSearchUsername] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState(users);
 
   useEffect(() => {
     if (status === 'idle') {
@@ -18,19 +17,16 @@ function UserList() {
     }
   }, [status, dispatch]);
 
-  const handleSearch = async (event) => {
-    event.preventDefault();
-    if (searchId) {
-      try {
-        const response = await axios.get(`/api/users/${searchId}`);
-        dispatch(setFilteredUser(response.data));
-      } catch (error) {
-        console.error('Error fetching user by ID:', error);
-      }
+  useEffect(() => {
+    if (searchUsername) {
+      const filtered = users.filter((user) =>
+        user.username.toLowerCase().includes(searchUsername.toLowerCase())
+      );
+      setFilteredUsers(filtered);
     } else {
-      dispatch(setFilteredUser(null));
+      setFilteredUsers(users);
     }
-  };
+  }, [searchUsername, users]);
 
   if (status === 'loading') {
     return <div className="loading-message">Loading users...</div>;
@@ -43,29 +39,18 @@ function UserList() {
   return (
     <div className="user-list-page container">
       <h1 className="page-title">User List</h1>
-      <form className="search-form" onSubmit={handleSearch}>
+      <form className="search-form" onSubmit={(e) => e.preventDefault()}>
         <input
           type="text"
           className="search-input"
-          placeholder="Search by user ID"
-          value={searchId}
-          onChange={(e) => setSearchId(e.target.value)}
+          placeholder="Search by username"
+          value={searchUsername}
+          onChange={(e) => setSearchUsername(e.target.value)}
         />
-        <button type="submit" className="search-button">Search</button>
       </form>
-      {filteredUser ? (
-        <div className="search-result">
-          <h2 className="section-title">Search Result</h2>
-          <div className="user-card">
-            <p className="user-info">
-              <span className="user-username">{filteredUser.username}</span> (ID: {filteredUser.id})
-            </p>
-            <Link to={`/profile/${filteredUser.id}`} className="view-profile-link">View Profile</Link>
-          </div>
-        </div>
-      ) : (
+      {filteredUsers && filteredUsers.length > 0 ? (
         <ul className="user-list">
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <li key={user.id} className="user-list-item">
               <div className="user-card">
                 <p className="user-info">
@@ -76,6 +61,8 @@ function UserList() {
             </li>
           ))}
         </ul>
+      ) : (
+        <p className="no-users-message">No users found.</p>
       )}
     </div>
   );

@@ -25,14 +25,13 @@ function NavBar() {
             <li><Link to="/login">Login</Link></li>
           </>
         ) : (
-          <li><Link to="/profile">Profile</Link></li>
+          <li><Link to={`/profile/${user.id}`}>Profile</Link></li> 
         )}
       </ul>
       {user && (
         <button className="navbar-button logout-button">
-        Logout
+          Logout
         </button>
-      
       )}
     </nav>
   );

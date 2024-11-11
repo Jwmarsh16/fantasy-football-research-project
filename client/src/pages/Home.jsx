@@ -35,7 +35,7 @@ function Home() {
           </p>
           {userDetails ? (
             <p className="user-details">
-              Details: <span className="user-email">{userDetails.email || 'Unknown Email'}</span>
+              Email: <span className="user-email">{userDetails.email || 'Unknown Email'}</span>
             </p>
           ) : (
             <p>Loading additional user details...</p>
