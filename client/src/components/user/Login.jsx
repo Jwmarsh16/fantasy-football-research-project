@@ -1,12 +1,14 @@
-// Login.jsx - Updated to use Axios and Redux for user login
-import React, { useState } from 'react';
+// Login.jsx - Updated to use Axios and Redux for user login and navigate to profile page upon successful login
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../redux/slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 function Login() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
   const authError = useSelector((state) => state.auth.error);
 
@@ -20,8 +22,18 @@ function Login() {
     password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
   });
 
-  const handleSubmit = (values) => {
-    dispatch(loginUser(values));
+  const handleSubmit = (values, { setSubmitting }) => {
+    dispatch(loginUser(values)).unwrap()
+      .then((response) => {
+        console.log('User successfully logged in:', response);
+        navigate('/profile'); // Navigate to profile page after successful login
+      })
+      .catch((error) => {
+        console.error('Login failed:', error);
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -51,7 +63,7 @@ function Login() {
               <ErrorMessage name="password" component="div" className="error" />
             </div>
             <button type="submit" disabled={isSubmitting}>
-              Login
+              {isSubmitting ? 'Logging in...' : 'Login'}
             </button>
           </Form>
         )}

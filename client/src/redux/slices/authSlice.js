@@ -1,4 +1,4 @@
-// slices/authSlice.js - Updated to properly handle registration, login, and Redux integration with async handling
+// authSlice.js - Ensure currentUser is set properly when loginUser action is successful
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -6,7 +6,11 @@ import axios from 'axios';
 export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, { rejectWithValue }) => {
   try {
     const response = await axios.post('/api/auth/login', credentials, { withCredentials: true });
-    return response.data;
+    // Ensure that the response contains the necessary user data
+    if (response.data && response.data.user) {
+      return response.data.user;
+    }
+    return response.data; // If the structure is different, return as is
   } catch (error) {
     return rejectWithValue(error.response ? error.response.data.message : 'Login failed');
   }
@@ -16,6 +20,9 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, 
 export const registerUser = createAsyncThunk('auth/registerUser', async (userData, { rejectWithValue }) => {
   try {
     const response = await axios.post('/api/auth/register', userData, { withCredentials: true });
+    if (response.data && response.data.user) {
+      return response.data.user;
+    }
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response ? error.response.data.message : 'Registration failed');
@@ -25,15 +32,17 @@ export const registerUser = createAsyncThunk('auth/registerUser', async (userDat
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
+    currentUser: null,
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
+    isAuthenticated: false, // Track authentication status
   },
   reducers: {
     logout: (state) => {
-      state.user = null;
+      state.currentUser = null;
       state.status = 'idle';
       state.error = null;
+      state.isAuthenticated = false; // Set to false on logout
     },
   },
   extraReducers: (builder) => {
@@ -45,11 +54,13 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user = action.payload;
+        state.currentUser = action.payload;
+        state.isAuthenticated = true; // Set to true when login is successful
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+        state.isAuthenticated = false;
       })
       // Register Cases
       .addCase(registerUser.pending, (state) => {
@@ -58,11 +69,13 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.user = action.payload;
+        state.currentUser = action.payload;
+        state.isAuthenticated = true; // Automatically authenticate after successful registration
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+        state.isAuthenticated = false;
       });
   },
 });

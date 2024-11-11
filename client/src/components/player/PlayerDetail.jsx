@@ -1,9 +1,11 @@
-// PlayerDetail.jsx - Updated to use Redux and Axios for managing player details, reviews, and rankings
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { setPlayer, setReviews, setMaxRank } from '../../redux/slices/playerSlice';
+import { fetchUsers } from '../../redux/slices/userSlice';
+import { addRanking, fetchRankings } from '../../redux/slices/rankingSlice';
+import { addReview, fetchReviews } from '../../redux/slices/reviewSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
@@ -12,7 +14,11 @@ function PlayerDetail() {
   const dispatch = useDispatch();
   const player = useSelector((state) => state.player.currentPlayer);
   const reviews = useSelector((state) => state.player.reviews);
+  const rankings = useSelector((state) => state.ranking.rankings);
   const maxRank = useSelector((state) => state.player.maxRank);
+  const users = useSelector((state) => state.user.users);
+  const currentUser = useSelector((state) => state.auth.currentUser);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const [showReviews, setShowReviews] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
@@ -24,33 +30,51 @@ function PlayerDetail() {
         dispatch(setPlayer(playerResponse.data));
         const playersResponse = await axios.get('/api/players');
         dispatch(setMaxRank(playersResponse.data.length));
+        if (!users.length) {
+          dispatch(fetchUsers());
+        }
       } catch (error) {
         console.error('Failed to fetch player data:', error);
         setError('Failed to fetch player data.');
       }
     }
     fetchData();
-  }, [id, dispatch]);
+  }, [id, dispatch, users.length]);
 
-  const handleRankingSubmit = async (values, { resetForm }) => {
-    try {
-      await axios.post('/api/rankings', { ...values, player_id: id });
-      setSuccess('Ranking added successfully!');
-      resetForm();
-    } catch (error) {
-      console.error('Failed to add ranking:', error);
-      setError('Failed to add ranking.');
+  const handleCombinedSubmit = async (values, { resetForm }) => {
+    if (!isAuthenticated || !currentUser) {
+      setError('You must be logged in to add a ranking and review.');
+      return;
     }
-  };
 
-  const handleReviewSubmit = async (values, { resetForm }) => {
     try {
-      await axios.post('/api/reviews', { ...values, player_id: id });
-      setSuccess('Review added successfully!');
+      // Dispatch addRanking to add the ranking
+      await dispatch(
+        addRanking({
+          rank: values.rank,
+          player_id: parseInt(id),
+          user_id: currentUser.id,
+        })
+      ).unwrap();
+
+      // Dispatch addReview to add the review
+      await dispatch(
+        addReview({
+          content: values.content,
+          player_id: parseInt(id),
+          user_id: currentUser.id,
+        })
+      ).unwrap();
+
+      setSuccess('Ranking and review added successfully!');
       resetForm();
+
+      // Refresh rankings and reviews
+      dispatch(fetchRankings());
+      dispatch(fetchReviews());
     } catch (error) {
-      console.error('Failed to add review:', error);
-      setError('Failed to add review.');
+      console.error('Failed to add ranking and review:', error);
+      setError('Failed to add ranking and review.');
     }
   };
 
@@ -60,6 +84,7 @@ function PlayerDetail() {
         const response = await axios.get('/api/reviews');
         const playerReviews = response.data.filter((review) => review.player_id === parseInt(id));
         dispatch(setReviews(playerReviews));
+        dispatch(fetchRankings()); // Also fetch rankings to ensure latest
       } catch (error) {
         console.error('Failed to fetch reviews:', error);
         setError('Failed to fetch reviews.');
@@ -67,6 +92,25 @@ function PlayerDetail() {
     }
     setShowReviews(!showReviews);
   };
+
+  const getUsernameById = (userId) => {
+    if (users.length > 0) {
+      const user = users.find((user) => user.id === parseInt(userId));
+      return user ? user.username : 'Unknown User';
+    }
+    return 'Loading...';
+  };
+
+  // Combine Reviews and Rankings Based on Player ID
+  const combinedReviewsAndRankings = reviews.map((review) => {
+    const ranking = rankings.find(
+      (ranking) => ranking.player_id === review.player_id && ranking.user_id === review.user_id
+    );
+    return {
+      ...review,
+      rank: ranking ? ranking.rank : 'N/A',
+    };
+  });
 
   if (error) return <div className="error-message">{error}</div>;
   if (!player) return <div>Loading...</div>;
@@ -80,55 +124,37 @@ function PlayerDetail() {
       <p>Stats: {JSON.stringify(player.stats)}</p>
       <p>Average Rank: {player.average_rank !== null ? player.average_rank.toFixed(2) : 'N/A'}</p>
 
-      <h2>Add a Rank</h2>
+      <h2>Add a Rank and Review</h2>
       {success && <p className="success-message">{success}</p>}
-      <Formik
-        initialValues={{ rank: '', user_id: '' }}
-        validationSchema={Yup.object({
-          rank: Yup.number().min(1, 'Rank must be at least 1').max(maxRank, `Rank must be at most ${maxRank}`).required('Required'),
-          user_id: Yup.number().required('Required')
-        })}
-        onSubmit={handleRankingSubmit}
-      >
-        <Form>
-          <div>
-            <label htmlFor="rank">Rank</label>
-            <Field type="number" id="rank" name="rank" />
-            <ErrorMessage name="rank" component="div" />
-          </div>
-          <div>
-            <label htmlFor="user_id">User ID</label>
-            <Field type="number" id="user_id" name="user_id" />
-            <ErrorMessage name="user_id" component="div" />
-          </div>
-          <button type="submit">Add Rank</button>
-        </Form>
-      </Formik>
-
-      <h2>Add a Review</h2>
-      {success && <p className="success-message">{success}</p>}
-      <Formik
-        initialValues={{ content: '', user_id: '' }}
-        validationSchema={Yup.object({
-          content: Yup.string().required('Required'),
-          user_id: Yup.number().required('Required')
-        })}
-        onSubmit={handleReviewSubmit}
-      >
-        <Form>
-          <div>
-            <label htmlFor="content">Review</label>
-            <Field as="textarea" id="content" name="content" />
-            <ErrorMessage name="content" component="div" />
-          </div>
-          <div>
-            <label htmlFor="user_id">User ID</label>
-            <Field type="number" id="user_id" name="user_id" />
-            <ErrorMessage name="user_id" component="div" />
-          </div>
-          <button type="submit">Add Review</button>
-        </Form>
-      </Formik>
+      {!isAuthenticated ? (
+        <p className="error-message">Please log in to add rankings and reviews.</p>
+      ) : (
+        <Formik
+          initialValues={{ rank: '', content: '' }}
+          validationSchema={Yup.object({
+            rank: Yup.number()
+              .min(1, 'Rank must be at least 1')
+              .max(maxRank, `Rank must be at most ${maxRank}`)
+              .required('Required'),
+            content: Yup.string().required('Required'),
+          })}
+          onSubmit={handleCombinedSubmit}
+        >
+          <Form>
+            <div>
+              <label htmlFor="rank">Rank</label>
+              <Field type="number" id="rank" name="rank" />
+              <ErrorMessage name="rank" component="div" />
+            </div>
+            <div>
+              <label htmlFor="content">Review</label>
+              <Field as="textarea" id="content" name="content" />
+              <ErrorMessage name="content" component="div" />
+            </div>
+            <button type="submit">Add Rank and Review</button>
+          </Form>
+        </Formik>
+      )}
 
       <button className="toggle-reviews-button" onClick={handleToggleReviews}>
         {showReviews ? 'Hide Reviews' : 'Show Reviews'}
@@ -138,8 +164,11 @@ function PlayerDetail() {
         <div>
           <h2>Reviews</h2>
           <ul>
-            {reviews.map((review) => (
-              <li key={review.id}>{review.content} (User ID: {review.user_id})</li>
+            {combinedReviewsAndRankings.map((item) => (
+              <li key={item.id}>
+                <strong>{getUsernameById(item.user_id)}</strong>: {item.content}
+                <p>Ranking: {item.rank}</p>
+              </li>
             ))}
           </ul>
         </div>

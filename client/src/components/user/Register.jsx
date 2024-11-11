@@ -1,12 +1,14 @@
-// Register.jsx - Integrated with Flask backend using Axios for user registration
+// Register.jsx - Integrated with Flask backend using Axios for user registration and navigating to login page after successful registration
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../redux/slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 function Register() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const authStatus = useSelector((state) => state.auth.status);
   const authError = useSelector((state) => state.auth.error);
 
@@ -26,6 +28,7 @@ function Register() {
     dispatch(registerUser(values)).unwrap()
       .then((response) => {
         console.log('User successfully registered:', response);
+        navigate('/login'); // Navigate to login page after successful registration
       })
       .catch((error) => {
         console.error('Registration failed:', error);

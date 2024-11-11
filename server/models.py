@@ -2,6 +2,7 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import validates
 from config import db
+import bcrypt
 
 # Models go here!
 
@@ -10,11 +11,23 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(40), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(128), nullable=False)  # Increased password length for hashed passwords
     reviews = db.relationship('Review', back_populates='user', cascade='all, delete-orphan')
     rankings = db.relationship('Ranking', back_populates='user', cascade='all, delete-orphan')
 
     serialize_rules = ('-reviews.user', '-rankings.user')
+
+    def set_password(self, password):
+        """
+        Set the user's password by hashing it with bcrypt.
+        """
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    def check_password(self, password):
+        """
+        Check the user's password against the stored hash.
+        """
+        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
 
 class Player(db.Model):
     __tablename__ = 'players'

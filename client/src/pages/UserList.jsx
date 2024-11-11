@@ -33,36 +33,46 @@ function UserList() {
   };
 
   if (status === 'loading') {
-    return <div>Loading users...</div>;
+    return <div className="loading-message">Loading users...</div>;
   }
 
   if (status === 'failed') {
-    return <div>Error loading users.</div>;
+    return <div className="error-message">Error loading users.</div>;
   }
 
   return (
-    <div className="container">
-      <h1>User List</h1>
-      <form onSubmit={handleSearch}>
+    <div className="user-list-page container">
+      <h1 className="page-title">User List</h1>
+      <form className="search-form" onSubmit={handleSearch}>
         <input
           type="text"
+          className="search-input"
           placeholder="Search by user ID"
           value={searchId}
           onChange={(e) => setSearchId(e.target.value)}
         />
-        <button type="submit">Search</button>
+        <button type="submit" className="search-button">Search</button>
       </form>
       {filteredUser ? (
-        <div>
-          <h2>Search Result</h2>
-          <p>{filteredUser.username} (ID: {filteredUser.id})</p>
-          <Link to={`/profile/${filteredUser.id}`}>View Profile</Link>
+        <div className="search-result">
+          <h2 className="section-title">Search Result</h2>
+          <div className="user-card">
+            <p className="user-info">
+              <span className="user-username">{filteredUser.username}</span> (ID: {filteredUser.id})
+            </p>
+            <Link to={`/profile/${filteredUser.id}`} className="view-profile-link">View Profile</Link>
+          </div>
         </div>
       ) : (
-        <ul>
+        <ul className="user-list">
           {users.map((user) => (
-            <li key={user.id}>
-              {user.username} (ID: {user.id}) - <Link to={`/profile/${user.id}`}>View Profile</Link>
+            <li key={user.id} className="user-list-item">
+              <div className="user-card">
+                <p className="user-info">
+                  <span className="user-username">{user.username}</span> (ID: {user.id})
+                </p>
+                <Link to={`/profile/${user.id}`} className="view-profile-link">View Profile</Link>
+              </div>
             </li>
           ))}
         </ul>

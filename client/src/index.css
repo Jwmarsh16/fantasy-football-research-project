@@ -7,30 +7,77 @@ body {
   padding: 0;
   box-sizing: border-box;
   line-height: 1.6;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 /* Navbar Styling */
 .navbar {
-  background-color: #ff5733;
+  background-color: #34495e;
   color: #ffffff;
-  padding: 20px;
+  padding: 15px 30px;
   position: sticky;
   top: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  flex-wrap: wrap; /* Ensure content wraps to fit within the viewport */
+  overflow: hidden;
 }
-.navbar a {
-  color: #ffffff;
-  text-decoration: none;
-  margin: 0 10px;
+.navbar-logo {
+  font-size: 1.8rem;
   font-weight: bold;
-  transition: color 0.3s ease;
+  color: #ecf0f1;
+  text-decoration: none;
+  flex-shrink: 0; /* Prevent logo from shrinking */
 }
-.navbar a:hover {
+.navbar-links {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap; /* Ensure links wrap to prevent overflow */
+  flex-grow: 1;
+  justify-content: center;
+}
+.navbar-links-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.navbar-links a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.navbar-links a:hover {
   color: #f39c12;
+  transform: scale(1.05);
 }
+.navbar-button {
+  background-color: #e74c3c;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-left: auto; /* Ensure the button is on the far right without causing overflow */
+  flex-shrink: 0; /* Prevent button from shrinking and being cut off */
+}
+.navbar-button:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+/* Adjust Logout Button Margin */
+.logout-button {
+  margin-right: 50px;
+}
+
 
 /* Button Styling */
 button {
@@ -51,10 +98,16 @@ button:hover {
 /* Home Page Styling */
 .home-page {
   text-align: center;
-  padding: 100px 20px;
+  padding: 50px 20px; /* Reduced padding to bring content higher */
   background: radial-gradient(circle at center, #ff9ff3, #f368e0, #ee5253);
   color: #ffffff;
   animation: fadeIn 1s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Align items to start at the top */
+  min-height: 100vh;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 @keyframes fadeIn {
   0% { opacity: 0; }
@@ -62,7 +115,7 @@ button:hover {
 }
 .home-page .home-title {
   font-size: 72px;
-  margin-bottom: 30px;
+  margin-top: 10px; /* Reduced margin to bring title closer to the top */
   color: #ffffff;
   text-shadow: 3px 3px #e84393;
 }
@@ -74,10 +127,12 @@ button:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   display: inline-block;
   margin-top: 20px;
+  width: 80%;
+  max-width: 600px;
 }
 .user-greeting {
   font-size: 22px;
-  margin-bottom: 10px;
+  margin-bottom: 20px; /* Increased margin to create space between greeting and next section */
   color: #f368e0;
 }
 .user-name {
@@ -94,6 +149,7 @@ button:hover {
 }
 .auth-prompt {
   margin-top: 40px;
+  text-align: center;
 }
 .login-message {
   font-size: 20px;
@@ -109,12 +165,14 @@ button:hover {
   color: #ffffff;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 .auth-button:hover {
   background-color: #01a3a4;
   transform: scale(1.1);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
 }
+
 
 /* Player List Page Styling */
 .player-list {
@@ -222,3 +280,230 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
   bottom: 0;
   width: 100%;
 }
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .home-title {
+    font-size: 2rem;
+  }
+
+  .user-info {
+    width: 90%;
+  }
+
+  .auth-button {
+    width: 80%;
+    padding: 12px;
+  }
+
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .navbar-links {
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .navbar-button {
+    margin-top: 10px;
+  }
+}
+
+/* Profile Page Styling */
+.profile-page {
+  padding: 40px;
+  background-color: #fff;
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+}
+.profile-title {
+  font-size: 36px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ff5733;
+}
+.user-info {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+.user-detail {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Reviews and Rankings Section Styling */
+.reviews-rankings-section {
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+}
+.section-title {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #2980b9;
+}
+.review-ranking-item {
+  background-color: #ffeaa7;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+.review-player {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.review-content {
+  font-size: 16px;
+  color: #444;
+}
+.ranking-value {
+  font-size: 16px;
+  color: #555;
+}
+.no-reviews-rankings-message {
+  font-size: 16px;
+  color: #777;
+  text-align: center;
+}
+
+/* Delete Button Styling */
+.delete-button {
+  background-color: #e74c3c;
+  color: #ffffff;
+  border: 2px solid #000; /* Add a border to help visually locate it */
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  position: relative;
+  z-index: 10;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+}
+
+/* Button Styling */
+button {
+  background-color: #8e44ad;
+  color: #ffffff;
+  border: none;
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+button:hover {
+  background-color: #5b2c6f;
+  transform: translateY(-2px);
+}
+
+
+/* User List Page Styling */
+.user-list-page {
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 32px;
+  text-align: center;
+  color: #34495e;
+  margin-bottom: 30px;
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #f0932b;
+  border-radius: 5px;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #e74c3c;
+}
+
+.search-button {
+  background-color: #00d2d3;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #01a3a4;
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+}
+
+.user-list-item {
+  margin-bottom: 20px;
+}
+
+.user-card {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.user-username {
+  font-weight: bold;
+  color: #2980b9;
+}
+
+.view-profile-link {
+  color: #e74c3c;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.view-profile-link:hover {
+  color: #c0392b;
+}
+
+.loading-message,
+.error-message {
+  font-size: 18px;
+  color: #e74c3c;
+  text-align: center;
+  margin-top: 20px;
+}
+

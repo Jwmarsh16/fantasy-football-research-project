@@ -82,21 +82,45 @@ class LoginResource(Resource):
         email = data.get('email')
         password = data.get('password')
 
+        # Debugging Logs
+        print(f"Received login request for email: {email}")
+
         user = User.query.filter_by(email=email).first()
-        if not user or not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            return {'message': 'Invalid email or password'}, 401
+        if not user:
+            print("User not found.")
+            return jsonify({'message': 'Invalid credentials'}), 401
 
-        # Generate JWT token
-        token = jwt.encode({
-            'user_id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
-        }, app.config['SECRET_KEY'], algorithm="HS256")
+        # Use the User model's bcrypt check_password method
+        if not user.check_password(password):
+            print("Password does not match.")
+            return jsonify({'message': 'Invalid credentials'}), 401
 
-        # Create a response and set the JWT as a cookie
-        response = make_response({'message': 'Login successful'})
-        response.set_cookie('token', token, httponly=True, secure=True, samesite='Strict')
+        # Create JWT Token
+        try:
+            token = jwt.encode({'user_id': user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)}, app.config['SECRET_KEY'], algorithm="HS256")
+        except Exception as e:
+            print(f"Error creating JWT token: {e}")
+            return jsonify({'message': 'Error creating token'}), 500
 
-        return response
+        # Debugging Logs
+        print(f"User found: {user}")
+        print(f"Creating response for user: {user.username}")
+
+        # Set the token in a cookie
+        try:
+            response = make_response(jsonify({
+                'message': 'Login successful',
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email
+                }
+            }))
+            response.set_cookie('token', token, httponly=True)
+            return response
+        except Exception as e:
+            print(f"Error creating response: {e}")
+            return jsonify({'message': 'Error creating response'}), 500
 
 # Protected Resource Example
 class ProtectedResource(Resource):

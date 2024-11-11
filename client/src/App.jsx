@@ -5,7 +5,7 @@ import NavBar from './components/NavBar';
 import PlayerList from './pages/PlayerList';
 import PlayerDetail from './components/player/PlayerDetail';
 import AddReview from './components/player/AddReview';
-import UserProfile from './pages/UserProfile';
+import Profile from './pages/Profile';
 import UserList from './pages/UserList'; 
 import Register from './components/user/Register';
 import Login from './components/user/Login';
@@ -19,7 +19,7 @@ function App() {
         <Route path="/players/:id" element={<PlayerDetail />} />
         <Route path="/players" element={<PlayerList />} />
         <Route path="/add-review/:playerId" element={<AddReview />} />
-        <Route path="/profile/:id" element={<UserProfile />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/users" element={<UserList />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />

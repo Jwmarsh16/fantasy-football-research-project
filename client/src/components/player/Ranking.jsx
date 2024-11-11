@@ -2,58 +2,36 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { setMaxRank } from '../slices/playerSlice';
+import { setMaxRank } from '../../slices/playerSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
 function Ranking() {
   const dispatch = useDispatch();
   const maxRank = useSelector((state) => state.player.maxRank);
+  const users = useSelector((state) => state.user.users);
+  const userStatus = useSelector((state) => state.user.status);
 
   useEffect(() => {
-    // Fetch players to determine max rank
-    async function fetchPlayers() {
+    async function fetchData() {
       try {
         const playersData = await axios.get('/api/players');
-        dispatch(setMaxRank(playersData.data.length)); // Set max rank based on number of players
+        dispatch(setMaxRank(playersData.data.length));
+        
+        if (userStatus === 'idle') {
+          dispatch(fetchUsers());
+        }
       } catch (error) {
-        console.error('Failed to fetch players:', error);
+        console.error('Failed to fetch data:', error);
       }
     }
-    fetchPlayers();
-  }, [dispatch]);
-
-  const initialValues = {
-    rank: '',
-    user_id: '',
-    player_id: ''
-  };
-
-  // Function to create the validation schema dynamically
-  const createValidationSchema = () => {
-    return Yup.object({
-      rank: Yup.number()
-        .min(1, 'Rank must be at least 1')
-        .max(maxRank, `Rank must be at most ${maxRank}`)
-        .required('Required'),
-      user_id: Yup.number().required('Required'),
-      player_id: Yup.number().required('Required')
-    });
-  };
-
-  const onSubmit = async (values) => {
-    try {
-      const response = await axios.post('/api/rankings', values);
-      console.log(response.data);
-    } catch (error) {
-      console.error('Failed to submit ranking:', error);
-    }
-  };
+    fetchData();
+  }, [dispatch, userStatus]);
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={createValidationSchema()} // Use the function to create the schema
+      validationSchema={createValidationSchema()}
       onSubmit={onSubmit}
     >
       <Form>
@@ -63,8 +41,15 @@ function Ranking() {
           <ErrorMessage name="rank" component="div" />
         </div>
         <div>
-          <label htmlFor="user_id">User ID</label>
-          <Field type="number" id="user_id" name="user_id" />
+          <label htmlFor="user_id">User</label>
+          <Field as="select" name="user_id">
+            <option value="">Select a user</option>
+            {users.map(user => (
+              <option key={user.id} value={user.id}>
+                {user.username}
+              </option>
+            ))}
+          </Field>
           <ErrorMessage name="user_id" component="div" />
         </div>
         <div>

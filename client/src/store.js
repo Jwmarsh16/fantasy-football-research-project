@@ -5,6 +5,7 @@ import userReducer from './redux/slices/userSlice';
 import reviewReducer from './redux/slices/reviewSlice';
 import authReducer from './redux/slices/authSlice';
 import groupReducer from './redux/slices/groupSlice';
+import rankingReducer from './redux/slices/rankingSlice'
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
     review: reviewReducer,
     auth: authReducer,
     group: groupReducer,
+    ranking: rankingReducer,
   },
 });
 

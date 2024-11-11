@@ -14,6 +14,12 @@ export const addReview = createAsyncThunk('review/addReview', async (review) => 
   return response.data;
 });
 
+// Async thunk to delete a review
+export const deleteReview = createAsyncThunk('review/deleteReview', async (reviewId) => {
+  await axios.delete(`/api/reviews/${reviewId}`);
+  return reviewId;
+});
+
 const reviewSlice = createSlice({
   name: 'review',
   initialState: {
@@ -35,6 +41,9 @@ const reviewSlice = createSlice({
       })
       .addCase(addReview.fulfilled, (state, action) => {
         state.reviews.push(action.payload);
+      })
+      .addCase(deleteReview.fulfilled, (state, action) => {
+        state.reviews = state.reviews.filter((review) => review.id !== action.payload);
       });
   },
 });
