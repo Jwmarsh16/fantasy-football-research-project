@@ -1,4 +1,4 @@
-// NavBar.jsx - Updated to use Redux for conditional rendering based on authentication status with appropriate class names for styling
+// NavBar.jsx - Updated to use Redux for conditional rendering based on authentication status
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,10 +14,13 @@ function NavBar() {
   }, [user]);
 
   // Function to handle logout
-  const handleLogout = () => {
-    dispatch(logoutUser()).then(() => {
+  const handleLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();  // Using unwrap to handle errors directly
       navigate('/'); // Redirect to home after logging out
-    });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (

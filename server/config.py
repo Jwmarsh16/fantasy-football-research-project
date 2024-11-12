@@ -43,7 +43,7 @@ bcrypt = Bcrypt(app=app)
 api = Api(app=app)
 
 #Deployment
-CORS(app)
+CORS(app, supports_credentials=True)
 
 #Development
 #CORS(app, supports_credentials=True, origins=["http://localhost:3000"])  # Make sure the CORS origins match your frontend URL
