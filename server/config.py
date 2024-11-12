@@ -48,8 +48,8 @@ bcrypt = Bcrypt(app=app)
 
 api = Api(app=app)
 
-#Deployment
-CORS(app, supports_credentials=True)
+#Production
+CORS(app, supports_credentials=True, origins=["https://fantasy-football-research-hub.onrender.com"])  # Make sure the CORS origins match your frontend URL
 
 #Development
 #CORS(app, supports_credentials=True, origins=["http://localhost:3000"])  # Make sure the CORS origins match your frontend URL

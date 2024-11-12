@@ -1,6 +1,7 @@
 // authSlice.js - Ensure currentUser is set properly when loginUser action is successful
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 // Async thunk to handle login
 export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, { rejectWithValue }) => {
@@ -32,8 +33,19 @@ export const registerUser = createAsyncThunk('auth/registerUser', async (userDat
 // Async thunk to handle logout
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { rejectWithValue }) => {
   try {
-    const response = await axios.post('/api/auth/logout', {}, { withCredentials: true });
-    // No return value necessary as we're just clearing user state
+    // Get the CSRF token from cookies
+    const csrfToken = Cookies.get('csrf_access_token');
+    
+    const response = await axios.post(
+      '/api/auth/logout', 
+      {},
+      {
+        headers: {
+          'X-CSRF-TOKEN': csrfToken,  // Add CSRF token to the request headers
+        },
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response ? error.response.data.message : 'Logout failed');
