@@ -138,13 +138,30 @@ class UserResource(Resource):
         db.session.commit()
         return to_dict(user, ['id', 'username', 'email']), 200
 
+    @jwt_required()  # Requires user to be logged in
     def delete(self, id):
+        # Get the user who is currently logged in
+        current_user_id = get_jwt_identity()
+
+        # Check if the current user is authorized to delete this user
+        if current_user_id != id:
+            return {"error": "Unauthorized action"}, 403
+
+        # Get the user to be deleted from the database
         user = User.query.get(id)
         if not user:
             return {"error": "User not found"}, 404
-        db.session.delete(user)
-        db.session.commit()
-        return '', 204
+
+        # Delete user from the database
+        try:
+            db.session.delete(user)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()  # Rollback in case of any error
+            return {"error": "An error occurred while deleting user"}, 500
+
+        return {'message': 'User successfully deleted'}, 200
+
 
 
 class PlayerResource(Resource):

@@ -1,9 +1,11 @@
+// Profile.jsx - Updated with delete profile functionality
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom'; // Import useParams
 import { fetchUserById, setUserDetails } from '../redux/slices/userSlice';
 import { fetchRankings, deleteRanking } from '../redux/slices/rankingSlice';
 import { fetchReviews, deleteReview } from '../redux/slices/reviewSlice';
+import { deleteUser } from '../redux/slices/authSlice'; // Import deleteUser thunk
 import axios from 'axios';
 
 function Profile() {
@@ -72,6 +74,17 @@ function Profile() {
     }
   };
 
+  const handleDeleteProfile = async () => {
+    if (window.confirm('Are you sure you want to delete your profile? This action cannot be undone.')) {
+      try {
+        await dispatch(deleteUser(userId)).unwrap(); // Use the deleteUser thunk to delete the user profile
+        navigate('/'); // Redirect to the homepage after deletion
+      } catch (error) {
+        console.error('Failed to delete user profile:', error);
+      }
+    }
+  };
+
   if (!userDetails) {
     return <p className="loading-message">Loading user details...</p>;
   }
@@ -94,6 +107,13 @@ function Profile() {
         <p className="user-detail"><strong>Username:</strong> {userDetails.username}</p>
         <p className="user-detail"><strong>Email:</strong> {userDetails.email}</p>
       </div>
+      {currentUser && currentUser.id === parseInt(userId) && (
+        <div className="delete-profile-section">
+          <button className="delete-profile-button" onClick={handleDeleteProfile}>
+            Delete Profile
+          </button>
+        </div>
+      )}
       <div className="reviews-rankings-section">
         <h3 className="section-title">Your Reviews and Rankings</h3>
         {combinedData && combinedData.length > 0 ? (

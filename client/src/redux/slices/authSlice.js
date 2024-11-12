@@ -52,6 +52,26 @@ export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { reject
   }
 });
 
+// Async thunk to handle deleting user
+export const deleteUser = createAsyncThunk('auth/deleteUser', async (userId, { rejectWithValue }) => {
+  try {
+    // Get the CSRF token from cookies
+    const csrfToken = Cookies.get('csrf_access_token');
+    
+    await axios.delete(`/api/users/${userId}`, {
+      headers: {
+        'X-CSRF-TOKEN': csrfToken,  // Add CSRF token to the request headers
+      },
+      withCredentials: true,
+    });
+    
+    // No return data necessary since we are just deleting the user
+    return userId;
+  } catch (error) {
+    return rejectWithValue(error.response ? error.response.data.message : 'Delete user failed');
+  }
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -103,6 +123,19 @@ const authSlice = createSlice({
         state.isAuthenticated = false; // Set to false on logout
       })
       .addCase(logoutUser.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+      // Delete User Cases
+      .addCase(deleteUser.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteUser.fulfilled, (state) => {
+        state.status = 'idle';
+        state.currentUser = null;
+        state.isAuthenticated = false; // User is deleted, so they are no longer authenticated
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });
