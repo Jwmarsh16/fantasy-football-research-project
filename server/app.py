@@ -266,7 +266,6 @@ class RankingResource(Resource):
 api.add_resource(RegisterResource, '/api/auth/register')
 api.add_resource(LoginResource, '/api/auth/login')
 api.add_resource(LogoutResource, '/api/auth/logout')  # Adding LogoutResource here
-api.add_resource(ProtectedResource, '/api/auth/protected')
 api.add_resource(UserResource, '/api/users', '/api/users/<int:id>')
 api.add_resource(PlayerResource, '/api/players', '/api/players/<int:id>')
 api.add_resource(ReviewResource, '/api/reviews', '/api/reviews/<int:id>')
