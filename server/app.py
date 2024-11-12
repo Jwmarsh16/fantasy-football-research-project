@@ -2,7 +2,7 @@
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity, unset_jwt_cookies
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, unset_jwt_cookies, create_access_token, set_access_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
@@ -13,7 +13,7 @@ import os
 from config import app, db, api
 from models import User, Player, Review, Ranking
 
-
+jwt = JWTManager(app)
 
 @app.route('/')
 def serve_index():
@@ -23,36 +23,7 @@ def serve_index():
 def to_dict(instance, fields):
     return {field: getattr(instance, field) for field in fields}
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.cookies.get('token')
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 403
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = User.query.filter_by(id=data['user_id']).first()
-        except:
-            return jsonify({'message': 'Token is invalid!'}), 403
-        return f(current_user, *args, **kwargs)
-    return decorated
 
-
-
-# Decorator to check for valid token
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.cookies.get('token')
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 403
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = User.query.filter_by(id=data['user_id']).first()
-        except:
-            return jsonify({'message': 'Token is invalid!'}), 403
-        return f(current_user, *args, **kwargs)
-    return decorated
 
 # Registration Resource
 class RegisterResource(Resource):
@@ -86,6 +57,7 @@ class LoginResource(Resource):
         # Debugging Logs
         print(f"Received login request for email: {email}")
 
+        # Fetch the user from the database
         user = User.query.filter_by(email=email).first()
         if not user:
             print("User not found.")
@@ -96,9 +68,9 @@ class LoginResource(Resource):
             print("Password does not match.")
             return jsonify({'message': 'Invalid credentials'}), 401
 
-        # Create JWT Token
+        # Create JWT Token using Flask-JWT-Extended
         try:
-            token = jwt.encode({'user_id': user.id, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)}, app.config['SECRET_KEY'], algorithm="HS256")
+            access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(hours=1))
         except Exception as e:
             print(f"Error creating JWT token: {e}")
             return jsonify({'message': 'Error creating token'}), 500
@@ -107,7 +79,7 @@ class LoginResource(Resource):
         print(f"User found: {user}")
         print(f"Creating response for user: {user.username}")
 
-        # Set the token in a cookie
+        # Set the token in a cookie using Flask-JWT-Extended utility
         try:
             response = make_response(jsonify({
                 'message': 'Login successful',
@@ -117,8 +89,9 @@ class LoginResource(Resource):
                     'email': user.email
                 }
             }))
-            response.set_cookie('token', token, httponly=True)
-            return response
+            # Set the JWT token in an HTTP-Only cookie
+            set_access_cookies(response, access_token)
+            return response, 200
         except Exception as e:
             print(f"Error creating response: {e}")
             return jsonify({'message': 'Error creating response'}), 500
