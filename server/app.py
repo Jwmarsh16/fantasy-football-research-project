@@ -78,22 +78,18 @@ class LoginResource(Resource):
         print(f"User found: {user}")
         print(f"Creating response for user: {user.username}")
 
-        # Set the token in a cookie using Flask-JWT-Extended utility
-        try:
-            response = make_response(jsonify({
-                'message': 'Login successful',
-                'user': {
-                    'id': user.id,
-                    'username': user.username,
-                    'email': user.email
-                }
-            }))
-            # Set the JWT token in an HTTP-Only cookie
-            set_access_cookies(response, access_token)
-            return response, 200
-        except Exception as e:
-            print(f"Error creating response: {e}")
-            return jsonify({'message': 'Error creating response'}), 500
+         # Flask-RESTful expects something JSON serializable, so we return a standard dictionary
+        response = jsonify({
+            'message': 'Login successful',
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            }
+        })
+        # Set JWT token as an HTTP-only cookie
+        set_access_cookies(response, access_token)
+        return response, 200
 
 # Logout Resource
 class LogoutResource(Resource):
