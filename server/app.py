@@ -60,38 +60,44 @@ class LoginResource(Resource):
         user = User.query.filter_by(email=email).first()
         if not user:
             print("User not found.")
-            return jsonify({'message': 'Invalid credentials'}), 401
+            return {'message': 'Invalid credentials'}, 401
 
         # Use the User model's bcrypt check_password method
         if not user.check_password(password):
             print("Password does not match.")
-            return jsonify({'message': 'Invalid credentials'}), 401
+            return {'message': 'Invalid credentials'}, 401
 
         # Create JWT Token using Flask-JWT-Extended
         try:
             access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(hours=1))
         except Exception as e:
             print(f"Error creating JWT token: {e}")
-            return jsonify({'message': 'Error creating token'}), 500
+            return {'message': 'Error creating token'}, 500
 
         # Debugging Logs
         print(f"User found: {user}")
         print(f"Creating response for user: {user.username}")
 
-        # Create response using make_response
-        response = make_response({
+        # Create the response data as a dictionary
+        response_data = {
             'message': 'Login successful',
             'user': {
                 'id': user.id,
                 'username': user.username,
                 'email': user.email
             }
-        })
+        }
 
-        # Set the JWT token as an HTTP-only cookie
+        # Return the response data
+        response = jsonify(response_data)
+        
+        # Set JWT token as an HTTP-only cookie
         set_access_cookies(response, access_token)
 
-        return response, 200
+        # Instead of returning `response, 200` (which is the Response object),
+        # simply return the response dictionary, which Flask-RESTful will serialize to JSON.
+        return response
+
 
 # Logout Resource
 class LogoutResource(Resource):
