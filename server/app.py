@@ -3,7 +3,6 @@ from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api, Resource
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, unset_jwt_cookies, create_access_token, set_access_cookies
-from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import datetime
 from functools import wraps
@@ -103,12 +102,6 @@ class LogoutResource(Resource):
         response = jsonify({"message": "Logout successful"})
         unset_jwt_cookies(response)
         return response, 200
-
-# Protected Resource Example
-class ProtectedResource(Resource):
-    @token_required
-    def get(current_user):
-        return {'message': f'Hello, {current_user.username}! This is a protected route.'}
 
 
 class UserResource(Resource):
