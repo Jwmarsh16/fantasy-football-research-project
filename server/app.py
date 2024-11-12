@@ -91,8 +91,15 @@ class LoginResource(Resource):
         # Return the response data
         response = jsonify(response_data)
         
-        # Set JWT token as an HTTP-only cookie
-        set_access_cookies(response, access_token)
+        # Set JWT token as an HTTP-only cookie with enhanced security settings
+        set_access_cookies(
+            response,
+            access_token,
+            max_age=3600,  # Expiration time set to 1 hour
+            secure=True,  # Ensure cookie is only sent over HTTPS
+            httponly=True,  # Prevent JavaScript access to cookie for added security
+            samesite='Lax'  # Restricts cross-site requests; can use 'Strict' or 'Lax'
+        )
 
         # Instead of returning `response, 200` (which is the Response object),
         # simply return the response dictionary, which Flask-RESTful will serialize to JSON.
