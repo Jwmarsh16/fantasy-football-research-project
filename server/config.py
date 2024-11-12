@@ -34,6 +34,12 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+app.config['JWT_SECRET_KEY'] = 'your_secret_key'  # Replace with a secure secret key
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']  # Store the JWT in cookies
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/'  # Define the path for which cookies are valid
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # Disable CSRF protection for development (enable in production)
+app.config['JWT_COOKIE_SECURE'] = False  # Set to True in production (only send cookies over HTTPS)
+
 db = SQLAlchemy(app=app, metadata=metadata)
 
 migrate = Migrate(app=app, db=db)
