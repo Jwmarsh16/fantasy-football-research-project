@@ -29,7 +29,7 @@ function Login() {
       .then((response) => {
         console.log('User successfully logged in:', response);
         if (response && response.id) {
-          navigate(`/profile/${response.id}`); // Navigate to user's profile page after successful login
+          navigate(`/`); // Navigate to user's profile page after successful login
         }
       })
       .catch((error) => {
