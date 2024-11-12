@@ -1,0 +1,118 @@
+/* PlayerDetail Styling */
+.player-detail-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f9fc;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .player-info-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .player-name {
+    font-size: 28px;
+    color: #34495e;
+  }
+  
+  .player-details p {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #555;
+  }
+  
+  .ranking-review-form {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
+  
+  .form-title {
+    font-size: 22px;
+    color: #2980b9;
+    margin-bottom: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 2px solid #dcdcdc;
+    font-size: 16px;
+  }
+  
+  .submit-button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #2980b9;
+  }
+  
+  .toggle-reviews-button {
+    background-color: #e67e22;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .toggle-reviews-button:hover {
+    background-color: #d35400;
+  }
+  
+  .reviews-section {
+    margin-top: 20px;
+  }
+  
+  .reviews-title {
+    font-size: 22px;
+    color: #2980b9;
+    margin-bottom: 15px;
+  }
+  
+  .reviews-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .review-card {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+  }
+  
+  .review-username {
+    font-weight: bold;
+    color: #34495e;
+  }
+  
+  .review-content, .review-rank {
+    font-size: 16px;
+    color: #555;
+  }

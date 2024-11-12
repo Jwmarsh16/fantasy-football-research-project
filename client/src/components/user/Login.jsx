@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../redux/slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import '../../style/LoginStyle.css';
 
 function Login() {
   const dispatch = useDispatch();

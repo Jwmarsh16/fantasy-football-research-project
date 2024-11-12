@@ -1,0 +1,67 @@
+/* Navbar Styling */
+.navbar {
+    background-color: #34495e;
+    color: #ffffff;
+    padding: 15px 30px;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    flex-wrap: wrap; /* Ensure content wraps to fit within the viewport */
+    overflow: hidden;
+  }
+  .navbar-logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #ecf0f1;
+    text-decoration: none;
+    flex-shrink: 0; /* Prevent logo from shrinking */
+  }
+  .navbar-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap; /* Ensure links wrap to prevent overflow */
+    flex-grow: 1;
+    justify-content: center;
+  }
+  .navbar-links-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .navbar-links a {
+    color: #ecf0f1;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  .navbar-links a:hover {
+    color: #f39c12;
+    transform: scale(1.05);
+  }
+  .navbar-button {
+    background-color: #e74c3c;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-left: auto; /* Ensure the button is on the far right without causing overflow */
+    flex-shrink: 0; /* Prevent button from shrinking and being cut off */
+  }
+  .navbar-button:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+  }
+  /* Adjust Logout Button Margin */
+  .logout-button {
+    margin-right: 50px;
+  }

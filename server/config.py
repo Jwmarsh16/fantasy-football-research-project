@@ -22,7 +22,7 @@ metadata = MetaData(naming_convention=naming_convention)
 #Development
 #app = Flask(__name__)
 
-#Deployment
+#Production
 app = Flask(
     __name__,
     static_url_path='',

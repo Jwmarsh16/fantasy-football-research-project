@@ -1,8 +1,8 @@
-// UserList.jsx - Updated to use Redux and Axios for fetching the list of users
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../redux/slices/userSlice';
 import { Link } from 'react-router-dom';
+import '../style/UserListStyle.css';
 
 function UserList() {
   const dispatch = useDispatch();
@@ -11,14 +11,12 @@ function UserList() {
   const [searchUsername, setSearchUsername] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
 
-  // Fetch users whenever the component mounts
   useEffect(() => {
     if (users.length === 0) {
       dispatch(fetchUsers());
     }
   }, [dispatch, users.length]);
 
-  // Update filtered users based on the search term
   useEffect(() => {
     if (searchUsername) {
       const filtered = users.filter((user) =>
@@ -30,12 +28,10 @@ function UserList() {
     }
   }, [searchUsername, users]);
 
-  // Handle loading state
   if (status === 'loading') {
     return <div className="loading-message">Loading users...</div>;
   }
 
-  // Handle error state
   if (status === 'failed') {
     return <div className="error-message">Error loading users.</div>;
   }
@@ -53,18 +49,22 @@ function UserList() {
         />
       </form>
       {filteredUsers && filteredUsers.length > 0 ? (
-        <ul className="user-list">
+        <div className="user-list-grid">
           {filteredUsers.map((user) => (
-            <li key={user.id} className="user-list-item">
-              <div className="user-card">
-                <p className="user-info">
-                  <span className="user-username">{user.username}</span> (ID: {user.id})
-                </p>
-                <Link to={`/profile/${user.id}`} className="view-profile-link">View Profile</Link>
+            <div key={user.id} className="user-card">
+              <div className="user-avatar">
+                <img src={`https://i.pravatar.cc/150?u=${user.id}`} alt="User Avatar" />
               </div>
-            </li>
+              <div className="user-info">
+                <span className="user-username">{user.username}</span>
+                <span className="user-id"> (ID: {user.id})</span>
+                <Link to={`/profile/${user.id}`} className="view-profile-link">
+                  View Profile
+                </Link>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       ) : (
         <p className="no-users-message">No users found.</p>
       )}

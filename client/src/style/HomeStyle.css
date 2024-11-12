@@ -1,0 +1,114 @@
+/* Home Page Styling */
+.home-page {
+  text-align: center;
+  padding: 80px 20px;
+  background: linear-gradient(to bottom, #6a11cb, #2575fc); /* Gradient from purple to blue */
+  color: #ffffff;
+  animation: fadeIn 1s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Welcome Section */
+.welcome-section {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  margin-bottom: 40px;
+  max-width: 800px;
+}
+
+.home-title {
+  font-size: 64px;
+  color: #ffffff;
+  text-shadow: 3px 3px #4a00e0; /* Dark purple text shadow */
+  margin-bottom: 15px;
+}
+
+.home-subtitle {
+  font-size: 24px;
+  color: #ffffff;
+  text-shadow: 1px 1px #4a00e0; /* Subtle purple shadow for subheadings */
+  margin-bottom: 20px;
+}
+
+/* User Info Card */
+.user-info-card {
+  background-color: #f0f0f0; /* Light grey for contrast */
+  color: #333; /* Dark text for readability */
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.user-welcome {
+  font-size: 30px;
+  color: #2c3e50; /* Dark slate color */
+  margin-bottom: 10px;
+}
+
+.user-details {
+  font-size: 18px;
+  color: #1e90ff; /* Light blue for better visibility */
+}
+
+.user-email {
+    color: #2980b9; /* Medium blue for consistency */
+    font-weight: bold;
+    word-wrap: break-word; /* Ensures long email addresses break into multiple lines */
+}
+
+/* Auth Section */
+.auth-section {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  margin-top: 40px;
+}
+
+.login-message {
+  font-size: 22px;
+  color: #ffffff;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px #004e92; /* Dark blue for text shadow */
+}
+
+.auth-button {
+  background-color: #38ef7d; /* Bright green to stand out */
+  padding: 15px 50px;
+  font-size: 20px;
+  border-radius: 50px;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.auth-button:hover {
+  background-color: #11998e; /* Darker green for hover */
+  transform: scale(1.1);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Loading Message */
+.loading-message {
+  font-size: 22px;
+  color: #ffffff;
+  text-shadow: 2px 2px #004e92;
+  margin-top: 20px;
+}

@@ -1,0 +1,138 @@
+/* General Container Styling */
+.user-list-page {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #f5f5f5;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.page-title {
+  font-size: 36px;
+  text-align: center;
+  color: #34495e;
+  margin-bottom: 40px;
+  font-weight: bold;
+}
+
+/* Search Bar Styling */
+.search-form {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.search-input {
+  padding: 15px;
+  font-size: 18px;
+  width: 300px;
+  border: 2px solid #f0932b;
+  border-radius: 25px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #e74c3c;
+  box-shadow: 0 0 5px rgba(231, 76, 60, 0.5);
+}
+
+/* User List Grid Styling */
+.user-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* User Card Styling */
+.user-card {
+  background-color: #ffffff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-align: center;
+  overflow: hidden;
+}
+
+.user-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.user-avatar img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  object-fit: cover;
+  border: 3px solid #f0932b;
+}
+
+.user-info {
+  font-size: 16px;
+  color: #555;
+}
+
+.user-username {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2980b9;
+  margin-bottom: 10px;
+}
+
+.user-id {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 20px;
+}
+
+.view-profile-link {
+  display: inline-block;
+  color: #ffffff;
+  background-color: #e74c3c;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.view-profile-link:hover {
+  background-color: #c0392b;
+  transform: translateY(-3px);
+}
+
+/* Loading & Error Message Styling */
+.loading-message,
+.error-message,
+.no-users-message {
+  font-size: 18px;
+  color: #e74c3c;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .user-card {
+    padding: 15px;
+  }
+
+  .page-title {
+    font-size: 28px;
+  }
+
+  .search-input {
+    width: 80%;
+  }
+
+  .user-avatar img {
+    width: 80px;
+    height: 80px;
+  }
+}
