@@ -32,9 +32,9 @@ export const registerUser = createAsyncThunk('auth/registerUser', async (userDat
 // Async thunk to handle logout
 export const logoutUser = createAsyncThunk('auth/logoutUser', async (_, { rejectWithValue }) => {
   try {
-    await axios.post('/api/auth/logout', {}, { withCredentials: true });
+    const response = await axios.post('/api/auth/logout', {}, { withCredentials: true });
     // No return value necessary as we're just clearing user state
-    return;
+    return response.data;
   } catch (error) {
     return rejectWithValue(error.response ? error.response.data.message : 'Logout failed');
   }
