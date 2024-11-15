@@ -2,7 +2,7 @@
 .home-page {
   text-align: center;
   padding: 80px 20px;
-  background: linear-gradient(to bottom, #6a11cb, #2575fc); /* Gradient from purple to blue */
+  background: linear-gradient(to bottom, #ffd700, #002147); /* Gradient from gold (#ffd700) to dark blue (#002147) */
   color: #ffffff;
   animation: fadeIn 1s ease-in-out;
   display: flex;
@@ -30,14 +30,14 @@
 .home-title {
   font-size: 64px;
   color: #ffffff;
-  text-shadow: 3px 3px #4a00e0; /* Dark purple text shadow */
+  text-shadow: 3px 3px #002147; /* Dark blue text shadow */
   margin-bottom: 15px;
 }
 
 .home-subtitle {
   font-size: 24px;
   color: #ffffff;
-  text-shadow: 1px 1px #4a00e0; /* Subtle purple shadow for subheadings */
+  text-shadow: 1px 1px #002147; /* Subtle dark blue shadow for subheadings */
   margin-bottom: 20px;
 }
 
@@ -66,9 +66,9 @@
 }
 
 .user-email {
-    color: #2980b9; /* Medium blue for consistency */
-    font-weight: bold;
-    word-wrap: break-word; /* Ensures long email addresses break into multiple lines */
+  color: #2980b9; /* Medium blue for consistency */
+  font-weight: bold;
+  word-wrap: break-word; /* Ensures long email addresses break into multiple lines */
 }
 
 /* Auth Section */
@@ -85,7 +85,7 @@
   font-size: 22px;
   color: #ffffff;
   margin-bottom: 20px;
-  text-shadow: 2px 2px #004e92; /* Dark blue for text shadow */
+  text-shadow: 2px 2px #002147; /* Dark blue for text shadow */
 }
 
 .auth-button {
@@ -109,6 +109,6 @@
 .loading-message {
   font-size: 22px;
   color: #ffffff;
-  text-shadow: 2px 2px #004e92;
+  text-shadow: 2px 2px #002147;
   margin-top: 20px;
 }
