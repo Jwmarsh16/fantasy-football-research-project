@@ -1,10 +1,9 @@
 /* Home Page Styling */
 .home-page {
   text-align: center;
-  padding: 80px 20px;
-  background: linear-gradient(to bottom, #ffd700, #002147); /* Gradient from gold (#ffd700) to dark blue (#002147) */
+  padding: 60px 15px;
+  background: linear-gradient(to bottom, #ffd700, #002147);
   color: #ffffff;
-  animation: fadeIn 1s ease-in-out;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,95 +19,170 @@
 /* Welcome Section */
 .welcome-section {
   background: rgba(255, 255, 255, 0.1);
-  padding: 40px;
+  padding: 30px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  margin-bottom: 40px;
-  max-width: 800px;
+  margin-bottom: 20px;
+  max-width: 60%;
+  box-sizing: border-box;
 }
 
 .home-title {
-  font-size: 64px;
+  font-size: 48px;
   color: #ffffff;
-  text-shadow: 3px 3px #002147; /* Dark blue text shadow */
+  text-shadow: 3px 3px #002147;
   margin-bottom: 15px;
 }
 
 .home-subtitle {
-  font-size: 24px;
+  font-size: 20px;
   color: #ffffff;
-  text-shadow: 1px 1px #002147; /* Subtle dark blue shadow for subheadings */
+  text-shadow: 1px 1px #002147;
   margin-bottom: 20px;
 }
 
 /* User Info Card */
 .user-info-card {
-  background-color: #f0f0f0; /* Light grey for contrast */
-  color: #333; /* Dark text for readability */
-  padding: 40px;
-  border-radius: 20px;
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 20px;
+  border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   display: inline-block;
   margin-top: 20px;
   width: 100%;
-  max-width: 600px;
+  max-width: 30%;
+  box-sizing: border-box;
 }
 
 .user-welcome {
-  font-size: 30px;
-  color: #2c3e50; /* Dark slate color */
+  font-size: 24px;
+  color: #2c3e50;
   margin-bottom: 10px;
 }
 
 .user-details {
-  font-size: 18px;
-  color: #1e90ff; /* Light blue for better visibility */
+  font-size: 16px;
+  color: #1e90ff;
 }
 
 .user-email {
-  color: #2980b9; /* Medium blue for consistency */
+  color: #2980b9;
   font-weight: bold;
-  word-wrap: break-word; /* Ensures long email addresses break into multiple lines */
+  word-wrap: break-word;
 }
 
 /* Auth Section */
 .auth-section {
   background: rgba(255, 255, 255, 0.1);
-  padding: 30px;
-  border-radius: 20px;
+  padding: 20px;
+  border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  max-width: 500px;
-  margin-top: 40px;
+  max-width: 90%;
+  box-sizing: border-box;
+  margin-top: 20px;
 }
 
 .login-message {
-  font-size: 22px;
+  font-size: 18px;
   color: #ffffff;
   margin-bottom: 20px;
-  text-shadow: 2px 2px #002147; /* Dark blue for text shadow */
+  text-shadow: 2px 2px #002147;
 }
 
 .auth-button {
-  background-color: #38ef7d; /* Bright green to stand out */
-  padding: 15px 50px;
-  font-size: 20px;
-  border-radius: 50px;
+  background-color: #38ef7d;
+  padding: 12px 40px;
+  font-size: 18px;
+  border-radius: 30px;
   color: #ffffff;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .auth-button:hover {
-  background-color: #11998e; /* Darker green for hover */
-  transform: scale(1.1);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+  background-color: #11998e;
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Loading Message */
 .loading-message {
-  font-size: 22px;
+  font-size: 18px;
   color: #ffffff;
   text-shadow: 2px 2px #002147;
-  margin-top: 20px;
+  margin-top: 15px;
+}
+
+/* Media Queries */
+@media screen and (max-width: 768px) {
+  .home-title {
+    font-size: 36px;
+  }
+
+  .home-subtitle {
+    font-size: 18px;
+  }
+
+  .user-welcome {
+    font-size: 20px;
+  }
+
+  .user-details {
+    font-size: 14px;
+  }
+
+  .login-message {
+    font-size: 16px;
+  }
+
+  .auth-button {
+    padding: 10px 30px;
+    font-size: 16px;
+  }
+  .welcome-section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    max-width: 90%;
+    box-sizing: border-box;
+  }
+  .user-info-card {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 80%;
+    box-sizing: border-box;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .home-title {
+    font-size: 28px;
+  }
+
+  .home-subtitle {
+    font-size: 16px;
+  }
+
+  .user-welcome {
+    font-size: 18px;
+  }
+
+  .user-details {
+    font-size: 12px;
+  }
+
+  .auth-button {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
 }

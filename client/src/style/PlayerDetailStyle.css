@@ -1,118 +1,176 @@
 /* PlayerDetail Styling */
 .player-detail-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f7f9fc;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .player-info-card {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f7f9fc;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 95%; /* Ensure it fits on smaller screens */
+}
+
+.player-info-card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.player-name {
+  font-size: 24px; /* Adjusted size for mobile */
+  color: #34495e;
+  word-wrap: break-word; /* Ensure long names wrap properly */
+}
+
+.player-details p {
+  font-size: 14px; /* Adjusted size for mobile */
+  margin: 10px 0;
+  color: #555;
+}
+
+/* Form Styling */
+.ranking-review-form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.form-title {
+  font-size: 20px; /* Adjusted size for mobile */
+  color: #2980b9;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #dcdcdc;
+  font-size: 14px; /* Adjusted size for mobile */
+}
+
+.submit-button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 8px 15px; /* Adjusted padding for mobile */
+  font-size: 14px; /* Adjusted size for mobile */
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #2980b9;
+}
+
+.toggle-reviews-button {
+  background-color: #e67e22;
+  color: #fff;
+  border: none;
+  padding: 8px 15px; /* Adjusted padding for mobile */
+  margin-top: 15px;
+  border-radius: 5px;
+  font-size: 14px; /* Adjusted size for mobile */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-reviews-button:hover {
+  background-color: #d35400;
+}
+
+/* Reviews Section */
+.reviews-section {
+  margin-top: 20px;
+}
+
+.reviews-title {
+  font-size: 20px; /* Adjusted size for mobile */
+  color: #2980b9;
+  margin-bottom: 15px;
+}
+
+.reviews-list {
+  list-style: none;
+  padding: 0;
+}
+
+.review-card {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+.review-username {
+  font-weight: bold;
+  color: #34495e;
+  word-wrap: break-word; /* Ensure long usernames wrap properly */
+}
+
+.review-content,
+.review-rank {
+  font-size: 14px; /* Adjusted size for mobile */
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .player-name {
-    font-size: 28px;
-    color: #34495e;
+    font-size: 20px; /* Further reduced size for smaller screens */
   }
-  
+
   .player-details p {
-    font-size: 16px;
-    margin: 10px 0;
-    color: #555;
+    font-size: 12px; /* Reduced size for smaller text */
   }
-  
-  .ranking-review-form {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-  }
-  
-  .form-title {
-    font-size: 22px;
-    color: #2980b9;
-    margin-bottom: 15px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .input-field {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 2px solid #dcdcdc;
-    font-size: 16px;
-  }
-  
-  .submit-button {
-    background-color: #3498db;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .submit-button:hover {
-    background-color: #2980b9;
-  }
-  
-  .toggle-reviews-button {
-    background-color: #e67e22;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    margin-top: 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .toggle-reviews-button:hover {
-    background-color: #d35400;
-  }
-  
-  .reviews-section {
-    margin-top: 20px;
-  }
-  
+
+  .form-title,
   .reviews-title {
-    font-size: 22px;
-    color: #2980b9;
-    margin-bottom: 15px;
+    font-size: 18px; /* Adjusted for smaller screens */
   }
-  
-  .reviews-list {
-    list-style: none;
-    padding: 0;
+
+  .submit-button,
+  .toggle-reviews-button {
+    padding: 6px 12px; /* Adjusted padding */
+    font-size: 12px; /* Reduced size for smaller screens */
   }
-  
+
+  .review-content,
+  .review-rank {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-detail-container {
+    padding: 15px; /* Reduced padding for very small screens */
+  }
+
+  .player-name {
+    font-size: 18px; /* Further reduced size */
+  }
+
+  .player-details p {
+    font-size: 10px;
+  }
+
+  .submit-button,
+  .toggle-reviews-button {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
   .review-card {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
+    padding: 10px; /* Adjusted padding for mobile */
   }
-  
-  .review-username {
-    font-weight: bold;
-    color: #34495e;
-  }
-  
-  .review-content, .review-rank {
-    font-size: 16px;
-    color: #555;
-  }
+}

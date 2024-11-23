@@ -1,6 +1,6 @@
 /* Player List Page Styling */
 .player-list-page {
-  padding: 40px 20px;
+  padding: 20px 10px; /* Adjust padding for smaller screens */
   background: linear-gradient(to bottom right, #34495e, #f39c12);
   color: #ffffff;
   min-height: 100vh;
@@ -13,8 +13,8 @@
 }
 
 .player-list-title {
-  font-size: 36px;
-  margin-bottom: 30px;
+  font-size: 32px; /* Reduced size for mobile */
+  margin-bottom: 20px;
   text-align: center;
   color: #ffffff;
   text-shadow: 2px 2px #2c3e50;
@@ -24,7 +24,7 @@
 .position-filter-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 10px; /* Reduced gap for smaller screens */
   justify-content: center;
   margin-bottom: 20px;
 }
@@ -33,13 +33,13 @@
   background-color: #2ecc71;
   color: #ffffff;
   border: none;
-  width: 60px;
-  height: 60px;
+  width: 50px; /* Adjusted size for mobile */
+  height: 50px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 14px; /* Reduced font size */
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
@@ -53,21 +53,22 @@
 /* Team Filter Container Styling */
 .team-filter-container {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  margin: 20px 0;
+  margin: 10px 0; /* Reduced margin for smaller screens */
 }
 
 .team-filter-label {
   margin-right: 10px;
-  font-size: 18px;
+  font-size: 16px; /* Reduced font size */
   font-weight: bold;
   color: #ffffff;
 }
 
 .team-filter-dropdown {
-  padding: 10px;
-  font-size: 16px;
+  padding: 8px; /* Adjusted padding for smaller screens */
+  font-size: 14px; /* Reduced font size */
   border-radius: 5px;
   border: 2px solid #ffffff;
   background-color: #ecf0f1;
@@ -81,6 +82,7 @@
 /* Sort and Clear Filters Styling */
 .sort-options {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 10px;
@@ -88,8 +90,8 @@
 }
 
 .sort-select {
-  padding: 10px;
-  font-size: 16px;
+  padding: 8px; /* Adjusted padding */
+  font-size: 14px; /* Reduced font size */
   border-radius: 5px;
   border: 2px solid #ffffff;
   background-color: #ecf0f1;
@@ -99,8 +101,8 @@
 .clear-filters-button {
   background-color: #e74c3c;
   color: #ffffff;
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 8px 15px; /* Adjusted padding */
+  font-size: 14px; /* Reduced font size */
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -114,9 +116,9 @@
 .player-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 15px; /* Reduced gap for smaller screens */
   justify-content: center;
-  padding: 30px 0;
+  padding: 20px 0;
 }
 
 .player-card {
@@ -124,8 +126,9 @@
   color: #34495e;
   border-radius: 10px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  width: 280px;
-  padding: 20px;
+  width: 100%; /* Full width for mobile */
+  max-width: 300px; /* Ensure consistent width */
+  padding: 15px; /* Adjusted padding */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -135,7 +138,7 @@
 }
 
 .player-link {
-  font-size: 24px;
+  font-size: 20px; /* Adjusted font size for mobile */
   color: #e67e22;
   text-decoration: none;
   transition: color 0.3s ease;
@@ -148,7 +151,7 @@
 
 .player-details {
   margin-top: 10px;
-  font-size: 16px;
+  font-size: 14px; /* Reduced font size */
 }
 
 .player-team,
@@ -157,4 +160,62 @@
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .player-list-title {
+    font-size: 28px;
+  }
+
+  .position-filter-circle {
+    width: 45px;
+    height: 45px;
+    font-size: 12px;
+  }
+
+  .team-filter-label,
+  .sort-select,
+  .clear-filters-button {
+    font-size: 12px;
+  }
+
+  .player-link {
+    font-size: 18px;
+  }
+
+  .player-details {
+    font-size: 12px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .player-list-title {
+    font-size: 24px;
+  }
+
+  .position-filter-circle {
+    width: 40px;
+    height: 40px;
+    font-size: 10px;
+  }
+
+  .team-filter-label,
+  .sort-select,
+  .clear-filters-button {
+    font-size: 10px;
+  }
+
+  .player-card {
+    max-width: 100%; /* Use full width for very small screens */
+    padding: 10px;
+  }
+
+  .player-link {
+    font-size: 16px;
+  }
+
+  .player-details {
+    font-size: 10px;
+  }
 }

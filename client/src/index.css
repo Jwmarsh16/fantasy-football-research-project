@@ -13,57 +13,7 @@ body {
 
 
 
-/* Card Design */
-.card {
-  background-color: #ffcccc;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  margin: 20px;
-}
-.card img {
-  width: 100%;
-  border-radius: 5px;
-  margin-bottom: 15px;
-}
-.card h3 {
-  font-size: 24px;
-  color: #d35400;
-}
-.card p {
-  color: #444;
-  font-size: 16px;
-}
 
-/* Responsive Styling */
-@media (max-width: 768px) {
-  .home-title {
-    font-size: 2rem;
-  }
-
-  .user-info {
-    width: 90%;
-  }
-
-  .auth-button {
-    width: 80%;
-    padding: 12px;
-  }
-
-  .navbar {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .navbar-links {
-    justify-content: center;
-    margin-top: 10px;
-  }
-
-  .navbar-button {
-    margin-top: 10px;
-  }
-}
 
 
 

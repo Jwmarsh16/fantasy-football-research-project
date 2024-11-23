@@ -1,35 +1,40 @@
 /* Profile Page Styling */
 .profile-page {
-  padding: 40px;
+  padding: 20px; /* Adjusted padding for smaller screens */
   background-color: #f3f4f6;
   max-width: 1000px;
-  margin: 40px auto;
+  margin: 20px auto; /* Reduced margin for smaller screens */
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  width: 95%; /* Ensure it fits smaller screens */
 }
 
 /* Profile Header Styling */
 .profile-header {
   display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
 }
 
 .profile-title {
-  font-size: 36px;
+  font-size: 28px; /* Reduced size for mobile */
   color: #34495e;
   font-weight: bold;
+  text-align: center; /* Centered for smaller screens */
+  margin-bottom: 10px; /* Add spacing for stacked layout */
 }
 
 .delete-profile-button {
   background-color: #e74c3c;
   color: #ffffff;
-  padding: 12px 25px;
+  padding: 10px 20px; /* Adjusted padding for mobile */
   border: none;
   border-radius: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 14px; /* Adjusted font size */
 }
 
 .delete-profile-button:hover {
@@ -40,37 +45,38 @@
 /* User Info Section */
 .user-info {
   background-color: #ffffff;
-  padding: 30px;
+  padding: 20px; /* Adjusted padding for mobile */
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 40px;
+  margin-bottom: 30px; /* Reduced margin for smaller screens */
 }
 
 .user-detail {
-  font-size: 18px;
+  font-size: 16px; /* Adjusted font size for mobile */
   color: #333;
   margin-bottom: 10px;
 }
 
 /* Reviews and Rankings Section Styling */
 .reviews-rankings-section {
-  margin-bottom: 40px;
+  margin-bottom: 30px; /* Reduced margin for smaller screens */
 }
 
 .section-title {
-  font-size: 28px;
+  font-size: 24px; /* Adjusted size for mobile */
   color: #2980b9;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   font-weight: bold;
+  text-align: center; /* Centered for smaller screens */
 }
 
 /* Review and Ranking Item Styling */
 .review-ranking-item {
   background-color: #ffffff;
-  padding: 20px;
+  padding: 15px; /* Adjusted padding for mobile */
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  margin-bottom: 15px; /* Reduced margin for smaller screens */
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -81,36 +87,39 @@
 
 .review-header {
   display: flex;
+  flex-wrap: wrap; /* Allow wrapping for smaller screens */
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
 
 .review-player {
-  font-size: 20px;
+  font-size: 18px; /* Adjusted font size */
   font-weight: bold;
   color: #e67e22;
 }
 
 .review-content {
-  font-size: 16px;
+  font-size: 14px; /* Adjusted font size for mobile */
   color: #555;
   margin-top: 10px;
 }
 
 .ranking-value {
-  font-size: 16px;
+  font-size: 14px; /* Adjusted size */
   color: #2980b9;
 }
 
+/* Delete Button */
 .delete-button {
   background-color: #e74c3c;
   color: #ffffff;
-  padding: 8px 15px;
+  padding: 6px 10px; /* Adjusted padding for mobile */
   border: none;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 12px; /* Adjusted font size */
 }
 
 .delete-button:hover {
@@ -119,7 +128,84 @@
 
 /* No Reviews or Rankings Message */
 .no-reviews-rankings-message {
-  font-size: 18px;
+  font-size: 16px; /* Adjusted size for mobile */
   color: #777;
   text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-title {
+    font-size: 24px; /* Reduced font size */
+  }
+
+  .delete-profile-button {
+    padding: 8px 15px; /* Adjusted padding for smaller screens */
+  }
+
+  .user-detail {
+    font-size: 14px; /* Adjusted font size */
+  }
+
+  .section-title {
+    font-size: 20px; /* Adjusted font size */
+  }
+
+  .review-player {
+    font-size: 16px; /* Adjusted font size */
+  }
+
+  .review-content {
+    font-size: 12px; /* Adjusted font size */
+  }
+
+  .ranking-value {
+    font-size: 12px; /* Adjusted size */
+  }
+
+  .delete-button {
+    padding: 5px 8px; /* Adjusted padding */
+    font-size: 10px; /* Adjusted font size */
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-page {
+    padding: 15px; /* Further reduced padding */
+  }
+
+  .profile-title {
+    font-size: 20px; /* Further reduction for smaller screens */
+  }
+
+  .delete-profile-button {
+    font-size: 12px;
+    margin-left: auto;
+    margin-right: 15px;
+  }
+
+  .user-detail {
+    font-size: 12px;
+  }
+
+  .section-title {
+    font-size: 18px;
+  }
+
+  .review-player {
+    font-size: 14px;
+  }
+
+  .review-content {
+    font-size: 12px;
+  }
+
+  .ranking-value {
+    font-size: 10px;
+  }
+
+  .delete-button {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
 }
