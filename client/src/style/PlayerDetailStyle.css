@@ -1,7 +1,7 @@
 /* PlayerDetail Styling */
 .player-detail-container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 120px auto;
   padding: 20px;
   background-color: #f7f9fc;
   border-radius: 10px;
@@ -13,20 +13,65 @@
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  text-align: center;
 }
 
 .player-name {
-  font-size: 24px; /* Adjusted size for mobile */
+  font-size: 24px;
   color: #34495e;
-  word-wrap: break-word; /* Ensure long names wrap properly */
 }
 
 .player-details p {
-  font-size: 14px; /* Adjusted size for mobile */
   margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.player-avatar {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.player-avatar-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ccc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Stats Section */
+.player-stats {
+  margin: 20px 0;
+}
+
+.stats-title {
+  font-size: 18px;
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+.stats-table th, 
+.stats-table td {
+  padding: 10px;
+  border: 1px solid #dcdcdc;
+}
+
+.stats-table th {
+  background-color: #f2f4f7;
+  color: #34495e;
+}
+
+.stats-table td {
   color: #555;
 }
 
@@ -105,11 +150,11 @@
 }
 
 .review-card {
-  background-color: #fff;
   padding: 15px;
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 15px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
 }
 
 .review-username {

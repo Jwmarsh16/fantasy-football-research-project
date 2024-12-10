@@ -93,48 +93,56 @@ function Profile() {
       };
     });
 
-  return (
-    <div className="profile-page">
-      <div className="profile-header">
-        <h2 className="profile-title">User Profile</h2>
-        {currentUser && currentUser.id === parseInt(userId) && (
-          <button className="delete-profile-button" onClick={handleDeleteProfile}>
-            Delete Profile
-          </button>
-        )}
-      </div>
-      <div className="user-info">
-        <div className="user-info-section">
-          <p className="user-detail"><strong>Username:</strong> {userDetails.username}</p>
-          <p className="user-detail"><strong>Email:</strong> {userDetails.email}</p>
+    return (
+      <div className="profile-page">
+        <div className="profile-header">
+          <h2 className="profile-title">User Profile</h2>
+          {currentUser && currentUser.id === parseInt(userId) && (
+            <button className="delete-profile-button" onClick={handleDeleteProfile}>
+              Delete Profile
+            </button>
+          )}
+        </div>
+        <div className="user-info">
+          <div className="user-avatar-section">
+            {/* User Avatar */}
+            <img 
+              src={`https://i.pravatar.cc/150?u=${userDetails.id}`} 
+              alt={`${userDetails.username}'s Avatar`} 
+              className="user-avatar-img" 
+            />
+          </div>
+          <div className="user-info-section">
+            <p className="user-detail"><strong>Username:</strong> {userDetails.username}</p>
+            <p className="user-detail"><strong>Email:</strong> {userDetails.email}</p>
+          </div>
+        </div>
+        <div className="reviews-rankings-section">
+          <h3 className="section-title">Your Reviews and Rankings</h3>
+          {combinedData && combinedData.length > 0 ? (
+            combinedData.map((data) => (
+              <div key={data.id} className="review-ranking-item">
+                <div className="review-header">
+                  <p className="review-player">{getPlayerDetails(data.player_id)}</p>
+                  {currentUser && currentUser.id === parseInt(userId) && (
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDeleteReviewAndRanking(data.id, data.player_id)}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+                <p className="review-content"><strong>Review:</strong> {data.content}</p>
+                <p className="ranking-value"><strong>Ranking:</strong> {data.rank}</p>
+              </div>
+            ))
+          ) : (
+            <p className="no-reviews-rankings-message">No reviews or rankings available.</p>
+          )}
         </div>
       </div>
-      <div className="reviews-rankings-section">
-        <h3 className="section-title">Your Reviews and Rankings</h3>
-        {combinedData && combinedData.length > 0 ? (
-          combinedData.map((data) => (
-            <div key={data.id} className="review-ranking-item">
-              <div className="review-header">
-                <p className="review-player">{getPlayerDetails(data.player_id)}</p>
-                {currentUser && currentUser.id === parseInt(userId) && (
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDeleteReviewAndRanking(data.id, data.player_id)}
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
-              <p className="review-content"><strong>Review:</strong> {data.content}</p>
-              <p className="ranking-value"><strong>Ranking:</strong> {data.rank}</p>
-            </div>
-          ))
-        ) : (
-          <p className="no-reviews-rankings-message">No reviews or rankings available.</p>
-        )}
-      </div>
-    </div>
-  );
+    );
 }
 
 export default Profile;

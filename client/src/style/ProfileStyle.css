@@ -57,6 +57,20 @@
   margin-bottom: 10px;
 }
 
+.user-avatar-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.user-avatar-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+
 /* Reviews and Rankings Section Styling */
 .reviews-rankings-section {
   margin-bottom: 30px; /* Reduced margin for smaller screens */

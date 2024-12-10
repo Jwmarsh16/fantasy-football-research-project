@@ -3,7 +3,7 @@
   background-color: #34495e;
   color: #ffffff;
   padding: 15px 30px;
-  position: sticky;
+  position: fixed;
   top: 0;
   width: 100%;
   display: flex;

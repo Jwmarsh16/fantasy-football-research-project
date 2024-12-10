@@ -114,69 +114,96 @@ function PlayerDetail() {
 
   return (
     <div className="player-detail-container">
-      <div className="player-info-card">
-        <h1 className="player-name">{player.name}</h1>
-        <div className="player-details">
-          <p><strong>Position:</strong> {player.position}</p>
-          <p><strong>Team:</strong> {player.team}</p>
-          <p><strong>Stats:</strong> {JSON.stringify(player.stats)}</p>
-          <p><strong>Average Rank:</strong> {player.average_rank !== null ? player.average_rank.toFixed(2) : 'N/A'}</p>
-        </div>
+    <div className="player-info-card">
+      {/* Player Avatar */}
+      <div className="player-avatar">
+        <img 
+          src={`https://i.pravatar.cc/150?u=${player.id}`} 
+          alt={`${player.name}'s Avatar`} 
+          className="player-avatar-img" 
+        />
       </div>
-
-      <div className="ranking-review-form">
-        <h2 className="form-title">Add a Rank and Review</h2>
-        {success && <p className="success-message">{success}</p>}
-        {!isAuthenticated ? (
-          <p className="error-message">Please log in to add rankings and reviews.</p>
-        ) : (
-          <Formik
-            initialValues={{ rank: '', content: '' }}
-            validationSchema={Yup.object({
-              rank: Yup.number()
-                .min(1, 'Rank must be at least 1')
-                .max(maxRank, `Rank must be at most ${maxRank}`)
-                .required('Required'),
-              content: Yup.string().required('Required'),
-            })}
-            onSubmit={handleCombinedSubmit}
-          >
-            <Form className="player-review-form">
-              <div className="form-group">
-                <label htmlFor="rank">Rank</label>
-                <Field type="number" id="rank" name="rank" className="input-field" />
-                <ErrorMessage name="rank" component="div" className="error-message" />
-              </div>
-              <div className="form-group">
-                <label htmlFor="content">Review</label>
-                <Field as="textarea" id="content" name="content" className="input-field" />
-                <ErrorMessage name="content" component="div" className="error-message" />
-              </div>
-              <button type="submit" className="submit-button">Add Rank and Review</button>
-            </Form>
-          </Formik>
-        )}
-      </div>
-
-      <button className="toggle-reviews-button" onClick={handleToggleReviews}>
-        {showReviews ? 'Hide Reviews' : 'Show Reviews'}
-      </button>
-
-      {showReviews && (
-        <div className="reviews-section">
-          <h2 className="reviews-title">Reviews</h2>
-          <ul className="reviews-list">
-            {combinedReviewsAndRankings.map((item) => (
-              <li key={item.id} className="review-card">
-                <p className="review-username"><strong>{getUsernameById(item.user_id)}</strong>:</p>
-                <p className="review-content">{item.content}</p>
-                <p className="review-rank">Ranking: {item.rank}</p>
-              </li>
-            ))}
-          </ul>
+      <h1 className="player-name">{player.name}</h1>
+      <div className="player-details">
+        <p><strong>Position:</strong> {player.position}</p>
+        <p><strong>Team:</strong> {player.team}</p>
+        <div className="player-stats">
+          <h3 className="stats-title">Stats</h3>
+          <table className="stats-table">
+            <thead>
+              <tr>
+                {Object.keys(player.stats || {}).map((key) => (
+                  <th key={key}>{key}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {Object.values(player.stats || {}).map((value, index) => (
+                  <td key={index}>{value}</td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
         </div>
+        <p><strong>Average Rank:</strong> {player.average_rank !== null ? player.average_rank.toFixed(2) : 'N/A'}</p>
+      </div>
+    </div>
+  
+    <div className="ranking-review-form">
+      <h2 className="form-title">Add a Rank and Review</h2>
+      {success && <p className="success-message">{success}</p>}
+      {!isAuthenticated ? (
+        <p className="error-message">Please log in to add rankings and reviews.</p>
+      ) : (
+        <Formik
+          initialValues={{ rank: '', content: '' }}
+          validationSchema={Yup.object({
+            rank: Yup.number()
+              .min(1, 'Rank must be at least 1')
+              .max(maxRank, `Rank must be at most ${maxRank}`)
+              .required('Required'),
+            content: Yup.string().required('Required'),
+          })}
+          onSubmit={handleCombinedSubmit}
+        >
+          <Form className="player-review-form">
+            <div className="form-group">
+              <label htmlFor="rank">Rank</label>
+              <Field type="number" id="rank" name="rank" className="input-field" />
+              <ErrorMessage name="rank" component="div" className="error-message" />
+            </div>
+            <div className="form-group">
+              <label htmlFor="content">Review</label>
+              <Field as="textarea" id="content" name="content" className="input-field" />
+              <ErrorMessage name="content" component="div" className="error-message" />
+            </div>
+            <button type="submit" className="submit-button">Add Rank and Review</button>
+          </Form>
+        </Formik>
       )}
     </div>
+  
+    <button className="toggle-reviews-button" onClick={handleToggleReviews}>
+      {showReviews ? 'Hide Reviews' : 'Show Reviews'}
+    </button>
+  
+    {showReviews && (
+      <div className="reviews-section">
+        <h2 className="reviews-title">Reviews</h2>
+        <ul className="reviews-list">
+          {combinedReviewsAndRankings.map((item) => (
+            <li key={item.id} className="review-card">
+              <p className="review-username"><strong>{getUsernameById(item.user_id)}</strong>:</p>
+              <p className="review-content">{item.content}</p>
+              <p className="review-rank">Ranking: {item.rank}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+
   );
 }
 

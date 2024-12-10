@@ -135,23 +135,33 @@ function PlayerList() {
 
       {/* Player List */}
       <ul className="player-list">
-        {sortedPlayers.map((player) => (
-          <li key={player.id} className="player-card">
-            <div className="player-card-content">
-              <div className="player-info">
-                <Link to={`/players/${player.id}`} className="player-link">{player.name}</Link>
-                <p className="player-details">
-                  <span className="player-team">{player.team}</span> | 
-                  <span className="player-position">{player.position}</span> | 
-                  <span className="player-ranking">
-                    Avg Rank: {player.average_rank && !isNaN(player.average_rank) ? Number(player.average_rank).toFixed(2) : 'N/A'}
-                  </span>
-                </p>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+  {sortedPlayers.map((player) => (
+    <li key={player.id} className="player-card">
+      <div className="player-card-content">
+        {/* Player Avatar */}
+        <div className="player-avatar">
+          <img 
+            src={`https://i.pravatar.cc/150?u=${player.id}`} 
+            alt={`${player.name}'s Avatar`} 
+            className="player-avatar-img" 
+          />
+        </div>
+        {/* Player Info */}
+        <div className="player-info">
+          <Link to={`/players/${player.id}`} className="player-link">{player.name}</Link>
+          <p className="player-details">
+            <span className="player-team">{player.team}</span> | 
+            <span className="player-position">{player.position}</span> | 
+            <span className="player-ranking">
+              Avg Rank: {player.average_rank && !isNaN(player.average_rank) ? Number(player.average_rank).toFixed(2) : 'N/A'}
+            </span>
+          </p>
+        </div>
+      </div>
+    </li>
+  ))}
+</ul>
+
     </div>
   );
 }

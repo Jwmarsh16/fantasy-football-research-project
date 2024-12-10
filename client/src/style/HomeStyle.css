@@ -8,23 +8,20 @@
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  position: relative;
 }
 
 /* Welcome Section */
 .welcome-section {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  margin-bottom: 20px;
-  max-width: 60%;
+  margin-top: auto;
+  margin: 80px 0 20px;
+  max-width: 800px;
   box-sizing: border-box;
+  text-align: center;
 }
 
 .home-title {
@@ -38,25 +35,82 @@
   font-size: 20px;
   color: #ffffff;
   text-shadow: 1px 1px #002147;
-  margin-bottom: 20px;
+}
+
+/* Content Layout */
+.home-content {
+  display: flex;
+  gap: 30px;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Main Content */
+.main-content {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* User Info Card */
+.user-info-container {
+  position: absolute; /* Allows precise placement */
+  top: 140px; /* Adjusted to position below the navbar */
+  margin-right: 73%; /* Aligns the card to the far left of the page */
+  width: 25%; /* Sets the width to 25% of the page */
+  z-index: 10; /* Keeps it above other elements */
+  display: flex;
+  justify-content: center; /* Centers content horizontally within the card */
+}
+
 .user-info-card {
-  background-color: #f0f0f0;
+  background: rgba(255, 255, 255, 0.2); /* Transparent white for integration */
   color: #333;
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  display: inline-block;
-  margin-top: 20px;
-  width: 100%;
-  max-width: 30%;
-  box-sizing: border-box;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  width: 100%; /* Ensures the card fills the container's width */
+  box-sizing: border-box; /* Includes padding in width calculation */
 }
 
+.user-avatar img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-right: 15px;
+}
+
+.user-info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 5px;
+  margin-right: auto;
+}
+
+.user-email {
+  font-size: 14px;
+  color: #555;
+  font-weight: normal;
+  word-wrap: break-word;
+}
+
+
+
 .user-welcome {
-  font-size: 24px;
+  font-size: 20px;
+  font-weight: bold;
   color: #2c3e50;
   margin-bottom: 10px;
 }
@@ -66,27 +120,88 @@
   color: #1e90ff;
 }
 
-.user-email {
-  color: #2980b9;
+/* Sidebar */
+.sidebar {
+  flex: 1;
+  background: #f0f9ff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.sidebar-title {
+  font-size: 20px;
   font-weight: bold;
-  word-wrap: break-word;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+/* Toggle Button */
+.toggle-button {
+  background: #3498db;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.toggle-button:hover {
+  background: #2980b9;
+  transform: scale(1.05);
+}
+
+/* Ranking List */
+.ranking-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+}
+
+.ranking-item {
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  color: #333;
+}
+
+.ranking-item .player-name {
+  font-weight: bold;
+}
+
+.ranking-item .player-position {
+  color: #e67e22;
+  font-weight: bold;
+}
+
+.ranking-item .player-team {
+  color: #3498db;
+  font-weight: bold;
 }
 
 /* Auth Section */
 .auth-section {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  max-width: 90%;
-  box-sizing: border-box;
+  max-width: 400px;
+  text-align: center;
   margin-top: 20px;
 }
 
 .login-message {
   font-size: 18px;
   color: #ffffff;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   text-shadow: 2px 2px #002147;
 }
 
@@ -97,7 +212,7 @@
   border-radius: 30px;
   color: #ffffff;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
   cursor: pointer;
 }
 
@@ -107,60 +222,149 @@
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Loading Message */
-.loading-message {
-  font-size: 18px;
-  color: #ffffff;
-  text-shadow: 2px 2px #002147;
-  margin-top: 15px;
+/* News Section */
+.news-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: #fff8e7;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  text-align: left;
 }
 
-/* Media Queries */
+.news-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.news-list {
+  list-style: none;
+  padding: 0;
+}
+
+.news-item {
+  padding: 15px;
+  margin-bottom: 15px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.news-item:last-child {
+  margin-bottom: 0;
+}
+
+.news-article-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #34495e;
+  margin-bottom: 5px;
+}
+
+.news-article-date {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 10px;
+}
+
+.news-article-content {
+  font-size: 16px;
+  color: #555;
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .user-info-container {
+    position: relative; /* Adjusts to relative for better alignment */
+    top: auto; /* Removes top offset */
+    left: auto; /* Centers container */
+    width: 90%; /* Adjusts width for iPad */
+    margin: 20px auto; /* Centers and adds spacing */
+  }
+
+  .user-info-card {
+    width: 80%; /* Reduces width for better fit */
+    margin: 0 auto;
+    padding: 15px; /* Adjusted padding */
+    flex-direction: row; /* Keeps horizontal layout */
+    align-items: center;
+  }
+
+  .user-avatar img {
+    width: 50px; /* Slightly smaller avatar */
+    height: 50px;
+    margin-right: 10px;
+  }
+
+  .user-name {
+    font-size: 16px; /* Reduced size */
+  }
+
+  .user-email {
+    font-size: 12px; /* Adjusted size */
+  }
+
+  .home-content {
+    flex-direction: column; /* Stacks main content and sidebar */
+    gap: 20px;
+  }
+
+  .sidebar {
+    width: 80%; /* Reduces sidebar width for better fit */
+    margin: 0 auto; /* Centers the sidebar */
+  }
+
+  .ranking-item {
+    font-size: 14px; /* Adjusted font size for iPad */
+  }
+
+  .news-section {
+    width: 80%; /* Adjusts width for iPad screens */
+    margin: 20px auto;
+    padding: 15px; /* Adjusted padding */
+  }
+
+  .news-item {
+    padding: 10px; /* Adjusted padding for iPad */
+  }
+}
+
+
+/* Mobile-Friendly Adjustments */
 @media screen and (max-width: 768px) {
-  .home-title {
-    font-size: 36px;
+  .home-content {
+    flex-direction: column;
+    gap: 20px;
   }
 
-  .home-subtitle {
-    font-size: 18px;
+  .user-info-container {
+    position: relative;
+    top: 50px;
+    margin-left: auto;
+    width: 100%;
+    margin-bottom: 20px;
   }
 
-  .user-welcome {
-    font-size: 20px;
+  .user-info-card {
+    width: 90%;
+    margin: 0 auto;
+  }
+  
+
+  .sidebar {
+    margin: 0 auto;
+    width: 90%;
   }
 
-  .user-details {
+  .ranking-item {
     font-size: 14px;
   }
 
-  .login-message {
-    font-size: 16px;
-  }
-
-  .auth-button {
-    padding: 10px 30px;
-    font-size: 16px;
-  }
-  .welcome-section {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
-    max-width: 90%;
-    box-sizing: border-box;
-  }
-  .user-info-card {
-    background-color: #f0f0f0;
-    color: #333;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    display: inline-block;
-    margin-top: 20px;
-    width: 100%;
-    max-width: 80%;
-    box-sizing: border-box;
+  .news-section {
+    margin: 20px auto;
+    width: 90%;
   }
 }
 
@@ -173,16 +377,20 @@
     font-size: 16px;
   }
 
-  .user-welcome {
-    font-size: 18px;
+  .news-section {
+    padding: 10px;
   }
 
-  .user-details {
-    font-size: 12px;
+  .news-item {
+    padding: 10px;
   }
 
-  .auth-button {
-    padding: 8px 20px;
+  .toggle-button {
     font-size: 14px;
+    padding: 8px 15px;
+  }
+
+  .ranking-item {
+    font-size: 12px;
   }
 }

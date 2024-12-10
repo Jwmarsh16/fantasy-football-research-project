@@ -162,6 +162,18 @@
   font-weight: bold;
 }
 
+.player-card-content .player-avatar .player-avatar-img {
+  width: 75px; /* Half the original size */
+  height: 75px;
+  border-radius: 50%; /* Ensure the avatar remains circular */
+  object-fit: cover; /* Maintain aspect ratio of the image */
+  border: 3px solid #ccc; /* Optional border for aesthetics */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional shadow */
+}
+
+
+
+
 /* Responsive Design */
 @media screen and (max-width: 768px) {
   .player-list-title {

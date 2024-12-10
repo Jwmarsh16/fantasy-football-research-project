@@ -57,7 +57,6 @@ function UserList() {
               </div>
               <div className="user-info">
                 <span className="user-username">{user.username}</span>
-                <span className="user-id"> (ID: {user.id})</span>
                 <Link to={`/profile/${user.id}`} className="view-profile-link">
                   View Profile
                 </Link>
