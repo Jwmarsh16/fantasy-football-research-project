@@ -1,21 +1,13 @@
-from config import app, db
-from faker import Faker
-
-from random import randint, sample, choice as rc
-
-from models import db, User, Player, Review, Ranking
-
 if __name__ == '__main__':
     fake = Faker()
     with app.app_context():
         print("Starting seed...")
-        # Seed code goes here!
         db.drop_all()
         db.create_all()
 
         def create_users():
             users = []
-            for _ in range(10):
+            for _ in range(10):  # Seeding only 10 initial users
                 user = User(
                     username=fake.user_name()[:20],
                     email=fake.email()[:50],
@@ -24,21 +16,19 @@ if __name__ == '__main__':
                 users.append(user)
                 db.session.add(user)
             db.session.commit()
-            return users
+            return users  # Return only the initially seeded users
 
         def create_players():
             players = []
             positions = ["QB", "RB", "WR", "TE", "K", "DEF"]
-            teams = [
-                "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
-                "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns",
-                "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers",
-                "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs",
-                "Las Vegas Raiders", "Los Angeles Chargers", "Los Angeles Rams", "Miami Dolphins",
-                "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants",
-                "New York Jets", "Philadelphia Eagles", "Pittsburgh Steelers", "San Francisco 49ers",
-                "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"
-            ]
+            teams = ["Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
+                     "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns",
+                     "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers",
+                     "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs",
+                     "Las Vegas Raiders", "Los Angeles Chargers", "Los Angeles Rams", "Miami Dolphins",
+                     "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants",
+                     "New York Jets", "Philadelphia Eagles", "Pittsburgh Steelers", "San Francisco 49ers",
+                     "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"]
             for _ in range(20):
                 player = Player(
                     name=fake.name()[:50],
@@ -55,12 +45,12 @@ if __name__ == '__main__':
             db.session.commit()
             return players
 
-        def create_reviews(users, players):
+        def create_reviews(seed_users, players):
             reviews = []
-            for _ in range(50):
+            for _ in range(50):  # Limit to initial seed users only
                 review = Review(
                     content=fake.text(max_nb_chars=200),
-                    user_id=rc(users).id,
+                    user_id=rc(seed_users).id,
                     player_id=rc(players).id
                 )
                 reviews.append(review)
@@ -68,9 +58,9 @@ if __name__ == '__main__':
             db.session.commit()
             return reviews
 
-        def create_rankings(users, players):
+        def create_rankings(seed_users, players):
             rankings = []
-            for user in users:
+            for user in seed_users:  # Only use initially seeded users
                 player_ids = [player.id for player in players]
                 sample_ranks = sample(range(1, len(players) + 1), len(players))
                 for i in range(len(players)):
@@ -84,8 +74,10 @@ if __name__ == '__main__':
             db.session.commit()
             return rankings
 
-        users = create_users()
+        # Create initial users and players
+        seeded_users = create_users()
         players = create_players()
-        create_reviews(users, players)
-        create_rankings(users, players)
-    # remove pass and write your seed data
+
+        # Pass only the initially seeded users to avoid auto-adding for new users
+        create_reviews(seeded_users, players)
+        create_rankings(seeded_users, players)
