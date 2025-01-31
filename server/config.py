@@ -20,15 +20,15 @@ naming_convention = {
 
 metadata = MetaData(naming_convention=naming_convention)
 #Development
-#app = Flask(__name__)
+app = Flask(__name__)
 
 #Production
-app = Flask(
-    __name__,
-    static_url_path='',
-    static_folder='../client/dist',
-    template_folder='../client/dist'
-)
+#app = Flask(
+    #__name__,
+    #static_url_path='',
+    #static_folder='../client/dist',
+    #template_folder='../client/dist'
+#)
 
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
@@ -37,8 +37,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  # Replace with a secure secret key
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']  # Store the JWT in cookies
 app.config['JWT_ACCESS_COOKIE_PATH'] = '/'  # Define the path for which cookies are valid
-app.config['JWT_COOKIE_CSRF_PROTECT'] = True  # Disable CSRF protection for development (enable in production)
-app.config['JWT_COOKIE_SECURE'] = True  # Set to True in production (only send cookies over HTTPS)
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # Disable CSRF protection for development (enable in production)
+app.config['JWT_COOKIE_SECURE'] = False  # Set to True in production (only send cookies over HTTPS)
 
 db = SQLAlchemy(app=app, metadata=metadata)
 
