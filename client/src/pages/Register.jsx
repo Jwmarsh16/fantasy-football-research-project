@@ -2,7 +2,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../../redux/slices/authSlice';
+import { registerUser } from '../redux/slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 

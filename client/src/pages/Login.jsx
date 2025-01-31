@@ -2,10 +2,10 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../../redux/slices/authSlice';
+import { loginUser } from '../redux/slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import '../../style/LoginStyle.css';
+import '../style/LoginStyle.css';
 
 function Login() {
   const dispatch = useDispatch();
