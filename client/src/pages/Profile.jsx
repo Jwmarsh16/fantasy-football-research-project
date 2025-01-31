@@ -21,6 +21,10 @@ function Profile() {
   const parsedUserId = parseInt(userId, 10);
 
   useEffect(() => {
+    console.log("Profile Page Loaded");
+    console.log("User ID from URL:", parsedUserId);
+    console.log("Redux Current User:", currentUser);
+
     if (!userId) {
       navigate('/login');
     } else {
@@ -76,16 +80,17 @@ function Profile() {
 
   const handleDeleteProfile = async () => {
     if (!currentUser) {
-      console.error('Current user is null. Cannot delete profile.');
+      console.error("Current user is null. Cannot delete profile.");
       return;
     }
-    if (window.confirm('Are you sure you want to delete your profile? This action cannot be undone.')) {
+
+    if (window.confirm("Are you sure you want to delete your profile? This action cannot be undone.")) {
       try {
         await dispatch(deleteUser(parsedUserId)).unwrap();
         navigate('/');
       } catch (error) {
-        console.error('Failed to delete user profile:', error);
-        alert('Failed to delete profile. Please try again.');
+        console.error("Failed to delete user profile:", error);
+        alert("Failed to delete profile. Please try again.");
       }
     }
   };
@@ -94,21 +99,11 @@ function Profile() {
     return <p className="loading-message">Loading user details...</p>;
   }
 
-  const combinedData = reviews
-    .filter((review) => review.user_id === parsedUserId)
-    .map((review) => {
-      const ranking = rankings.find((ranking) => ranking.user_id === parsedUserId && ranking.player_id === review.player_id);
-      return {
-        ...review,
-        rank: ranking ? ranking.rank : 'N/A',
-      };
-    });
-
   return (
     <div className="profile-page">
       <div className="profile-header">
         <h2 className="profile-title">User Profile</h2>
-        {currentUser.id === parsedUserId ? (
+        {currentUser && parsedUserId && currentUser.id === parsedUserId ? (
           <button className="delete-profile-button" onClick={handleDeleteProfile}>
             Delete Profile
           </button>
@@ -131,22 +126,21 @@ function Profile() {
       </div>
       <div className="reviews-rankings-section">
         <h3 className="section-title">Your Reviews and Rankings</h3>
-        {combinedData && combinedData.length > 0 ? (
-          combinedData.map((data) => (
-            <div key={data.id} className="review-ranking-item">
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <div key={review.id} className="review-ranking-item">
               <div className="review-header">
-                <p className="review-player">{getPlayerDetails(data.player_id)}</p>
+                <p className="review-player">{getPlayerDetails(review.player_id)}</p>
                 {currentUser.id === parsedUserId && (
                   <button
                     className="delete-button"
-                    onClick={() => handleDeleteReviewAndRanking(data.id, data.player_id)}
+                    onClick={() => handleDeleteReviewAndRanking(review.id, review.player_id)}
                   >
                     Delete
                   </button>
                 )}
               </div>
-              <p className="review-content"><strong>Review:</strong> {data.content}</p>
-              <p className="ranking-value"><strong>Ranking:</strong> {data.rank}</p>
+              <p className="review-content"><strong>Review:</strong> {review.content}</p>
             </div>
           ))
         ) : (
