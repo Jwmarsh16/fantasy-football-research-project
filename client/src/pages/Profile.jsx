@@ -18,12 +18,14 @@ function Profile() {
   const rankings = useSelector((state) => state.ranking.rankings);
   const [players, setPlayers] = useState([]);
 
+  const parsedUserId = parseInt(userId, 10);
+
   useEffect(() => {
     if (!userId) {
       navigate('/login');
     } else {
-      if (!userDetails || userDetails.id !== parseInt(userId)) {
-        dispatch(fetchUserById(userId))
+      if (!userDetails || userDetails.id !== parsedUserId) {
+        dispatch(fetchUserById(parsedUserId))
           .unwrap()
           .then((response) => {
             if (response) {
@@ -36,9 +38,11 @@ function Profile() {
       }
       dispatch(fetchRankings());
       dispatch(fetchReviews());
-      fetchPlayers();
+      if (players.length === 0) {
+        fetchPlayers();
+      }
     }
-  }, [userId, userDetails, dispatch, navigate]);
+  }, [parsedUserId, userDetails, dispatch, navigate, players.length]);
 
   const fetchPlayers = async () => {
     try {
@@ -57,11 +61,13 @@ function Profile() {
   const handleDeleteReviewAndRanking = async (reviewId, playerId) => {
     try {
       await dispatch(deleteReview(reviewId)).unwrap();
-      const ranking = rankings.find(
-        (ranking) => ranking.user_id === parseInt(userId) && ranking.player_id === playerId
-      );
-      if (ranking) {
-        await dispatch(deleteRanking(ranking.id)).unwrap();
+      if (rankings.length > 0) {
+        const ranking = rankings.find(
+          (ranking) => ranking.user_id === parsedUserId && ranking.player_id === playerId
+        );
+        if (ranking) {
+          await dispatch(deleteRanking(ranking.id)).unwrap();
+        }
       }
     } catch (error) {
       console.error('Failed to delete review and ranking:', error);
@@ -69,82 +75,86 @@ function Profile() {
   };
 
   const handleDeleteProfile = async () => {
+    if (!currentUser) {
+      console.error('Current user is null. Cannot delete profile.');
+      return;
+    }
     if (window.confirm('Are you sure you want to delete your profile? This action cannot be undone.')) {
       try {
-        await dispatch(deleteUser(userId)).unwrap();
+        await dispatch(deleteUser(parsedUserId)).unwrap();
         navigate('/');
       } catch (error) {
         console.error('Failed to delete user profile:', error);
+        alert('Failed to delete profile. Please try again.');
       }
     }
   };
 
-  if (!userDetails) {
+  if (!userDetails || !currentUser) {
     return <p className="loading-message">Loading user details...</p>;
   }
 
   const combinedData = reviews
-    .filter((review) => review.user_id === parseInt(userId))
+    .filter((review) => review.user_id === parsedUserId)
     .map((review) => {
-      const ranking = rankings.find((ranking) => ranking.user_id === parseInt(userId) && ranking.player_id === review.player_id);
+      const ranking = rankings.find((ranking) => ranking.user_id === parsedUserId && ranking.player_id === review.player_id);
       return {
         ...review,
         rank: ranking ? ranking.rank : 'N/A',
       };
     });
 
-    return (
-      <div className="profile-page">
-        <div className="profile-header">
-          <h2 className="profile-title">User Profile</h2>
-          {currentUser && userId && parseInt(currentUser.id) === parseInt(userId) ? (
-            <button className="delete-profile-button" onClick={handleDeleteProfile}>
-              Delete Profile
-            </button>
-          ) : (
-            <p className="error-message">You do not have permission to delete this profile.</p>
-          )}
+  return (
+    <div className="profile-page">
+      <div className="profile-header">
+        <h2 className="profile-title">User Profile</h2>
+        {currentUser.id === parsedUserId ? (
+          <button className="delete-profile-button" onClick={handleDeleteProfile}>
+            Delete Profile
+          </button>
+        ) : (
+          <p className="error-message">You do not have permission to delete this profile.</p>
+        )}
+      </div>
+      <div className="user-info">
+        <div className="user-avatar-section">
+          <img 
+            src={`https://i.pravatar.cc/150?u=${userDetails.id}`} 
+            alt={`${userDetails.username}'s Avatar`} 
+            className="user-avatar-img" 
+          />
         </div>
-        <div className="user-info">
-          <div className="user-avatar-section">
-            {/* User Avatar */}
-            <img 
-              src={`https://i.pravatar.cc/150?u=${userDetails.id}`} 
-              alt={`${userDetails.username}'s Avatar`} 
-              className="user-avatar-img" 
-            />
-          </div>
-          <div className="user-info-section">
-            <p className="user-detail"><strong>Username:</strong> {userDetails.username}</p>
-            <p className="user-detail"><strong>Email:</strong> {userDetails.email}</p>
-          </div>
-        </div>
-        <div className="reviews-rankings-section">
-          <h3 className="section-title">Your Reviews and Rankings</h3>
-          {combinedData && combinedData.length > 0 ? (
-            combinedData.map((data) => (
-              <div key={data.id} className="review-ranking-item">
-                <div className="review-header">
-                  <p className="review-player">{getPlayerDetails(data.player_id)}</p>
-                  {currentUser && currentUser.id === parseInt(userId) && (
-                    <button
-                      className="delete-button"
-                      onClick={() => handleDeleteReviewAndRanking(data.id, data.player_id)}
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-                <p className="review-content"><strong>Review:</strong> {data.content}</p>
-                <p className="ranking-value"><strong>Ranking:</strong> {data.rank}</p>
-              </div>
-            ))
-          ) : (
-            <p className="no-reviews-rankings-message">No reviews or rankings available.</p>
-          )}
+        <div className="user-info-section">
+          <p className="user-detail"><strong>Username:</strong> {userDetails.username}</p>
+          <p className="user-detail"><strong>Email:</strong> {userDetails.email}</p>
         </div>
       </div>
-    );
+      <div className="reviews-rankings-section">
+        <h3 className="section-title">Your Reviews and Rankings</h3>
+        {combinedData && combinedData.length > 0 ? (
+          combinedData.map((data) => (
+            <div key={data.id} className="review-ranking-item">
+              <div className="review-header">
+                <p className="review-player">{getPlayerDetails(data.player_id)}</p>
+                {currentUser.id === parsedUserId && (
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDeleteReviewAndRanking(data.id, data.player_id)}
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+              <p className="review-content"><strong>Review:</strong> {data.content}</p>
+              <p className="ranking-value"><strong>Ranking:</strong> {data.rank}</p>
+            </div>
+          ))
+        ) : (
+          <p className="no-reviews-rankings-message">No reviews or rankings available.</p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default Profile;

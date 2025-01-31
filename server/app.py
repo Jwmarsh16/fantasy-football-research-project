@@ -140,27 +140,29 @@ class UserResource(Resource):
 
     @jwt_required()  # Requires user to be logged in
     def delete(self, id):
-        # Get the user who is currently logged in
-        current_user_id = get_jwt_identity()
-
-        # Check if the current user is authorized to delete this user
-        if current_user_id != id:
-            return {"error": "Unauthorized action"}, 403
-
-        # Get the user to be deleted from the database
-        user = User.query.get(id)
-        if not user:
-            return {"error": "User not found"}, 404
-
-        # Delete user from the database
         try:
-            db.session.delete(user)
+            # Get the user who is currently logged in
+            current_user_id = get_jwt_identity()
+            user_to_delete = User.query.get(int(id))
+
+            # Ensure ID is an integer before comparison
+            if current_user_id != int(id):
+                return {"error": "Unauthorized action"}, 403
+
+            if not user_to_delete:
+                return {"error": "User not found"}, 404
+
+            # Delete user from the database
+            db.session.delete(user_to_delete)
             db.session.commit()
+
+            return {"message": "User successfully deleted"}, 200
+
+        except ValueError:
+            return {"error": "Invalid user ID format"}, 400
         except Exception as e:
             db.session.rollback()  # Rollback in case of any error
-            return {"error": "An error occurred while deleting user"}, 500
-
-        return {'message': 'User successfully deleted'}, 200
+            return {"error": f"An error occurred: {str(e)}"}, 500
 
 
 
