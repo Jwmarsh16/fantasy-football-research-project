@@ -28,18 +28,17 @@
 
 .delete-profile-button {
   background-color: #e74c3c;
-  color: #ffffff;
-  padding: 10px 20px; /* Adjusted padding for mobile */
+  color: white;
   border: none;
-  border-radius: 15px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px; /* Adjusted font size */
+  transition: background-color 0.3s ease;
 }
 
 .delete-profile-button:hover {
   background-color: #c0392b;
-  transform: translateY(-2px);
 }
 
 /* User Info Section */

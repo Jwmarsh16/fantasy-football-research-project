@@ -97,10 +97,12 @@ function Profile() {
       <div className="profile-page">
         <div className="profile-header">
           <h2 className="profile-title">User Profile</h2>
-          {currentUser && currentUser.id === parseInt(userId) && (
+          {currentUser && userId && parseInt(currentUser.id) === parseInt(userId) ? (
             <button className="delete-profile-button" onClick={handleDeleteProfile}>
               Delete Profile
             </button>
+          ) : (
+            <p className="error-message">You do not have permission to delete this profile.</p>
           )}
         </div>
         <div className="user-info">
