@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { setPlayer, setReviews, setMaxRank } from '../../redux/slices/playerSlice';
-import { fetchUsers } from '../../redux/slices/userSlice';
-import { addRanking, fetchRankings } from '../../redux/slices/rankingSlice';
-import { addReview, fetchReviews } from '../../redux/slices/reviewSlice';
+import { setPlayer, setReviews, setMaxRank } from '../redux/slices/playerSlice';
+import { fetchUsers } from '../redux/slices/userSlice';
+import { addRanking, fetchRankings } from '../redux/slices/rankingSlice';
+import { addReview, fetchReviews } from '../redux/slices/reviewSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import '../../style/PlayerDetailStyle.css';
+import '../style/PlayerDetailStyle.css';
 
 function PlayerDetail() {
   const { id } = useParams();

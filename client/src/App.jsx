@@ -3,12 +3,12 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import PlayerList from './pages/PlayerList';
-import PlayerDetail from './components/player/PlayerDetail';
+import PlayerDetail from './pages/PlayerDetail';
 import AddReview from './components/player/AddReview';
 import Profile from './pages/Profile';
 import UserList from './pages/UserList'; 
-import Register from './components/user/Register';
-import Login from './components/user/Login';
+import Register from './pages/Register';
+import Login from './pages/Login';
 import Home from './pages/Home';
 
 function App() {
