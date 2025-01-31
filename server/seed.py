@@ -1,3 +1,10 @@
+from config import app, db
+from faker import Faker
+
+from random import randint, sample, choice as rc
+
+from models import db, User, Player, Review, Ranking
+
 if __name__ == '__main__':
     fake = Faker()
     with app.app_context():
@@ -81,3 +88,5 @@ if __name__ == '__main__':
         # Pass only the initially seeded users to avoid auto-adding for new users
         create_reviews(seeded_users, players)
         create_rankings(seeded_users, players)
+
+    # remove pass and write your seed data

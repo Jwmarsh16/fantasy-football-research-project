@@ -99,6 +99,8 @@ function Profile() {
     return <p className="loading-message">Loading user details...</p>;
   }
 
+  const userReviews = reviews.filter((review) => review.user_id === parsedUserId);
+
   return (
     <div className="profile-page">
       <div className="profile-header">
@@ -126,8 +128,8 @@ function Profile() {
       </div>
       <div className="reviews-rankings-section">
         <h3 className="section-title">Your Reviews and Rankings</h3>
-        {reviews.length > 0 ? (
-          reviews.map((review) => (
+        {userReviews.length > 0 ? (
+          userReviews.map((review) => (
             <div key={review.id} className="review-ranking-item">
               <div className="review-header">
                 <p className="review-player">{getPlayerDetails(review.player_id)}</p>
