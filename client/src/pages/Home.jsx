@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserById } from '../redux/slices/userSlice';
 import { fetchRankings } from '../redux/slices/rankingSlice';
+import { fetchPlayers } from '../redux/slices/playerSlice'; // Ensure this exists in playerSlice.js
 import '../style/HomeStyle.css';
 
 function Home() {
@@ -14,36 +15,15 @@ function Home() {
   const userLoadingStatus = useSelector((state) => state.user.status);
   const rankings = useSelector((state) => state.ranking.rankings);
   const players = useSelector((state) => state.player.players);
-
   const [showOverall, setShowOverall] = useState(true);
-
-  // Mock News Data
-  const mockNews = [
-    {
-      id: 1,
-      title: 'Top Fantasy Football Strategies for This Season',
-      content: 'Learn the top strategies to dominate your fantasy football league this season!',
-      date: '2024-12-08',
-    },
-    {
-      id: 2,
-      title: 'Player Injuries to Watch Out For',
-      content: 'Keep an eye on these key players and their injuries heading into Week 14.',
-      date: '2024-12-07',
-    },
-    {
-      id: 3,
-      title: 'Breaking: Player Trade Rumors',
-      content: 'Rumors are swirling about major trades involving star players!',
-      date: '2024-12-06',
-    },
-  ];
 
   useEffect(() => {
     if (isAuthenticated && !userDetails && user && user.id) {
       dispatch(fetchUserById(user.id));
     }
+
     dispatch(fetchRankings());
+    dispatch(fetchPlayers()); // Ensure players are fetched initially
   }, [isAuthenticated, userDetails, user, dispatch]);
 
   const handleAuthButtonClick = () => {
@@ -54,20 +34,23 @@ function Home() {
     setShowOverall((prev) => !prev);
   };
 
-  const top5Overall = [...rankings]
-    ?.sort((a, b) => a.rank - b.rank)
-    .slice(0, 5)
-    .map((ranking) => players.find((player) => player.id === ranking.player_id));
+  const top5Overall = players.length > 0 && rankings.length > 0
+    ? [...rankings]
+        .sort((a, b) => a.rank - b.rank)
+        .slice(0, 5)
+        .map((ranking) => players.find((player) => player.id === ranking.player_id))
+    : [];
 
-  const top5User = [...rankings]
-    ?.filter((ranking) => ranking.user_id === user?.id)
-    .sort((a, b) => a.rank - b.rank)
-    .slice(0, 5)
-    .map((ranking) => players.find((player) => player.id === ranking.player_id));
+  const top5User = players.length > 0 && rankings.length > 0
+    ? [...rankings]
+        .filter((ranking) => ranking.user_id === user?.id)
+        .sort((a, b) => a.rank - b.rank)
+        .slice(0, 5)
+        .map((ranking) => players.find((player) => player.id === ranking.player_id))
+    : [];
 
   return (
     <div className="home-page">
-      {/* User Info Card Positioned in the Top-Left */}
       {userLoadingStatus === 'loading' ? (
         <p className="loading-message">Loading user information...</p>
       ) : isAuthenticated && user ? (
@@ -104,13 +87,16 @@ function Home() {
             <div className="news-section">
               <h3 className="news-title">News and Updates</h3>
               <ul className="news-list">
-                {mockNews.map((article) => (
-                  <li key={article.id} className="news-item">
-                    <h4 className="news-article-title">{article.title}</h4>
-                    <p className="news-article-date">{article.date}</p>
-                    <p className="news-article-content">{article.content}</p>
-                  </li>
-                ))}
+                {/* Mock News Data */}
+                {[{ id: 1, title: 'Fantasy News', content: 'Big trades happening', date: '2024-12-08' }].map(
+                  (article) => (
+                    <li key={article.id} className="news-item">
+                      <h4 className="news-article-title">{article.title}</h4>
+                      <p className="news-article-date">{article.date}</p>
+                      <p className="news-article-content">{article.content}</p>
+                    </li>
+                  )
+                )}
               </ul>
             </div>
           )}

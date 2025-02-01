@@ -1,8 +1,6 @@
 from config import app, db
 from faker import Faker
-
 from random import randint, sample, choice as rc
-
 from models import db, User, Player, Review, Ranking
 
 if __name__ == '__main__':
@@ -28,27 +26,33 @@ if __name__ == '__main__':
         def create_players():
             players = []
             positions = ["QB", "RB", "WR", "TE", "K", "DEF"]
-            teams = ["Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
-                     "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns",
-                     "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers",
-                     "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs",
-                     "Las Vegas Raiders", "Los Angeles Chargers", "Los Angeles Rams", "Miami Dolphins",
-                     "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants",
-                     "New York Jets", "Philadelphia Eagles", "Pittsburgh Steelers", "San Francisco 49ers",
-                     "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"]
-            for _ in range(20):
-                player = Player(
-                    name=fake.name()[:50],
-                    position=rc(positions),
-                    team=rc(teams),
-                    stats={
-                        "games_played": randint(10, 16),
-                        "touchdowns": randint(0, 20),
-                        "yards": randint(0, 2000)
-                    }
-                )
-                players.append(player)
-                db.session.add(player)
+            teams = [
+                "Arizona Cardinals", "Atlanta Falcons", "Baltimore Ravens", "Buffalo Bills",
+                "Carolina Panthers", "Chicago Bears", "Cincinnati Bengals", "Cleveland Browns",
+                "Dallas Cowboys", "Denver Broncos", "Detroit Lions", "Green Bay Packers",
+                "Houston Texans", "Indianapolis Colts", "Jacksonville Jaguars", "Kansas City Chiefs",
+                "Las Vegas Raiders", "Los Angeles Chargers", "Los Angeles Rams", "Miami Dolphins",
+                "Minnesota Vikings", "New England Patriots", "New Orleans Saints", "New York Giants",
+                "New York Jets", "Philadelphia Eagles", "Pittsburgh Steelers", "San Francisco 49ers",
+                "Seattle Seahawks", "Tampa Bay Buccaneers", "Tennessee Titans", "Washington Commanders"
+            ]
+            position_counts = {pos: 0 for pos in positions}  # Track number of players per position
+            while any(count < 5 for count in position_counts.values()):
+                position = rc(positions)
+                if position_counts[position] < 5:
+                    player = Player(
+                        name=fake.name()[:50],
+                        position=position,
+                        team=rc(teams),
+                        stats={
+                            "games_played": randint(10, 16),
+                            "touchdowns": randint(0, 20),
+                            "yards": randint(0, 2000)
+                        }
+                    )
+                    players.append(player)
+                    db.session.add(player)
+                    position_counts[position] += 1
             db.session.commit()
             return players
 
@@ -88,5 +92,3 @@ if __name__ == '__main__':
         # Pass only the initially seeded users to avoid auto-adding for new users
         create_reviews(seeded_users, players)
         create_rankings(seeded_users, players)
-
-    # remove pass and write your seed data
