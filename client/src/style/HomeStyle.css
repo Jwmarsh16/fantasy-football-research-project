@@ -2,7 +2,9 @@
 .home-page {
   text-align: center;
   padding: 60px 15px;
-  background: linear-gradient(to bottom, #ffd700, #002147);
+  background: linear-gradient(-45deg, #ffd700, #ff5733, #002147, #1abc9c);
+  background-size: 400% 400%;
+  animation: gradientAnimation 10s ease infinite;
   color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -11,30 +13,83 @@
   position: relative;
 }
 
+/* Background Animation */
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Welcome Section */
 /* Welcome Section */
 .welcome-section {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   margin-top: auto;
   margin: 80px 0 20px;
   max-width: 800px;
-  box-sizing: border-box;
   text-align: center;
+  transition: transform 0.3s ease-in-out;
+}
+
+.welcome-section:hover {
+  transform: scale(1.05);
 }
 
 .home-title {
-  font-size: 48px;
+  font-size: 52px;
   color: #ffffff;
-  text-shadow: 3px 3px #002147;
+  text-shadow: 4px 4px #002147;
   margin-bottom: 15px;
 }
 
 .home-subtitle {
-  font-size: 20px;
+  font-size: 22px;
   color: #ffffff;
-  text-shadow: 1px 1px #002147;
+  text-shadow: 2px 2px #002147;
+}
+
+/* Register Button Styling */
+.auth-center-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto; /* Ensures full centering */
+  max-width: 400px; /* Restricts width for better alignment */
+}
+
+
+.auth-button {
+  background: linear-gradient(135deg, #38ef7d, #11998e);
+  color: #ffffff;
+  border: none;
+  padding: 18px 50px;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 5px 20px rgba(0, 255, 128, 0.4);
+  transition: all 0.3s ease-in-out;
+  display: inline-block;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.auth-button:hover {
+  background: #11998e;
+  transform: scale(1.1);
+  box-shadow: 0 8px 30px rgba(0, 255, 128, 0.6);
 }
 
 /* Content Layout */
@@ -46,78 +101,35 @@
   max-width: 1200px;
 }
 
-/* Main Content */
-.main-content {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 /* User Info Card */
 .user-info-container {
-  position: absolute; /* Allows precise placement */
-  top: 140px; /* Adjusted to position below the navbar */
-  margin-right: 73%; /* Aligns the card to the far left of the page */
-  width: 25%; /* Sets the width to 25% of the page */
-  z-index: 10; /* Keeps it above other elements */
+  position: absolute;
+  top: 140px;
+  margin-right: 73%;
+  width: 25%;
+  z-index: 10;
   display: flex;
-  justify-content: center; /* Centers content horizontally within the card */
+  justify-content: center;
 }
 
 .user-info-card {
-  background: rgba(255, 255, 255, 0.2); /* Transparent white for integration */
+  background: rgba(255, 255, 255, 0.25);
   color: #333;
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
-  width: 100%; /* Ensures the card fills the container's width */
-  box-sizing: border-box; /* Includes padding in width calculation */
+  width: 100%;
 }
 
 .user-avatar img {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  border: 2px solid #ccc;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 3px solid #ff5733;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
   margin-right: 15px;
-}
-
-.user-info-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.user-name {
-  font-size: 18px;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 5px;
-  margin-right: auto;
-}
-
-.user-email {
-  font-size: 14px;
-  color: #555;
-  font-weight: normal;
-  word-wrap: break-word;
-}
-
-
-
-.user-welcome {
-  font-size: 20px;
-  font-weight: bold;
-  color: #2c3e50;
-  margin-bottom: 10px;
-}
-
-.user-details {
-  font-size: 16px;
-  color: #1e90ff;
 }
 
 /* Sidebar */
@@ -126,33 +138,20 @@
   background: #f0f9ff;
   padding: 20px;
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   text-align: center;
+  transition: transform 0.3s ease-in-out;
 }
 
 .sidebar-title {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
-  margin-bottom: 15px;
   color: #2c3e50;
+  margin-bottom: 15px;
 }
 
-/* Toggle Button */
-.toggle-button {
-  background: #3498db;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 25px;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s ease, transform 0.2s ease;
-}
 
-.toggle-button:hover {
-  background: #2980b9;
+.sidebar:hover {
   transform: scale(1.05);
 }
 
@@ -164,62 +163,19 @@
 }
 
 .ranking-item {
-  padding: 10px;
-  margin-bottom: 10px;
-  background: #ffffff;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #ffffff, #f3f3f3);
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   font-size: 16px;
   color: #333;
+  transition: transform 0.2s ease-in-out;
 }
 
-.ranking-item .player-name {
-  font-weight: bold;
-}
-
-.ranking-item .player-position {
-  color: #e67e22;
-  font-weight: bold;
-}
-
-.ranking-item .player-team {
-  color: #3498db;
-  font-weight: bold;
-}
-
-/* Auth Section */
-.auth-section {
-  background: rgba(255, 255, 255, 0.15);
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  text-align: center;
-  margin-top: 20px;
-}
-
-.login-message {
-  font-size: 18px;
-  color: #ffffff;
-  margin-bottom: 15px;
-  text-shadow: 2px 2px #002147;
-}
-
-.auth-button {
-  background-color: #38ef7d;
-  padding: 12px 40px;
-  font-size: 18px;
-  border-radius: 30px;
-  color: #ffffff;
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s ease, transform 0.2s ease;
-  cursor: pointer;
-}
-
-.auth-button:hover {
-  background-color: #11998e;
-  transform: scale(1.05);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+.ranking-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* News Section */
@@ -228,13 +184,18 @@
   padding: 20px;
   background: #fff8e7;
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   width: 100%;
   text-align: left;
+  transition: transform 0.3s ease-in-out;
+}
+
+.news-section:hover {
+  transform: scale(1.02);
 }
 
 .news-title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: bold;
   color: #2c3e50;
   margin-bottom: 15px;
@@ -250,15 +211,16 @@
   margin-bottom: 15px;
   background: #ffffff;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
 }
 
-.news-item:last-child {
-  margin-bottom: 0;
+.news-item:hover {
+  transform: translateY(-5px);
 }
 
 .news-article-title {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   color: #34495e;
   margin-bottom: 5px;
@@ -275,68 +237,35 @@
   color: #555;
 }
 
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-  .user-info-container {
-    position: relative; /* Adjusts to relative for better alignment */
-    top: auto; /* Removes top offset */
-    left: auto; /* Centers container */
-    width: 90%; /* Adjusts width for iPad */
-    margin: 20px auto; /* Centers and adds spacing */
-  }
-
-  .user-info-card {
-    width: 80%; /* Reduces width for better fit */
-    margin: 0 auto;
-    padding: 15px; /* Adjusted padding */
-    flex-direction: row; /* Keeps horizontal layout */
-    align-items: center;
-  }
-
-  .user-avatar img {
-    width: 50px; /* Slightly smaller avatar */
-    height: 50px;
-    margin-right: 10px;
-  }
-
-  .user-name {
-    font-size: 16px; /* Reduced size */
-  }
-
-  .user-email {
-    font-size: 12px; /* Adjusted size */
-  }
-
-  .home-content {
-    flex-direction: column; /* Stacks main content and sidebar */
-    gap: 20px;
-  }
-
-  .sidebar {
-    width: 80%; /* Reduces sidebar width for better fit */
-    margin: 0 auto; /* Centers the sidebar */
-  }
-
-  .ranking-item {
-    font-size: 14px; /* Adjusted font size for iPad */
-  }
-
-  .news-section {
-    width: 80%; /* Adjusts width for iPad screens */
-    margin: 20px auto;
-    padding: 15px; /* Adjusted padding */
-  }
-
-  .news-item {
-    padding: 10px; /* Adjusted padding for iPad */
-  }
+/* Toggle Button */
+.toggle-button {
+  background: #3498db;
+  color: #ffffff;
+  border: none;
+  padding: 12px 22px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
+.toggle-button:hover {
+  background: #2980b9;
+  transform: scale(1.1);
+}
 
 /* Mobile-Friendly Adjustments */
 @media screen and (max-width: 768px) {
   .home-content {
     flex-direction: column;
     gap: 20px;
+  }
+
+  .auth-button {
+    font-size: 20px;
+    padding: 14px 35px;
   }
 
   .user-info-container {
@@ -351,15 +280,10 @@
     width: 90%;
     margin: 0 auto;
   }
-  
 
   .sidebar {
     margin: 0 auto;
     width: 90%;
-  }
-
-  .ranking-item {
-    font-size: 14px;
   }
 
   .news-section {
@@ -370,27 +294,28 @@
 
 @media screen and (max-width: 480px) {
   .home-title {
-    font-size: 28px;
+    font-size: 32px;
   }
 
   .home-subtitle {
-    font-size: 16px;
+    font-size: 18px;
+  }
+
+  .auth-button {
+    font-size: 18px;
+    padding: 12px 30px;
   }
 
   .news-section {
-    padding: 10px;
-  }
-
-  .news-item {
-    padding: 10px;
+    padding: 12px;
   }
 
   .toggle-button {
-    font-size: 14px;
-    padding: 8px 15px;
+    font-size: 16px;
+    padding: 10px 18px;
   }
 
   .ranking-item {
-    font-size: 12px;
+    font-size: 14px;
   }
 }

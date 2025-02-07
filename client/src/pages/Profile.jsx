@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchUserById, setUserDetails } from '../redux/slices/userSlice';
+import { fetchUserById, setUserDetails, fetchUsers } from '../redux/slices/userSlice';
 import { fetchRankings, deleteRanking } from '../redux/slices/rankingSlice';
 import { fetchReviews, deleteReview } from '../redux/slices/reviewSlice';
 import { deleteUser } from '../redux/slices/authSlice';
 import axios from 'axios';
 import '../style/ProfileStyle.css';
+import ProfilePicUpdater from '../components/user/ProfilePicUpdater';
 
 function Profile() {
   const { userId } = useParams();
@@ -17,36 +18,41 @@ function Profile() {
   const reviews = useSelector((state) => state.review.reviews);
   const rankings = useSelector((state) => state.ranking.rankings);
   const [players, setPlayers] = useState([]);
+  const [forceUpdate, setForceUpdate] = useState(0); // ✅ Added state for forcing re-render
 
-  const parsedUserId = parseInt(userId, 10);
+  const parsedUserId = userId ? parseInt(userId, 10) : null;
 
   useEffect(() => {
-    console.log("Profile Page Loaded");
-    console.log("User ID from URL:", parsedUserId);
-    console.log("Redux Current User:", currentUser);
-
-    if (!userId) {
+    if (!parsedUserId) {
       navigate('/login');
-    } else {
-      if (!userDetails || userDetails.id !== parsedUserId) {
-        dispatch(fetchUserById(parsedUserId))
-          .unwrap()
-          .then((response) => {
-            if (response) {
-              dispatch(setUserDetails(response));
-            }
-          })
-          .catch((error) => {
-            console.error('Error fetching user details:', error);
-          });
-      }
-      dispatch(fetchRankings());
-      dispatch(fetchReviews());
-      if (players.length === 0) {
-        fetchPlayers();
-      }
+      return;
+    }
+
+    if (!userDetails || userDetails.id !== parsedUserId) {
+      dispatch(fetchUserById(parsedUserId))
+        .unwrap()
+        .then((response) => {
+          if (response) {
+            dispatch(setUserDetails(response));
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user details:', error);
+        });
+    }
+
+    dispatch(fetchRankings());
+    dispatch(fetchReviews());
+
+    if (players.length === 0) {
+      fetchPlayers();
     }
   }, [parsedUserId, userDetails, dispatch, navigate, players.length]);
+
+  useEffect(() => {
+    console.log("Profile.jsx - Redux state updated:", userDetails);
+    setForceUpdate((prev) => prev + 1); // ✅ Force re-render when Redux state updates
+  }, [userDetails]);
 
   const fetchPlayers = async () => {
     try {
@@ -65,13 +71,11 @@ function Profile() {
   const handleDeleteReviewAndRanking = async (reviewId, playerId) => {
     try {
       await dispatch(deleteReview(reviewId)).unwrap();
-      if (rankings.length > 0) {
-        const ranking = rankings.find(
-          (ranking) => ranking.user_id === parsedUserId && ranking.player_id === playerId
-        );
-        if (ranking) {
-          await dispatch(deleteRanking(ranking.id)).unwrap();
-        }
+      const ranking = rankings.find(
+        (ranking) => ranking.user_id === parsedUserId && ranking.player_id === playerId
+      );
+      if (ranking) {
+        await dispatch(deleteRanking(ranking.id)).unwrap();
       }
     } catch (error) {
       console.error('Failed to delete review and ranking:', error);
@@ -83,7 +87,6 @@ function Profile() {
       console.error("Current user is null. Cannot delete profile.");
       return;
     }
-
     if (window.confirm("Are you sure you want to delete your profile? This action cannot be undone.")) {
       try {
         await dispatch(deleteUser(parsedUserId)).unwrap();
@@ -95,8 +98,16 @@ function Profile() {
     }
   };
 
-  if (!userDetails || !currentUser) {
-    return <p className="loading-message">Loading user details...</p>;
+  // ✅ Ensure profile picture logic works correctly:
+  let avatarUrl;
+  if (userDetails.profilePic && userDetails.profilePic.trim() !== "") {
+    if (userDetails.profilePic === "avatar") {
+      avatarUrl = `https://i.pravatar.cc/150?u=${userDetails.id}`;
+    } else {
+      avatarUrl = userDetails.profilePic; // ✅ Directly use the pre-signed S3 URL
+    }
+  } else {
+    avatarUrl = "https://placehold.co/600x400?text=Upload+Picture"; // ✅ Default placeholder
   }
 
   const userReviews = reviews.filter((review) => review.user_id === parsedUserId);
@@ -105,7 +116,7 @@ function Profile() {
     <div className="profile-page">
       <div className="profile-header">
         <h2 className="profile-title">User Profile</h2>
-        {currentUser && parsedUserId && currentUser.id === parsedUserId ? (
+        {currentUser && parsedUserId === currentUser.id ? (
           <button className="delete-profile-button" onClick={handleDeleteProfile}>
             Delete Profile
           </button>
@@ -115,11 +126,23 @@ function Profile() {
       </div>
       <div className="user-info">
         <div className="user-avatar-section">
-          <img 
-            src={`https://i.pravatar.cc/150?u=${userDetails.id}`} 
-            alt={`${userDetails.username}'s Avatar`} 
-            className="user-avatar-img" 
+          <img
+            src={avatarUrl}
+            alt={`${userDetails.username}'s Avatar`}
+            className="user-avatar-img"
+            key={forceUpdate} // ✅ Forces re-render when profile picture changes
           />
+          {currentUser && parsedUserId === currentUser.id && (
+            <ProfilePicUpdater 
+              userId={parsedUserId} 
+              onUpdate={(data) => {
+                if (!data || !data.profilePic) return;
+
+                dispatch(setUserDetails({ ...userDetails, profilePic: data.profilePic })); // ✅ Ensure Redux updates instantly
+                dispatch(fetchUsers());
+              }} 
+            />
+          )}
         </div>
         <div className="user-info-section">
           <p className="user-detail"><strong>Username:</strong> {userDetails.username}</p>

@@ -11,11 +11,10 @@ function UserList() {
   const [searchUsername, setSearchUsername] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
 
+  // Always fetch users on component mount.
   useEffect(() => {
-    if (users.length === 0) {
-      dispatch(fetchUsers());
-    }
-  }, [dispatch, users.length]);
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   useEffect(() => {
     if (searchUsername) {
@@ -50,19 +49,32 @@ function UserList() {
       </form>
       {filteredUsers && filteredUsers.length > 0 ? (
         <div className="user-list-grid">
-          {filteredUsers.map((user) => (
-            <div key={user.id} className="user-card">
-              <div className="user-avatar">
-                <img src={`https://i.pravatar.cc/150?u=${user.id}`} alt="User Avatar" />
+          {filteredUsers.map((user) => {
+            // Determine the avatar URL:
+            // If a user has uploaded a profile picture, use that.
+            // If profilePic is "avatar", use pravatar.
+            // Otherwise, use the placeholder.
+            const avatarUrl =
+              user.profilePic && user.profilePic.trim() !== '' && user.profilePic !== "avatar"
+                ? user.profilePic
+                : (user.profilePic === "avatar"
+                    ? `https://i.pravatar.cc/150?u=${user.id}`
+                    : 'https://placehold.co/600x400?text=Upload+Picture');
+
+            return (
+              <div key={user.id} className="user-card">
+                <div className="user-avatar">
+                  <img src={avatarUrl} alt="User Avatar" />
+                </div>
+                <div className="user-info">
+                  <span className="user-username">{user.username}</span>
+                  <Link to={`/profile/${user.id}`} className="view-profile-link">
+                    View Profile
+                  </Link>
+                </div>
               </div>
-              <div className="user-info">
-                <span className="user-username">{user.username}</span>
-                <Link to={`/profile/${user.id}`} className="view-profile-link">
-                  View Profile
-                </Link>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <p className="no-users-message">No users found.</p>

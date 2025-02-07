@@ -1,4 +1,3 @@
-// slices/userSlice.js - Updated to use thunkAPI for handling async actions
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -10,7 +9,9 @@ export const fetchUserById = createAsyncThunk(
       const response = await axios.get(`/api/users/${userId}`, { withCredentials: true });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response ? error.response.data.message : 'Failed to fetch user');
+      return thunkAPI.rejectWithValue(
+        error.response ? error.response.data.message : 'Failed to fetch user'
+      );
     }
   }
 );
@@ -23,7 +24,49 @@ export const fetchUsers = createAsyncThunk(
       const response = await axios.get('/api/users', { withCredentials: true });
       return response.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.response ? error.response.data.message : 'Failed to fetch users');
+      return thunkAPI.rejectWithValue(
+        error.response ? error.response.data.message : 'Failed to fetch users'
+      );
+    }
+  }
+);
+
+// NEW: Async thunk to update the profile picture
+export const updateProfilePic = createAsyncThunk(
+  "user/updateProfilePic",
+  async ({ userId, file }, { rejectWithValue }) => {
+    if (!userId || isNaN(userId)) {  // ✅ Validate userId before sending request
+      console.error("Redux: userId is invalid:", userId);
+      return rejectWithValue("Invalid user ID");
+    }
+
+    if (!file) {  // ✅ Validate file before sending request
+      console.error("Redux: No file selected for upload.");
+      return rejectWithValue("No file selected.");
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("profilePic", file);
+      formData.append("userId", userId);  // ✅ Ensure userId is included
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/api/users/${userId}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        }
+      );
+
+      console.log("Redux: Profile picture updated successfully", response.data);
+
+      return response.data; // Expect updated user object with new profilePic
+    } catch (error) {
+      console.error("Redux: Error updating profile picture:", error);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update profile picture"
+      );
     }
   }
 );
@@ -86,6 +129,26 @@ const userSlice = createSlice({
       .addCase(fetchUserById.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || 'Failed to fetch user details';
+      })
+      // Update Profile Picture Cases
+      .addCase(updateProfilePic.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(updateProfilePic.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        if (action.payload && action.payload.profilePic) {
+          console.log("Redux - Updating profilePic:", action.payload.profilePic); // ✅ Debug Redux update
+          state.userDetails = {
+            ...state.userDetails,
+            profilePic: action.payload.profilePic, // ✅ Store the correct pre-signed URL
+          };
+        }
+        state.error = null;
+      })
+      .addCase(updateProfilePic.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || 'Failed to update profile picture';
       });
   },
 });
