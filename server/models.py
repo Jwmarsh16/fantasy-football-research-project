@@ -3,9 +3,10 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import validates
 from config import db
 import bcrypt
+from sqlalchemy.sql import expression
+
 
 # Models go here
-
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -14,6 +15,13 @@ class User(db.Model, SerializerMixin):
     password = db.Column(db.String(128), nullable=False)  # Increased password length for hashed passwords
     reviews = db.relationship('Review', back_populates='user', cascade='all, delete-orphan')
     rankings = db.relationship('Ranking', back_populates='user', cascade='all, delete-orphan')
+    profilePic = db.Column(db.String(200), nullable=True)  # Can be null if user hasn't uploaded one
+    isFake = db.Column(
+        db.Boolean, 
+        nullable=False, 
+        default=False, 
+        server_default=expression.false()
+    )  # New field to flag seeded fake accounts
 
     serialize_rules = ('-reviews.user', '-rankings.user')
 
@@ -28,6 +36,8 @@ class User(db.Model, SerializerMixin):
         Check the user's password against the stored hash.
         """
         return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
+
+
 
 class Player(db.Model):
     __tablename__ = 'players'
