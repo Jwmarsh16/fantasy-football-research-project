@@ -51,25 +51,24 @@ export const updateProfilePic = createAsyncThunk(
       formData.append("userId", userId);  // ✅ Ensure userId is included
 
       const response = await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/api/users/${userId}`,
+        `/api/users/${userId}`,  // ✅ Use a relative path (no `VITE_API_BASE_URL` needed)
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true,
+          withCredentials: true, // ✅ Ensures authentication works
         }
       );
 
-      console.log("Redux: Profile picture updated successfully", response.data);
-
-      return response.data; // Expect updated user object with new profilePic
+      return response.data; // ✅ Return the updated user object
     } catch (error) {
       console.error("Redux: Error updating profile picture:", error);
       return rejectWithValue(
-        error.response?.data?.message || "Failed to update profile picture"
+        error.response?.data || "Failed to update profile picture"
       );
     }
   }
 );
+
 
 const userSlice = createSlice({
   name: 'user',
@@ -138,14 +137,15 @@ const userSlice = createSlice({
       .addCase(updateProfilePic.fulfilled, (state, action) => {
         state.status = "succeeded";
         if (action.payload && action.payload.profilePic) {
-          console.log("Redux - Updating profilePic:", action.payload.profilePic); // ✅ Debug Redux update
+          console.log("Redux - Updating profilePic:", action.payload.profilePic);
           state.userDetails = {
             ...state.userDetails,
-            profilePic: action.payload.profilePic, // ✅ Store the correct pre-signed URL
+            profilePic: action.payload.profilePic, // ✅ Store new pre-signed URL directly
           };
         }
         state.error = null;
       })
+    
       .addCase(updateProfilePic.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || 'Failed to update profile picture';

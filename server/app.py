@@ -49,7 +49,7 @@ def generate_presigned_url(file_key):
         url = s3.generate_presigned_url(
             'get_object',
             Params={'Bucket': S3_BUCKET_NAME, 'Key': file_key},
-            ExpiresIn=3600  # ✅ Link expires in 1 hour
+            ExpiresIn=86400  # ✅ Link expires in 1 hour
         )
         print(f"Generated pre-signed URL: {url}")  # ✅ Debugging
         return url

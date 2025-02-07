@@ -46,10 +46,11 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
 
       // ✅ Send file to Flask backend (uploads to AWS S3)
       const response = await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/api/users/${userId}`,
+        `/api/users/${userId}`,  // ✅ Use a relative path
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
+      
 
       console.log("Server response:", response);
 
