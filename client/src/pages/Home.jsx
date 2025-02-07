@@ -18,12 +18,22 @@ function Home() {
   const [showOverall, setShowOverall] = useState(true);
 
   useEffect(() => {
-    if (isAuthenticated && !userDetails && user && user.id) {
-      dispatch(fetchUserById(user.id));
+    if (isAuthenticated && user?.id) {
+      dispatch(fetchUserById(user.id))
+        .unwrap()
+        .then((response) => {
+          if (response) {
+            dispatch(setUserDetails(response)); // ✅ Ensure Redux updates correctly
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching user details:", error);
+        });
     }
     dispatch(fetchRankings());
     dispatch(fetchPlayers()); // Ensure players are fetched initially
-  }, [isAuthenticated, userDetails, user, dispatch]);
+  }, [isAuthenticated, user, dispatch]);
+  
 
   const handleAuthButtonClick = () => {
     navigate('/register');
@@ -96,6 +106,13 @@ function Home() {
 
   // Shuffle news articles on every page load
   const shuffledNews = [...mockNews].sort(() => Math.random() - 0.5).slice(0, 3);
+  const loggedInUser = user?.id === userDetails?.id ? userDetails : user;
+
+  const avatarUrl =
+    loggedInUser?.profilePic && loggedInUser.profilePic.trim() !== ""
+      ? loggedInUser.profilePic // ✅ Use logged-in user's uploaded profile picture
+      : "https://placehold.co/600x400?text=Upload+Picture"; // ✅ Default placeholder
+
 
   return (
     <div className="home-page">
@@ -105,16 +122,11 @@ function Home() {
         <div className="user-info-container">
           <div className="user-info-card">
             <div className="user-avatar">
-              {/* Updated: Use uploaded profilePic for real users if available */}
-              <img
-                src={userDetails?.profilePic || 'https://placehold.co/600x400?text=Upload\nPicture'}
-
-                alt="User Avatar"
-              />
+              <img src={avatarUrl} alt="User Avatar" />
             </div>
             <div className="user-info-text">
-              <p className="user-name">{user?.username || 'Loading...'}</p>
-              <p className="user-email">{userDetails?.email || 'Unknown Email'}</p>
+              <p className="user-name">{loggedInUser?.username || "Loading..."}</p>
+              <p className="user-email">{loggedInUser?.email || "Unknown Email"}</p>
             </div>
           </div>
         </div>

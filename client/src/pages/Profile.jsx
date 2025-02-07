@@ -99,16 +99,17 @@ function Profile() {
   };
 
   // ✅ Ensure profile picture logic works correctly:
+  // ✅ Ensure profile picture logic works correctly:
   let avatarUrl;
-  if (userDetails.profilePic && userDetails.profilePic.trim() !== "") {
-    if (userDetails.profilePic === "avatar") {
-      avatarUrl = `https://i.pravatar.cc/150?u=${userDetails.id}`;
-    } else {
-      avatarUrl = userDetails.profilePic; // ✅ Directly use the pre-signed S3 URL
-    }
+  if (userDetails.profilePic === "avatar") {
+    avatarUrl = `https://i.pravatar.cc/150?u=${userDetails.id}`; // ✅ Display fake user avatar
+  } else if (userDetails.profilePic && userDetails.profilePic.trim() !== "" && userDetails.profilePic !== "avatar") {
+    avatarUrl = userDetails.profilePic; // ✅ Directly use the pre-signed S3 URL for real users
   } else {
-    avatarUrl = "https://placehold.co/600x400?text=Upload+Picture"; // ✅ Default placeholder
+    avatarUrl = "https://placehold.co/600x400?text=Upload+Picture"; // ✅ Default placeholder for users with no image
   }
+
+
 
   const userReviews = reviews.filter((review) => review.user_id === parsedUserId);
 

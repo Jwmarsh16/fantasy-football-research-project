@@ -175,21 +175,24 @@ class LogoutResource(Resource):
 
 
 # User Resource
-# User Resource
 class UserResource(Resource):
     def get(self, id=None):
         if id:
             user = User.query.get(id)
             if user:
-                print(f"🔍 [GET] Fetching user {id} from database: {user.profilePic}")
+                print(f"🔍 [GET] Fetching user {id} from database: {user.profilePic}, isFake: {user.isFake}")
 
-                user_data = to_dict(user, ['id', 'username', 'email', 'profilePic'])
+                user_data = to_dict(user, ['id', 'username', 'email', 'profilePic', 'isFake'])
 
-                # ✅ Generate pre-signed URL for AWS S3 if a profile picture exists
+                # ✅ Only generate a pre-signed URL if the user is NOT a fake account
                 if user.profilePic:
-                    pre_signed_url = generate_presigned_url(user.profilePic)
-                    print(f"🔍 [GET] Generated pre-signed URL: {pre_signed_url}")
-                    user_data['profilePic'] = pre_signed_url
+                    if user.isFake and user.profilePic == "avatar":
+                        print(f"✅ [GET] Fake user detected, keeping profilePic as: {user.profilePic}")
+                        user_data['profilePic'] = "avatar"
+                    else:
+                        pre_signed_url = generate_presigned_url(user.profilePic)
+                        print(f"🔍 [GET] Generated pre-signed URL: {pre_signed_url}")
+                        user_data['profilePic'] = pre_signed_url
 
                 user_data['reviews'] = [to_dict(review, ['id', 'content', 'player_id']) for review in user.reviews]
                 user_data['rankings'] = [to_dict(ranking, ['id', 'rank', 'player_id']) for ranking in user.rankings]
@@ -199,9 +202,26 @@ class UserResource(Resource):
 
             print(f"❌ [GET] User {id} not found.")
             return {"error": "User not found"}, 404
-        
+
+        # ✅ Fetch all users and ensure correct `profilePic` values
         users = User.query.all()
-        return [to_dict(user, ['id', 'username', 'email', 'profilePic']) for user in users], 200
+        user_list = []
+        for user in users:
+            user_data = to_dict(user, ['id', 'username', 'email', 'profilePic', 'isFake'])
+
+            if user.profilePic:
+                if user.isFake and user.profilePic == "avatar":
+                    user_data['profilePic'] = "avatar"  # ✅ Fake user avatar
+                else:
+                    user_data['profilePic'] = generate_presigned_url(user.profilePic)  # ✅ Pre-signed S3 URL
+
+            user_list.append(user_data)
+
+        print(f"✅ [GET] Returning all users with profile pictures.")
+        return user_list, 200
+
+
+
 
     def put(self, id):
         user = User.query.get(id)

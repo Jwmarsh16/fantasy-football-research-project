@@ -11,6 +11,13 @@ function UserList() {
   const [searchUsername, setSearchUsername] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
 
+  const S3_BUCKET_URL = "https://fantasy-football-research-hub.s3.amazonaws.com/";
+
+  // ✅ Debugging: Log fetched users to check profilePic values
+  useEffect(() => {
+    console.log("UserList.jsx - Fetched users:", users);
+  }, [users]);
+
   // Always fetch users on component mount.
   useEffect(() => {
     dispatch(fetchUsers());
@@ -50,21 +57,24 @@ function UserList() {
       {filteredUsers && filteredUsers.length > 0 ? (
         <div className="user-list-grid">
           {filteredUsers.map((user) => {
-            // Determine the avatar URL:
-            // If a user has uploaded a profile picture, use that.
-            // If profilePic is "avatar", use pravatar.
-            // Otherwise, use the placeholder.
+            // ✅ Debugging: Log profilePic values for each user
+            console.log(`UserList.jsx - Processing user: ${user.username}, profilePic: ${user.profilePic}, isFake: ${user.isFake}`);
+
+            // ✅ Ensure avatar displays correctly based on database values
             const avatarUrl =
-              user.profilePic && user.profilePic.trim() !== '' && user.profilePic !== "avatar"
-                ? user.profilePic
-                : (user.profilePic === "avatar"
-                    ? `https://i.pravatar.cc/150?u=${user.id}`
-                    : 'https://placehold.co/600x400?text=Upload+Picture');
+              user.profilePic && user.profilePic.trim() !== "" && user.profilePic !== "avatar"
+                ? user.profilePic // ✅ Use the full pre-signed URL from Flask
+                : user.isFake && user.profilePic === "avatar"
+                ? `https://i.pravatar.cc/150?u=${user.id}` // ✅ Fake user avatar
+                : "https://placehold.co/600x400?text=Upload+Picture"; // ✅ Default placeholder
+
+            // ✅ Debugging: Log generated avatar URLs
+            console.log(`UserList.jsx - User: ${user.username}, Avatar URL: ${avatarUrl}`);
 
             return (
               <div key={user.id} className="user-card">
                 <div className="user-avatar">
-                  <img src={avatarUrl} alt="User Avatar" />
+                  <img src={avatarUrl} alt={`${user.username}'s Avatar`} />
                 </div>
                 <div className="user-info">
                   <span className="user-username">{user.username}</span>
