@@ -20,8 +20,8 @@ class User(db.Model, SerializerMixin):
         db.Boolean, 
         nullable=False, 
         default=False, 
-        server_default=expression.false()
-    )  # New field to flag seeded fake accounts
+         server_default="false"  # ✅ Ensures the database sets this for existing users
+    ) # New field to flag seeded fake accounts
 
     serialize_rules = ('-reviews.user', '-rankings.user')
 
