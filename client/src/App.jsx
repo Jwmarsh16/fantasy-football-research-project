@@ -10,6 +10,16 @@ import UserList from './pages/UserList';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
+// Settings pages
+//import EditProfile from './pages/settings/EditProfile';
+//import AccountSettings from './pages/settings/AccountSettings';
+//import PrivacySettings from './pages/settings/PrivacySettings';
+//import SecuritySettings from './pages/settings/SecuritySettings';
+//import NotificationSettings from './pages/settings/NotificationSettings';
+//import LanguageAccessibility from './pages/settings/LanguageAccessibility';
+//import ContentAdPreferences from './pages/settings/ContentAdPreferences';
+//import DataPrivacyTools from './pages/settings/DataPrivacyTools';
+//import DeleteAccount from './pages/settings/DeleteAccount';
 
 function App() {
   return (
@@ -25,6 +35,17 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
+        {/* Settings Routes */}
+        {//<Route path="/profile/edit" element={<EditProfile />} />
+        //<Route path="/profile/account" element={<AccountSettings />} />
+        //<Route path="/profile/privacy" element={<PrivacySettings />} />
+        //<Route path="/profile/security" element={<SecuritySettings />} />
+        //<Route path="/profile/notifications" element={<NotificationSettings />} />
+        //<Route path="/profile/language" element={<LanguageAccessibility />} />
+        //<Route path="/profile/content" element={<ContentAdPreferences />} />
+        //<Route path="/profile/data" element={<DataPrivacyTools />} />
+        //<Route path="/profile/delete" element={<DeleteAccount />} />
+        }
       </Routes>
     </Router>
   );

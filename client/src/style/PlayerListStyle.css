@@ -149,6 +149,35 @@
   color: #d35400;
 }
 
+/* Updated Player Info Styling */
+.player-info {
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
+  margin-top: 10px;
+}
+
+.player-info .player-name {
+  margin: 0;
+  font-size: 22px;
+  color: #e67e22;
+}
+
+.player-meta {
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.player-meta p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #34495e;
+}
+
+.player-meta p strong {
+  color: #2980b9;
+}
+
+/* Existing Player Details Styling (if used elsewhere) */
 .player-details {
   margin-top: 10px;
   font-size: 14px; /* Reduced font size */
@@ -170,9 +199,6 @@
   border: 3px solid #ccc; /* Optional border for aesthetics */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional shadow */
 }
-
-
-
 
 /* Responsive Design */
 @media screen and (max-width: 768px) {

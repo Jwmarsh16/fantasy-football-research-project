@@ -1,243 +1,459 @@
-/* Profile Page Styling */
+/* ============================================
+   COMBINED PROFILE STYLE – LAYOUT FROM STYLE 1
+   & COLOR SCHEME FROM STYLE 2 (with yellow replaced)
+   ============================================ */
+
+/* Define Variables (modified from Style 2) */
+:root {
+  --primary-bg-gradient: linear-gradient(135deg, #1abc9c, #2c3e50);
+  --container-bg: linear-gradient(135deg, #035e0b, #0984e3);
+  /* Replacing yellow/gold with vibrant cyan accents */
+  --title-color: #166a79;               /* Cyan accent for titles */
+  --detail-color: #ffffff;              /* White text for details */
+  --info-bg: rgba(255, 255, 255, 0.2);
+  --avatar-border-color: #00bcd4;
+  --delete-btn-gradient: linear-gradient(135deg, #b13a2d, #ff5733);
+  --delete-btn-hover-bg: #c0392b;
+  --section-title-color: #282a79;
+  --review-player-color: #282a79;
+  --ranking-value-color: #26c6da;       /* A slightly lighter cyan variant */
+}
+
+/* -------------------------------
+   Container
+------------------------------- */
+.profile-container {
+  background: var(--container-bg);
+  background-size: 200% 200%;
+  animation: bgShift 15s ease infinite;
+  padding: 80px 0;
+  min-height: 100vh;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* -------------------------------
+   Profile Card – Make it a positioned container
+------------------------------- */
 .profile-page {
-  padding: 20px;
-  background: linear-gradient(135deg, #1abc9c, #2c3e50);
-  max-width: 1000px;
-  margin: 20px auto;
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  width: 95%;
-  color: white;
-  transition: transform 0.3s ease-in-out;
+  position: relative; /* Ensures that absolute children are positioned relative to this container */
+  background: var(--primary-bg-gradient);
+  border-top: 6px solid var(--title-color);
+  color: var(--detail-color);
+  max-width: 900px;
+  margin: 80px auto 40px; /* Reduced top margin from 120px to 80px */
+  padding: 40px 50px;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .profile-page:hover {
-  transform: scale(1.02);
+  transform: scale(1.01);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
 
-/* Profile Header Styling */
+
+/* -------------------------------
+   Header Section
+------------------------------- */
 .profile-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 2px solid var(--title-color);
+  padding-bottom: 20px;
   margin-bottom: 30px;
-  width: 100%;
-  position: relative;
-  padding-top: 60px;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .profile-title {
-  font-size: 30px;
-  color: #ffd700;
+  font-size: 32px;
+  color: var(--title-color);
   font-weight: bold;
-  text-align: center;
-  flex-grow: 1;
-  margin-left: 130px;
   text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .delete-profile-button {
-  background: linear-gradient(135deg, #e74c3c, #ff5733);
-  color: white;
+  background: var(--delete-btn-gradient);
+  color: #fff;
   border: none;
-  padding: 12px 25px;
-  font-size: 1rem;
+  padding: 12px 24px;
   border-radius: 30px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: block;
-  margin-left: auto;
-  margin-top: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .delete-profile-button:hover {
-  background: #c0392b;
+  background: var(--delete-btn-hover-bg);
   transform: scale(1.05);
 }
 
-/* User Info Section */
+/* -------------------------------
+   User Info Section
+------------------------------- */
 .user-info {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 30px;
+  background: #ffffff;
+  border: 1px solid #dcdcdc;
   border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   margin-bottom: 30px;
-  transition: transform 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease;
 }
 
 .user-info:hover {
-  transform: scale(1.02);
-}
-
-.user-detail {
-  font-size: 18px;
-  font-weight: bold;
-  color: #ffffff;
-  margin-bottom: 10px;
+  box-shadow: 0 0 20px rgba(41, 128, 185, 0.3);
 }
 
 .user-avatar-section {
+  flex: 0 0 160px;
   text-align: center;
-  margin-bottom: 20px;
+  position: relative; /* Needed for the file upload button overlay */
 }
 
 .user-avatar-img {
-  width: 110px;
-  height: 110px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #ffd700;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  border: 4px solid var(--avatar-border-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: transform 0.6s ease;
 }
 
-/* Reviews and Rankings Section Styling */
+.user-avatar-img:hover {
+  transform: rotate(360deg);
+}
+
+.user-info-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-detail {
+  font-size: 20px;
+  margin: 8px 0;
+  color: var(--title-color);
+  font-weight: bold;
+}
+
+/* -------------------------------
+   Reviews & Rankings Section
+------------------------------- */
 .reviews-rankings-section {
+  background: #ffffff;
+  border: 2px solid #dcdcdc;
+  border-radius: 15px;
+  padding: 30px;
   margin-bottom: 30px;
 }
 
 .section-title {
-  font-size: 26px;
-  color: #ffd700;
-  margin-bottom: 15px;
-  font-weight: bold;
+  font-size: 28px;
+  color: var(--section-title-color);
   text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--title-color);
+  padding-bottom: 10px;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Review and Ranking Item Styling */
+/* -------------------------------
+   Review/Ranking Items
+------------------------------- */
 .review-ranking-item {
-  background: rgba(255, 255, 255, 0.15);
-  padding: 18px;
+  background: #f7f7f7;
+  border: 2px dashed #dcdcdc;
   border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  margin-bottom: 15px;
-  transition: transform 0.3s ease-in-out;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .review-ranking-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transform: scale(1.02);
+  background: #ececec;
 }
 
 .review-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .review-player {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
-  color: #ffcc00;
+  color: var(--review-player-color);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-info {
+  font-size: 18px;
+  color: var(--ranking-value-color);
+  font-weight: bold;
 }
 
 .review-content {
-  font-size: 16px;
-  color: #ffffff;
+  font-size: 18px;
+  color: #555;
   margin-top: 10px;
 }
 
-.ranking-value {
-  font-size: 16px;
-  color: #f39c12;
-}
-
-/* Delete Button */
+/* -------------------------------
+   Delete Button (for reviews/rankings)
+------------------------------- */
 .delete-button {
-  background: linear-gradient(135deg, #e74c3c, #ff5733);
-  color: white;
-  padding: 8px 15px;
+  background: var(--delete-btn-gradient);
+  color: #fff;
+  padding: 10px 16px;
   border: none;
-  border-radius: 20px;
+  border-radius: 15px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
+  transition: transform 0.3s ease, background 0.3s ease;
+  font-size: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .delete-button:hover {
-  background: #c0392b;
+  background: var(--delete-btn-hover-bg);
   transform: scale(1.05);
 }
 
-/* Responsive Design */
+/* ============================================
+   SOCIAL MEDIA–INSPIRED ADDITIONS
+   ============================================ */
+
+/* Profile Menu Container – now fixed so it remains visible */
+.profile-menu-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Hamburger Menu Toggle Button */
+.profile-menu-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
+  transition: transform 0.3s ease;
+}
+
+/* Hover effect on the hamburger button */
+.profile-menu-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* The three bars */
+.profile-menu-toggle .bar {
+  width: 100%;
+  height: 4px;
+  background-color: var(--title-color, #166a79);  /* Uses your cyan accent */
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* Transformations for open state – animates into a cross */
+.profile-menu-toggle.open .bar:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.profile-menu-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+}
+.profile-menu-toggle.open .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Dropdown Menu Styling */
+.profile-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: #e0f7fa;  /* Light cyan background for a fresh look */
+  color: #333;         /* Dark text for readability */
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  padding: 10px 0;
+}
+
+.profile-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.profile-menu ul li {
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  color: #333;  /* Explicitly set dark text color */
+  font-size: 12px;  /* Reduced font size */
+}
+
+.profile-menu ul li:hover {
+  background: #b2ebf2;  /* Slightly darker cyan on hover */
+}
+
+/* File Upload Button (for profile picture upload) */
+.file-upload-button {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: var(--title-color);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  transform: translate(25%, 25%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+}
+
+.file-upload-button:hover {
+  background: #0097a7; /* Slightly darker cyan for hover */
+}
+
+/* Style for the file upload input – hide it */
+.profile-pic-updater input[type="file"] {
+  display: none;
+}
+
+/* Style for the custom file upload label/button */
+.profile-pic-updater label.file-upload-label {
+  display: inline-block;
+  background-color: #166a79;   /* Vibrant cyan accent */
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.profile-pic-updater label.file-upload-label:hover {
+  background-color: #00bcd4;   /* A lighter cyan for hover */
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
 @media (max-width: 768px) {
+  .profile-page {
+    padding: 20px 30px;
+    margin: 20px;
+  }
+  
+  .user-info {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .user-avatar-section {
+    margin-bottom: 20px;
+  }
+  
+  .user-info-section {
+    align-items: center;
+    text-align: center;
+  }
+  
   .profile-title {
     font-size: 24px;
   }
-
-  .delete-profile-button {
-    padding: 10px 20px;
-    margin-top: 15px;
-  }
-
+  
   .user-detail {
-    font-size: 16px;
+    font-size: 18px;
   }
-
+  
   .section-title {
     font-size: 22px;
   }
-
+  
   .review-player {
-    font-size: 18px;
+    font-size: 20px;
   }
-
+  
   .review-content {
-    font-size: 14px;
+    font-size: 16px;
   }
-
-  .ranking-value {
-    font-size: 14px;
-  }
-
+  
   .delete-button {
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  /* Adjust menu & upload button sizes on smaller screens */
+  .profile-menu-toggle {
+    font-size: 20px;
+    padding: 6px;
+  }
+  
+  .file-upload-button {
+    padding: 4px;
   }
 }
 
 @media (max-width: 480px) {
   .profile-page {
-    padding: 15px;
+    padding: 15px 20px;
+    margin: 15px;
   }
-
+  
   .profile-title {
     font-size: 20px;
   }
-
-  .delete-profile-button {
-    font-size: 14px;
-    margin-left: auto;
-    margin-right: 15px;
-    margin-top: 20px;
-  }
-
+  
   .user-detail {
-    font-size: 14px;
+    font-size: 16px;
   }
-
+  
   .section-title {
     font-size: 20px;
   }
-
+  
   .review-player {
-    font-size: 16px;
+    font-size: 18px;
   }
-
+  
   .review-content {
     font-size: 14px;
   }
-
-  .ranking-value {
+  
+  .delete-button {
+    padding: 6px 10px;
     font-size: 12px;
   }
-
-  .delete-button {
-    font-size: 12px;
-    padding: 5px 8px;
+  
+  .profile-menu-toggle {
+    font-size: 18px;
+    padding: 4px;
+  }
+  
+  .file-upload-button {
+    padding: 3px;
   }
 }

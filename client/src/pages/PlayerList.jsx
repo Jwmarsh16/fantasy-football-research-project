@@ -146,28 +146,34 @@ function PlayerList() {
         {sortedPlayers.map((player) => (
           <li key={player.id} className="player-card">
             <div className="player-card-content">
-              {/* Player Avatar */}
+              {/* Player Avatar wrapped in a Link */}
               <div className="player-avatar">
-                <img 
-                  src={getPlayerHeadshot(player.name)}
-                  onError={(e) => { 
-                    e.target.onerror = null; 
-                    e.target.src = "https://via.placeholder.com/150"; 
-                  }} 
-                  alt={`${player.name}'s Headshot`} 
-                  className="player-avatar-img" 
-                />
+                <Link to={`/players/${player.id}`}>
+                  <img 
+                    src={getPlayerHeadshot(player.name)}
+                    onError={(e) => { 
+                      e.target.onerror = null; 
+                      e.target.src = "https://via.placeholder.com/150"; 
+                    }} 
+                    alt={`${player.name}'s Headshot`} 
+                    className="player-avatar-img" 
+                  />
+                </Link>
               </div>
-              {/* Player Info */}
+              {/* Updated Player Info */}
               <div className="player-info">
-                <Link to={`/players/${player.id}`} className="player-link">{player.name}</Link>
-                <p className="player-details">
-                  <span className="player-team">{player.team}</span> | 
-                  <span className="player-position">{player.position}</span> | 
-                  <span className="player-ranking">
-                    Avg Rank: {player.average_rank && !isNaN(player.average_rank) ? Number(player.average_rank).toFixed(2) : 'N/A'}
-                  </span>
-                </p>
+                <Link to={`/players/${player.id}`} className="player-link">
+                  <h3 className="player-name">{player.name}</h3>
+                </Link>
+                <div className="player-meta">
+                  <p><strong>Team:</strong> {player.team}</p>
+                  <p><strong>Position:</strong> {player.position}</p>
+                  <p>
+                    <strong>Avg Rank:</strong> {player.average_rank && !isNaN(player.average_rank)
+                      ? Number(player.average_rank).toFixed(2)
+                      : 'N/A'}
+                  </p>
+                </div>
               </div>
             </div>
           </li>

@@ -90,7 +90,19 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
   return (
     <div className="profile-pic-updater">
       {!selectedFile && (
-        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <>
+          {/* Hide the actual input */}
+          <input 
+            id="profile-pic-upload" 
+            type="file" 
+            accept="image/*" 
+            onChange={handleFileChange} 
+          />
+          {/* Styled label acting as a button */}
+          <label htmlFor="profile-pic-upload" className="file-upload-label">
+            Choose File
+          </label>
+        </>
       )}
       {editorVisible && selectedFile && (
         <ProfilePicEditor

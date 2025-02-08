@@ -42,7 +42,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-
 /* Stats Section */
 .player-stats {
   margin: 20px 0;
@@ -60,7 +59,7 @@
   text-align: center;
 }
 
-.stats-table th, 
+.stats-table th,
 .stats-table td {
   padding: 10px;
   border: 1px solid #dcdcdc;
@@ -74,6 +73,7 @@
 .stats-table td {
   color: #555;
 }
+
 
 /* Form Styling */
 .ranking-review-form {
@@ -117,6 +117,7 @@
   background-color: #2980b9;
 }
 
+/* Existing Toggle Reviews Button (if needed elsewhere) */
 .toggle-reviews-button {
   background-color: #e67e22;
   color: #fff;
@@ -157,16 +158,84 @@
   margin-bottom: 10px;
 }
 
+/* Updated Username & Ranking Colors */
 .review-username {
   font-weight: bold;
-  color: #34495e;
+  color: #2980b9; /* Cohesive blue for usernames */
+  font-size: 16px;
   word-wrap: break-word; /* Ensure long usernames wrap properly */
 }
 
-.review-content,
-.review-rank {
-  font-size: 14px; /* Adjusted size for mobile */
-  color: #555;
+.review-ranking {
+  color: #3498db; /* Complementary blue for ranking */
+  font-size: 16px;
+}
+
+/* New Reviews and Rankings Display Styling */
+.reviews-rankings-display {
+  background-color: #f1f9ff; /* Light blue background */
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Updated title for Reviews and Rankings */
+.player-detail-container .section-title {
+  font-size: 22px;
+  color: #2980b9; /* Cohesive blue for the title */
+  margin-bottom: 15px;
+  border-bottom: 2px solid #2980b9; /* Matching border color */
+  padding-bottom: 5px;
+}
+
+/* Updated styling for review items */
+.review-ranking-item {
+  background-color: #fff;
+  border-left: 5px solid #2980b9;  /* Matching accent stripe */
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  transition: transform 0.2s ease;
+}
+
+.review-ranking-item:hover {
+  transform: translateX(5px);
+}
+
+.review-header {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+/* Updated Review Text */
+.player-detail-container .review-content {
+  font-size: 14px;
+  color: #2c3e50; /* Dark slate blue for review text */
+}
+
+.no-reviews-message {
+  font-size: 16px;
+  color: #888;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Updated Toggle Button for Reviews */
+.toggle-button {
+  background-color: #2e86de;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-button:hover {
+  background-color: #1b4f72; /* Darker blue on hover */
 }
 
 /* Responsive Design */
@@ -185,13 +254,14 @@
   }
 
   .submit-button,
-  .toggle-reviews-button {
+  .toggle-reviews-button,
+  .toggle-button {
     padding: 6px 12px; /* Adjusted padding */
     font-size: 12px; /* Reduced size for smaller screens */
   }
 
   .review-content,
-  .review-rank {
+  .review-ranking {
     font-size: 12px;
   }
 }
@@ -210,7 +280,8 @@
   }
 
   .submit-button,
-  .toggle-reviews-button {
+  .toggle-reviews-button,
+  .toggle-button {
     padding: 5px 10px;
     font-size: 10px;
   }
