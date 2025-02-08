@@ -3,18 +3,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserById } from '../redux/slices/userSlice';
 import { fetchRankings } from '../redux/slices/rankingSlice';
-import { fetchPlayers } from '../redux/slices/playerSlice'; // Ensure this exists in playerSlice.js
+import { fetchPlayers } from '../redux/slices/playerSlice';
 import '../style/HomeStyle.css';
 
 function Home() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const user = useSelector((state) => state.auth.currentUser);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userDetails = useSelector((state) => state.user.userDetails);
   const userLoadingStatus = useSelector((state) => state.user.status);
   const rankings = useSelector((state) => state.ranking.rankings);
   const players = useSelector((state) => state.player.players);
+
   const [showOverall, setShowOverall] = useState(true);
 
   useEffect(() => {
@@ -23,7 +25,7 @@ function Home() {
         .unwrap()
         .then((response) => {
           if (response) {
-            dispatch(setUserDetails(response)); // ✅ Ensure Redux updates correctly
+            dispatch(setUserDetails(response));
           }
         })
         .catch((error) => {
@@ -31,9 +33,8 @@ function Home() {
         });
     }
     dispatch(fetchRankings());
-    dispatch(fetchPlayers()); // Ensure players are fetched initially
+    dispatch(fetchPlayers());
   }, [isAuthenticated, user, dispatch]);
-  
 
   const handleAuthButtonClick = () => {
     navigate('/register');
@@ -60,7 +61,7 @@ function Home() {
           .map((ranking) => players.find((player) => player.id === ranking.player_id))
       : [];
 
-  // News Articles with Randomization on Page Load
+  // Mock news articles (shuffled on every page load)
   const mockNews = [
     {
       id: 1,
@@ -104,15 +105,13 @@ function Home() {
     },
   ];
 
-  // Shuffle news articles on every page load
   const shuffledNews = [...mockNews].sort(() => Math.random() - 0.5).slice(0, 3);
   const loggedInUser = user?.id === userDetails?.id ? userDetails : user;
 
   const avatarUrl =
     loggedInUser?.profilePic && loggedInUser.profilePic.trim() !== ""
-      ? loggedInUser.profilePic // ✅ Use logged-in user's uploaded profile picture
-      : "https://placehold.co/600x400?text=Upload+Picture"; // ✅ Default placeholder
-
+      ? loggedInUser.profilePic
+      : "https://placehold.co/600x400?text=Upload+Picture";
 
   return (
     <div className="home-page">
@@ -138,7 +137,6 @@ function Home() {
       </div>
 
       {!isAuthenticated ? (
-        // When not authenticated, render the auth section inside its own centering container.
         <div className="auth-center-wrapper">
           <div className="auth-section">
             <p className="login-message">
@@ -150,7 +148,6 @@ function Home() {
           </div>
         </div>
       ) : (
-        // When authenticated, render the usual layout.
         <div className="home-content">
           <div className="main-content">
             <div className="news-section">
