@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchUserById, setUserDetails, fetchUsers } from '../redux/slices/userSlice';
@@ -18,7 +18,11 @@ function Profile() {
   const reviews = useSelector((state) => state.review.reviews);
   const rankings = useSelector((state) => state.ranking.rankings);
   const [players, setPlayers] = useState([]);
-  const [forceUpdate, setForceUpdate] = useState(0); // ✅ Added state for forcing re-render
+  const [forceUpdate, setForceUpdate] = useState(0); // Forces re-render when userDetails update
+  const [showMenu, setShowMenu] = useState(false);   // State for the settings menu
+
+  // Create a ref for the menu container to detect outside clicks
+  const menuRef = useRef(null);
 
   const parsedUserId = userId ? parseInt(userId, 10) : null;
 
@@ -27,7 +31,6 @@ function Profile() {
       navigate('/login');
       return;
     }
-
     if (!userDetails || userDetails.id !== parsedUserId) {
       dispatch(fetchUserById(parsedUserId))
         .unwrap()
@@ -40,10 +43,8 @@ function Profile() {
           console.error('Error fetching user details:', error);
         });
     }
-
     dispatch(fetchRankings());
     dispatch(fetchReviews());
-
     if (players.length === 0) {
       fetchPlayers();
     }
@@ -51,8 +52,21 @@ function Profile() {
 
   useEffect(() => {
     console.log("Profile.jsx - Redux state updated:", userDetails);
-    setForceUpdate((prev) => prev + 1); // ✅ Force re-render when Redux state updates
+    setForceUpdate((prev) => prev + 1); // Force re-render when userDetails changes
   }, [userDetails]);
+
+  // useEffect for closing the menu when clicking outside of it
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuRef]);
 
   const fetchPlayers = async () => {
     try {
@@ -98,80 +112,125 @@ function Profile() {
     }
   };
 
-  // ✅ Ensure profile picture logic works correctly:
-  // ✅ Ensure profile picture logic works correctly:
+  // Determine the avatar URL.
   let avatarUrl;
-  if (userDetails.profilePic === "avatar") {
-    avatarUrl = `https://i.pravatar.cc/150?u=${userDetails.id}`; // ✅ Display fake user avatar
-  } else if (userDetails.profilePic && userDetails.profilePic.trim() !== "" && userDetails.profilePic !== "avatar") {
-    avatarUrl = userDetails.profilePic; // ✅ Directly use the pre-signed S3 URL for real users
+  if (userDetails.profilePic && userDetails.profilePic.trim() !== "") {
+    if (userDetails.profilePic === "avatar") {
+      avatarUrl = `https://i.pravatar.cc/150?u=${userDetails.id}`;
+    } else {
+      avatarUrl = userDetails.profilePic;
+    }
   } else {
-    avatarUrl = "https://placehold.co/600x400?text=Upload+Picture"; // ✅ Default placeholder for users with no image
+    avatarUrl = "https://placehold.co/600x400?text=Upload+Picture";
   }
 
-
+  // Toggle function for the settings menu
+  const toggleMenu = () => {
+    setShowMenu((prev) => !prev);
+  };
 
   const userReviews = reviews.filter((review) => review.user_id === parsedUserId);
 
   return (
-    <div className="profile-page">
-      <div className="profile-header">
-        <h2 className="profile-title">User Profile</h2>
-        {currentUser && parsedUserId === currentUser.id ? (
-          <button className="delete-profile-button" onClick={handleDeleteProfile}>
-            Delete Profile
-          </button>
-        ) : (
-          <p className="error-message">You do not have permission to delete this profile.</p>
-        )}
-      </div>
-      <div className="user-info">
-        <div className="user-avatar-section">
-          <img
-            src={avatarUrl}
-            alt={`${userDetails.username}'s Avatar`}
-            className="user-avatar-img"
-            key={forceUpdate} // ✅ Forces re-render when profile picture changes
-          />
-          {currentUser && parsedUserId === currentUser.id && (
-            <ProfilePicUpdater 
-              userId={parsedUserId} 
-              onUpdate={(data) => {
-                if (!data || !data.profilePic) return;
+    <div className="profile-container">
+      <div className="profile-page">
+        <div className="profile-header">
+          <h2 className="profile-title">User Profile</h2>
+          {/* Remove delete button from header */}
+        </div>
 
-                dispatch(setUserDetails({ ...userDetails, profilePic: data.profilePic })); // ✅ Ensure Redux updates instantly
-                dispatch(fetchUsers());
-              }} 
+        {/* Settings Menu Toggle */}
+        {currentUser && parsedUserId === currentUser.id && (
+          <div className="profile-menu-container" ref={menuRef}>
+            <button
+              className={`profile-menu-toggle ${showMenu ? 'open' : ''}`}
+              onClick={toggleMenu}
+            >
+              <span className="bar"></span>
+              <span className="bar"></span>
+              <span className="bar"></span>
+            </button>
+            {showMenu && (
+              <div className="profile-menu">
+                <ul>
+                  <li style={{ cursor: 'pointer' }} onClick={() => navigate('/profile/edit')}>Edit Profile</li>
+                  <li style={{ cursor: 'pointer' }} onClick={() => navigate('/profile/account')}>Account Settings</li>
+                  <li style={{ cursor: 'pointer' }} onClick={() => navigate('/profile/privacy')}>Privacy Settings</li>
+                  <li style={{ cursor: 'pointer' }} onClick={() => navigate('/profile/security')}>Security Settings</li>
+                  <li style={{ cursor: 'pointer' }} onClick={() => navigate('/profile/notifications')}>Notification Settings</li>
+                  <li style={{ cursor: 'pointer' }} onClick={() => navigate('/profile/language')}>Language & Accessibility Options</li>
+                  <li style={{ cursor: 'pointer' }} onClick={() => navigate('/profile/content')}>Content & Ad Preferences</li>
+                  <li style={{ cursor: 'pointer' }} onClick={() => navigate('/profile/data')}>Data & Privacy Tools</li>
+                  <li style={{ cursor: 'pointer' }} onClick={handleDeleteProfile}>Delete Profile</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="user-info">
+          <div className="user-avatar-section">
+            <img
+              src={avatarUrl}
+              alt={`${userDetails.username}'s Avatar`}
+              className="user-avatar-img"
+              key={forceUpdate} // Forces re-render when profile picture changes
             />
+            {currentUser && parsedUserId === currentUser.id && (
+              <ProfilePicUpdater 
+                userId={parsedUserId} 
+                onUpdate={(data) => {
+                  if (!data || !data.profilePic) return;
+                  dispatch(setUserDetails({ ...userDetails, profilePic: data.profilePic }));
+                  dispatch(fetchUsers());
+                }} 
+              />
+            )}
+          </div>
+          <div className="user-info-section">
+            <p className="user-detail"><strong>Username:</strong> {userDetails.username}</p>
+            <p className="user-detail"><strong>Email:</strong> {userDetails.email}</p>
+          </div>
+        </div>
+        <div className="reviews-rankings-section">
+          <h3 className="section-title">Your Reviews and Rankings</h3>
+          {userReviews.length > 0 ? (
+            userReviews.map((review) => {
+              const ranking = rankings.find(
+                (rank) => rank.user_id === parsedUserId && rank.player_id === review.player_id
+              );
+              return (
+                <div key={review.id} className="review-ranking-item">
+                  <div className="review-header">
+                    <p className="review-player">{getPlayerDetails(review.player_id)}</p>
+                    {ranking && (
+                      <p className="ranking-info">
+                        <strong>Ranking:</strong> {ranking.rank}
+                      </p>
+                    )}
+                    {currentUser.id === parsedUserId && (
+                      <button
+                        className="delete-button"
+                        onClick={() =>
+                          handleDeleteReviewAndRanking(review.id, review.player_id)
+                        }
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                  <p className="review-content">
+                    <strong>Review:</strong> {review.content}
+                  </p>
+                </div>
+              );
+            })
+          ) : (
+            <p className="no-reviews-rankings-message">
+              No reviews or rankings available.
+            </p>
           )}
         </div>
-        <div className="user-info-section">
-          <p className="user-detail"><strong>Username:</strong> {userDetails.username}</p>
-          <p className="user-detail"><strong>Email:</strong> {userDetails.email}</p>
-        </div>
-      </div>
-      <div className="reviews-rankings-section">
-        <h3 className="section-title">Your Reviews and Rankings</h3>
-        {userReviews.length > 0 ? (
-          userReviews.map((review) => (
-            <div key={review.id} className="review-ranking-item">
-              <div className="review-header">
-                <p className="review-player">{getPlayerDetails(review.player_id)}</p>
-                {currentUser.id === parsedUserId && (
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDeleteReviewAndRanking(review.id, review.player_id)}
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
-              <p className="review-content"><strong>Review:</strong> {review.content}</p>
-            </div>
-          ))
-        ) : (
-          <p className="no-reviews-rankings-message">No reviews or rankings available.</p>
-        )}
       </div>
     </div>
   );
