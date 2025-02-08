@@ -30,6 +30,14 @@ function PlayerDetail() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
+  // Helper function to format stat keys (e.g., "games_played" => "Games Played")
+  const formatStatKey = (key) => {
+    return key
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -48,12 +56,26 @@ function PlayerDetail() {
     fetchData();
   }, [id, dispatch, users.length]);
 
+  // Combine reviews and corresponding rankings for this player
+  const combinedReviewsAndRankings = reviews
+    .filter((review) => review.player_id === parseInt(id))
+    .map((review) => {
+      const ranking = rankings.find(
+        (ranking) =>
+          ranking.player_id === review.player_id &&
+          ranking.user_id === review.user_id
+      );
+      return {
+        ...review,
+        rank: ranking ? ranking.rank : 'N/A',
+      };
+    });
+
   const handleCombinedSubmit = async (values, { resetForm }) => {
     if (!isAuthenticated || !currentUser) {
       setError('You must be logged in to add a ranking and review.');
       return;
     }
-
     try {
       await dispatch(
         addRanking({
@@ -73,7 +95,6 @@ function PlayerDetail() {
 
       setSuccess('Ranking and review added successfully!');
       resetForm();
-
       dispatch(fetchRankings());
       dispatch(fetchReviews());
     } catch (error) {
@@ -86,7 +107,10 @@ function PlayerDetail() {
     if (!showReviews) {
       try {
         const response = await axios.get('/api/reviews');
-        const playerReviews = response.data.filter((review) => review.player_id === parseInt(id));
+        // Filter for this player's reviews only
+        const playerReviews = response.data.filter(
+          (review) => review.player_id === parseInt(id)
+        );
         dispatch(setReviews(playerReviews));
         dispatch(fetchRankings());
       } catch (error) {
@@ -104,16 +128,6 @@ function PlayerDetail() {
     }
     return 'Loading...';
   };
-
-  const combinedReviewsAndRankings = reviews.map((review) => {
-    const ranking = rankings.find(
-      (ranking) => ranking.player_id === review.player_id && ranking.user_id === review.user_id
-    );
-    return {
-      ...review,
-      rank: ranking ? ranking.rank : 'N/A',
-    };
-  });
 
   if (error) return <div className="error-message">{error}</div>;
   if (!player) return <div className="loading-message">Loading...</div>;
@@ -143,7 +157,7 @@ function PlayerDetail() {
               <thead>
                 <tr>
                   {Object.keys(player.stats || {}).map((key) => (
-                    <th key={key}>{key}</th>
+                    <th key={key}>{formatStatKey(key)}</th>
                   ))}
                 </tr>
               </thead>
@@ -156,7 +170,10 @@ function PlayerDetail() {
               </tbody>
             </table>
           </div>
-          <p><strong>Average Rank:</strong> {player.average_rank !== null ? player.average_rank.toFixed(2) : 'N/A'}</p>
+          <p>
+            <strong>Average Rank:</strong>{' '}
+            {player.average_rank !== null ? player.average_rank.toFixed(2) : 'N/A'}
+          </p>
         </div>
       </div>
 
@@ -193,6 +210,35 @@ function PlayerDetail() {
           </Formik>
         )}
       </div>
+
+      {/* Show Reviews and Rankings Button */}
+      <div className="toggle-reviews-section">
+        <button className="toggle-button" onClick={handleToggleReviews}>
+          {showReviews ? 'Hide Reviews and Rankings' : 'Show Reviews and Rankings'}
+        </button>
+      </div>
+
+      {/* Conditionally render the reviews and rankings */}
+      {showReviews && (
+        <div className="reviews-rankings-display">
+          <h3 className="section-title">Reviews and Rankings</h3>
+          {combinedReviewsAndRankings && combinedReviewsAndRankings.length > 0 ? (
+            combinedReviewsAndRankings.map((item, index) => (
+              <div key={index} className="review-ranking-item">
+                <div className="review-header">
+                  <p className="review-player">
+                    <span className="review-username">{getUsernameById(item.user_id)}</span>
+                    <span className="review-ranking"> - Rank: {item.rank}</span>
+                  </p>
+                </div>
+                <p className="review-content">{item.content}</p>
+              </div>
+            ))
+          ) : (
+            <p className="no-reviews-message">No reviews or rankings available.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
