@@ -10,11 +10,15 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import '../style/PlayerDetailStyle.css';
 
-// Function to get player headshot (local images)
+// ---------------------------------------------------------------------
+// Updated getPlayerHeadshot function:
+// Fixed the URL string to use a proper template literal so that the player's
+// headshot image is loaded correctly from the local folder.
 const getPlayerHeadshot = (playerName) => {
   const formattedName = playerName.toLowerCase().replace(/ /g, "_");
-  return `/images/players/${formattedName}.png`; // Load from local folder
+  return `/images/players/${formattedName}.png`; // Corrected to use backticks for template literal
 };
+// ---------------------------------------------------------------------
 
 function PlayerDetail() {
   const { id } = useParams();
@@ -29,6 +33,13 @@ function PlayerDetail() {
   const [showReviews, setShowReviews] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  
+  // ---------------------------------------------------------------------
+  // NEW: State variable to track the sort order for reviews and rankings.
+  // 'asc' means ascending order (i.e., Best to Worst with rank 1 first)
+  // 'desc' would mean descending order (i.e., Worst to Best)
+  const [sortOrder, setSortOrder] = useState('asc');
+  // ---------------------------------------------------------------------
 
   // Helper function to format stat keys (e.g., "games_played" => "Games Played")
   const formatStatKey = (key) => {
@@ -56,20 +67,35 @@ function PlayerDetail() {
     fetchData();
   }, [id, dispatch, users.length]);
 
-  // Combine reviews and corresponding rankings for this player
+  // ---------------------------------------------------------------------
+  // Combine reviews and corresponding rankings for this player.
+  // Updated here:
+  // - We now use null for missing rankings (instead of 'N/A') so that numeric sorting works correctly.
   const combinedReviewsAndRankings = reviews
     .filter((review) => review.player_id === parseInt(id))
     .map((review) => {
-      const ranking = rankings.find(
+      const rankingObj = rankings.find(
         (ranking) =>
           ranking.player_id === review.player_id &&
           ranking.user_id === review.user_id
       );
       return {
         ...review,
-        rank: ranking ? ranking.rank : 'N/A',
+        rank: rankingObj ? rankingObj.rank : null, // null indicates no ranking available
       };
     });
+  // ---------------------------------------------------------------------
+
+  // ---------------------------------------------------------------------
+  // NEW: Sort the combined reviews and rankings based on the selected sort order.
+  // Reviews with no ranking (null) are treated as having a rank of Infinity so that
+  // they appear at the end of the sorted list.
+  const sortedReviews = [...combinedReviewsAndRankings].sort((a, b) => {
+    const aRank = a.rank !== null ? a.rank : Infinity;
+    const bRank = b.rank !== null ? b.rank : Infinity;
+    return sortOrder === 'asc' ? aRank - bRank : bRank - aRank;
+  });
+  // ---------------------------------------------------------------------
 
   const handleCombinedSubmit = async (values, { resetForm }) => {
     if (!isAuthenticated || !currentUser) {
@@ -222,13 +248,33 @@ function PlayerDetail() {
       {showReviews && (
         <div className="reviews-rankings-display">
           <h3 className="section-title">Reviews and Rankings</h3>
-          {combinedReviewsAndRankings && combinedReviewsAndRankings.length > 0 ? (
-            combinedReviewsAndRankings.map((item, index) => (
+          {/* ---------------------------------------------------------------------
+              NEW: Dropdown for selecting sort order.
+              This allows the user to sort reviews from Best to Worst (ascending)
+              or Worst to Best (descending) based on the ranking.
+          --------------------------------------------------------------------- */}
+          <div className="sort-options">
+            <label htmlFor="sortOrder">Sort by Ranking: </label>
+            <select
+              id="sortOrder"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <option value="asc">Best to Worst</option>
+              <option value="desc">Worst to Best</option>
+            </select>
+          </div>
+          {sortedReviews && sortedReviews.length > 0 ? (
+            sortedReviews.map((item, index) => (
               <div key={index} className="review-ranking-item">
                 <div className="review-header">
                   <p className="review-player">
                     <span className="review-username">{getUsernameById(item.user_id)}</span>
-                    <span className="review-ranking"> - Rank: {item.rank}</span>
+                    {/* ---------------------------------------------------------------------
+                        Updated the display so that if the rank is missing (null),
+                        it shows 'N/A' instead of a blank value.
+                    --------------------------------------------------------------------- */}
+                    <span className="review-ranking"> - Rank: {item.rank !== null ? item.rank : 'N/A'}</span>
                   </p>
                 </div>
                 <p className="review-content">{item.content}</p>

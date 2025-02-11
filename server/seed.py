@@ -33,7 +33,7 @@ if __name__ == '__main__':
             {"name": "Joe Burrow", "position": "QB", "team": "Cincinnati Bengals"},
             {"name": "Lamar Jackson", "position": "QB", "team": "Baltimore Ravens"},
             {"name": "Christian McCaffrey", "position": "RB", "team": "San Francisco 49ers"},
-            {"name": "Derrick Henry", "position": "RB", "team": "Tennessee Titans"},
+            {"name": "Derrick Henry", "position": "RB", "team": "Baltimore Ravens"},
             {"name": "Nick Chubb", "position": "RB", "team": "Cleveland Browns"},
             {"name": "Saquon Barkley", "position": "RB", "team": "New York Giants"},
             {"name": "Jonathan Taylor", "position": "RB", "team": "Indianapolis Colts"},
