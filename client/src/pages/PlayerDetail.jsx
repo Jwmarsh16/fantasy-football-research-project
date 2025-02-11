@@ -97,6 +97,9 @@ function PlayerDetail() {
   });
   // ---------------------------------------------------------------------
 
+  // ---------------------------------------------------------------------
+  // UPDATED: Update handleCombinedSubmit to re-fetch player details after submission.
+  // This ensures the average rank is updated and rendered immediately.
   const handleCombinedSubmit = async (values, { resetForm }) => {
     if (!isAuthenticated || !currentUser) {
       setError('You must be logged in to add a ranking and review.');
@@ -123,11 +126,16 @@ function PlayerDetail() {
       resetForm();
       dispatch(fetchRankings());
       dispatch(fetchReviews());
+
+      // NEW: Re-fetch the updated player details to update the average rank immediately.
+      const updatedPlayerResponse = await axios.get(`/api/players/${id}`);
+      dispatch(setPlayer(updatedPlayerResponse.data));
     } catch (error) {
       console.error('Failed to add ranking and review:', error);
       setError('Failed to add ranking and review.');
     }
   };
+  // ---------------------------------------------------------------------
 
   const handleToggleReviews = async () => {
     if (!showReviews) {

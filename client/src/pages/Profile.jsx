@@ -103,6 +103,8 @@ function Profile() {
     }
   };
 
+  // ---------------------------------------------------------------------
+  // UPDATED: handleDeleteProfile now navigates back to the home page after deletion.
   const handleDeleteProfile = async () => {
     if (!currentUser) {
       console.error("Current user is null. Cannot delete profile.");
@@ -111,6 +113,7 @@ function Profile() {
     if (window.confirm("Are you sure you want to delete your profile? This action cannot be undone.")) {
       try {
         await dispatch(deleteUser(parsedUserId)).unwrap();
+        // Navigate back to the home page after successful deletion.
         navigate('/');
       } catch (error) {
         console.error("Failed to delete user profile:", error);
@@ -118,6 +121,7 @@ function Profile() {
       }
     }
   };
+  // ---------------------------------------------------------------------
 
   // Determine the avatar URL.
   let avatarUrl;
