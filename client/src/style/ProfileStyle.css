@@ -187,6 +187,11 @@
   background: #ececec;
 }
 
+/* -------------------------------
+   Revised Review/Ranking Items Styling
+   (Ensuring consistent placement of .ranking-info)
+------------------------------- */
+
 .review-header {
   display: flex;
   justify-content: space-between;
@@ -194,18 +199,46 @@
   margin-bottom: 15px;
 }
 
+/* 
+  Added flex: 1 and a right margin to .review-player so it takes up available space 
+  while keeping your original font settings.
+*/
+/* Styling for the main player name (keeps your existing styling) */
 .review-player {
   font-size: 22px;
   font-weight: bold;
   color: var(--review-player-color);
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+  margin: 0; /* Remove extra margins to keep it neat */
 }
 
+/* Container for player name and extra details */
+.review-player-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Styling for the extra details (position and team) */
+.player-details {
+  font-size: 16px;       /* Slightly smaller than the main name */
+  color: #555;           /* A subdued color matching your review content */
+  margin: 4px 0 0 0;     /* Small margin on top for separation */
+  font-style: italic;    /* Optional: italicize for a subtle distinction */
+}
+
+/* 
+  Added flex properties to .ranking-info to enforce a fixed width and centered text.
+  This maintains your original font size, color, and weight.
+*/
 .ranking-info {
+  flex: 0 0 100px;  /* Fixed width (adjust 100px as needed) */
+  text-align: center;
   font-size: 18px;
   color: var(--ranking-value-color);
   font-weight: bold;
 }
+
 
 .review-content {
   font-size: 18px;
@@ -358,6 +391,101 @@
   background-color: #00bcd4;   /* A lighter cyan for hover */
 }
 
+/* -------------------------------
+   Filter and Sorting Controls Styling
+------------------------------- */
+.filter-sort-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: var(--info-bg); /* semi-transparent white background */
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+}
+
+/* -------- Position Filter Circles -------- */
+.position-filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.position-filter-circle {
+  background: #fff;
+  border: 2px solid var(--title-color);
+  color: var(--title-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 36px; /* centers the text vertically */
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease, color 0.3s ease;
+}
+
+.position-filter-circle:hover,
+.position-filter-circle.active {
+  background: var(--title-color);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+/* -------- Team Filter & Sort Options -------- */
+.team-filter-container,
+.sort-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.team-filter-label {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--title-color);
+}
+
+.team-filter-dropdown,
+.sort-select {
+  padding: 6px 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  background: #fff;
+  font-size: 16px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.team-filter-dropdown:focus,
+.sort-select:focus {
+  border-color: var(--title-color);
+}
+
+/* -------- Clear Filters Button -------- */
+.clear-filters-button {
+  background: var(--delete-btn-gradient);
+  border: none;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.clear-filters-button:hover {
+  background: var(--delete-btn-hover-bg);
+  transform: scale(1.05);
+}
+
+
+
 /* ============================================
    RESPONSIVE DESIGN
    ============================================ */
@@ -414,6 +542,24 @@
   
   .file-upload-button {
     padding: 4px;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-sort-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .team-filter-container,
+  .sort-options {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .team-filter-dropdown,
+  .sort-select {
+    width: 100%;
   }
 }
 

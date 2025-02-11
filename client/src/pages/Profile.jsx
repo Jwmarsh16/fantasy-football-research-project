@@ -21,13 +21,10 @@ function Profile() {
   const [forceUpdate, setForceUpdate] = useState(0); // Forces re-render when userDetails update
   const [showMenu, setShowMenu] = useState(false);   // State for the settings menu
 
-  // ---------------------------------------------------------------------
-  // NEW: State variables for filtering and sorting the user's rankings.
-  // These mimic the controls from PlayerList.jsx but operate on the rankings/reviews.
+  // State variables for filtering and sorting the user's rankings.
   const [sortType, setSortType] = useState('');         // Options: '', 'team', 'position', or 'ranking'
   const [filterTeam, setFilterTeam] = useState('');       // Filter reviews by player's team
   const [filterPosition, setFilterPosition] = useState(''); // Filter reviews by player's position
-  // ---------------------------------------------------------------------
 
   // Create a ref for the menu container to detect outside clicks
   const menuRef = useRef(null);
@@ -86,6 +83,7 @@ function Profile() {
   };
 
   // Helper function to get player details string.
+  // (Not used in the review display anymore to avoid duplicate player name.)
   const getPlayerDetails = (playerId) => {
     const player = players.find((p) => p.id === playerId);
     return player ? `${player.name}, ${player.team}, ${player.position}` : 'Unknown Player';
@@ -141,8 +139,7 @@ function Profile() {
   // Filter reviews for the current user.
   const userReviews = reviews.filter((review) => review.user_id === parsedUserId);
 
-  // ---------------------------------------------------------------------
-  // NEW: Create a combined array of user reviews that includes:
+  // Create a combined array of user reviews that includes:
   // - The corresponding ranking (if exists)
   // - Player information (team, position, name) from the players array.
   // This additional player data will be used for filtering and sorting.
@@ -159,20 +156,15 @@ function Profile() {
       playerName: player ? player.name : 'Unknown Player',
     };
   });
-  // ---------------------------------------------------------------------
 
-  // ---------------------------------------------------------------------
-  // NEW: Filtering & Sorting Logic
-  // First, compute the unique teams from the reviews data.
+  // Filtering & Sorting Logic
+  // Compute unique teams from the reviews data.
   const teams = [...new Set(userReviewsWithPlayerData.map((r) => r.team).filter(Boolean))];
 
-  // IMPORTANT CHANGE:
-  // Instead of using the positions from the user's reviews (which would exclude positions
-  // with no rankings), we derive the available positions from the complete players list.
-  // This ensures that the position filter circles always display.
+  // Derive available positions from the complete players list (to always show all positions)
   const positions = [...new Set(players.map((p) => p.position))];
 
-  // Handle filtering based on selected team and/or position.
+  // Filter reviews based on selected team and/or position.
   let filteredReviews = [...userReviewsWithPlayerData];
   if (filterTeam) {
     filteredReviews = filteredReviews.filter((review) => review.team === filterTeam);
@@ -181,9 +173,7 @@ function Profile() {
     filteredReviews = filteredReviews.filter((review) => review.position === filterPosition);
   }
 
-  // Handle sorting based on the selected sort type.
-  // - Sorting by team or position is alphabetical.
-  // - Sorting by ranking sorts numerically (null ranking values are treated as Infinity).
+  // Sort reviews based on the selected sort type.
   if (sortType === 'team') {
     filteredReviews.sort((a, b) => a.team.localeCompare(b.team));
   } else if (sortType === 'position') {
@@ -195,12 +185,9 @@ function Profile() {
       return aRank - bRank;
     });
   }
-  // The final sorted and filtered array.
   const finalSortedReviews = filteredReviews;
-  // ---------------------------------------------------------------------
 
-  // ---------------------------------------------------------------------
-  // NEW: Event handlers for filtering and sorting controls.
+  // Event handlers for filtering and sorting controls.
   const handleFilterByPosition = (position) => {
     setFilterPosition(position);
     setFilterTeam(''); // Clear team filter when filtering by position
@@ -220,7 +207,6 @@ function Profile() {
     setFilterPosition('');
     setSortType('');
   };
-  // ---------------------------------------------------------------------
 
   return (
     <div className="profile-container">
@@ -287,12 +273,7 @@ function Profile() {
         <div className="reviews-rankings-section">
           <h3 className="section-title">Your Reviews and Rankings</h3>
 
-          {/* ---------------------------------------------------------------------
-              NEW: Filtering & Sorting Controls
-              These controls allow you to filter your reviews by the player's
-              position (using clickable circles) and team (via dropdown), and
-              sort the results by team, position, or ranking.
-          --------------------------------------------------------------------- */}
+          {/* Filtering & Sorting Controls */}
           <div className="filter-sort-container">
             {/* Position Filter Circles */}
             <div className="position-filter-container">
@@ -337,14 +318,20 @@ function Profile() {
               <button onClick={handleClearFilters} className="clear-filters-button">Clear Filters</button>
             </div>
           </div>
-          {/* --------------------------------------------------------------------- */}
+          {/* End Filtering & Sorting Controls */}
 
           {/* Display Filtered and Sorted Reviews/Rankings */}
           {finalSortedReviews.length > 0 ? (
             finalSortedReviews.map((review) => (
               <div key={review.id} className="review-ranking-item">
                 <div className="review-header">
-                  <p className="review-player">{`${review.playerName} (${getPlayerDetails(review.player_id)})`}</p>
+                  {/* 
+                    The player's name is now displayed with extra details in a neat, organized block.
+                  */}
+                  <div className="review-player-info">
+                    <p className="review-player">{review.playerName}</p>
+                    <p className="player-details">{review.position} | {review.team}</p>
+                  </div>
                   <p className="ranking-info">
                     <strong>Ranking:</strong> {review.ranking !== null ? review.ranking : 'N/A'}
                   </p>
