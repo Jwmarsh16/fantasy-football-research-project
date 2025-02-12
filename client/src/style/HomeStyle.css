@@ -146,23 +146,31 @@
     margin-right: 15px;
   }
   
-  /* ===============================
-     MAIN CONTENT LAYOUT
-     =============================== */
-  .home-content {
-    display: flex;
-    justify-content: space-between;
-    gap: 30px;
-    width: 100%;
-    max-width: 1200px;
-    margin-top: 20px;
-  }
+ /* ===============================
+   MAIN CONTENT LAYOUT & GLOBAL STYLES
+   =============================== */
+.home-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 20px;
+}
+
+/* NEW: Define main-content and sidebar proportions */
+.main-content {
+  flex: 3;         /* Takes up about 75% of the width */
+  /* Remove width:100% from news-section so that it respects the parent's width */
+}
+
   
   /* ===============================
      SIDEBAR (RANKING LIST)
      =============================== */
   .sidebar {
     flex: 1;
+    min-width: 250px;
     background: var(--sidebar-bg);
     padding: 20px;
     border-radius: 15px;
@@ -205,22 +213,23 @@
   }
   
   /* ===============================
-     NEWS SECTION
-     =============================== */
-  .news-section {
-    margin-top: 30px;
-    padding: 20px;
-    background: var(--news-bg);
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    text-align: left;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .news-section:hover {
-    transform: scale(1.02);
-  }
+   NEWS SECTION (within .main-content)
+   =============================== */
+.news-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: var(--news-bg);
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  /* Remove fixed width so it fills the main-content container */
+  width: auto;
+  text-align: left;
+  transition: transform 0.3s ease-in-out;
+}
+
+.news-section:hover {
+  transform: scale(1.02);
+}
   
   .news-title {
     font-size: 26px;

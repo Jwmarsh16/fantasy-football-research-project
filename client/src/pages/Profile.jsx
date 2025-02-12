@@ -2,10 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchUserById, setUserDetails, fetchUsers } from '../redux/slices/userSlice';
-import { fetchRankings, deleteRanking } from '../redux/slices/rankingSlice';
-import { fetchReviews, deleteReview } from '../redux/slices/reviewSlice';
+import { fetchRankings, deleteRanking, updateRanking } from '../redux/slices/rankingSlice';
+import { fetchReviews, deleteReview, updateReview } from '../redux/slices/reviewSlice';
 import { deleteUser } from '../redux/slices/authSlice';
 import axios from 'axios';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 import '../style/ProfileStyle.css';
 import ProfilePicUpdater from '../components/user/ProfilePicUpdater';
 
@@ -18,15 +20,19 @@ function Profile() {
   const reviews = useSelector((state) => state.review.reviews);
   const rankings = useSelector((state) => state.ranking.rankings);
   const [players, setPlayers] = useState([]);
-  const [forceUpdate, setForceUpdate] = useState(0); // Forces re-render when userDetails update
-  const [showMenu, setShowMenu] = useState(false);   // State for the settings menu
+  const [forceUpdate, setForceUpdate] = useState(0); // Forces re-render when userDetails change
+  const [showMenu, setShowMenu] = useState(false);   // For the settings menu
+  // NEW: State to track which review is being edited.
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  // NEW: State to track which review's action menu is open.
+  const [openMenuReviewId, setOpenMenuReviewId] = useState(null);
 
-  // State variables for filtering and sorting the user's rankings.
-  const [sortType, setSortType] = useState('');         // Options: '', 'team', 'position', or 'ranking'
-  const [filterTeam, setFilterTeam] = useState('');       // Filter reviews by player's team
-  const [filterPosition, setFilterPosition] = useState(''); // Filter reviews by player's position
+  // Filtering and sorting state.
+  const [sortType, setSortType] = useState('');         // '', 'team', 'position', or 'ranking'
+  const [filterTeam, setFilterTeam] = useState('');       // Filter reviews by team
+  const [filterPosition, setFilterPosition] = useState(''); // Filter reviews by position
 
-  // Create a ref for the menu container to detect outside clicks
+  // Ref for global settings menu.
   const menuRef = useRef(null);
 
   const parsedUserId = userId ? parseInt(userId, 10) : null;
@@ -57,10 +63,10 @@ function Profile() {
 
   useEffect(() => {
     console.log("Profile.jsx - Redux state updated:", userDetails);
-    setForceUpdate((prev) => prev + 1); // Force re-render when userDetails changes
+    setForceUpdate((prev) => prev + 1);
   }, [userDetails]);
 
-  // useEffect for closing the menu when clicking outside of it
+  // Close global settings menu on outside click.
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -82,8 +88,7 @@ function Profile() {
     }
   };
 
-  // Helper function to get player details string.
-  // (Not used in the review display anymore to avoid duplicate player name.)
+  // Helper function (not used in display).
   const getPlayerDetails = (playerId) => {
     const player = players.find((p) => p.id === playerId);
     return player ? `${player.name}, ${player.team}, ${player.position}` : 'Unknown Player';
@@ -103,8 +108,6 @@ function Profile() {
     }
   };
 
-  // ---------------------------------------------------------------------
-  // UPDATED: handleDeleteProfile now navigates back to the home page after deletion.
   const handleDeleteProfile = async () => {
     if (!currentUser) {
       console.error("Current user is null. Cannot delete profile.");
@@ -113,17 +116,15 @@ function Profile() {
     if (window.confirm("Are you sure you want to delete your profile? This action cannot be undone.")) {
       try {
         await dispatch(deleteUser(parsedUserId)).unwrap();
-        // Navigate back to the home page after successful deletion.
-        navigate('/');
+        navigate('/register');
       } catch (error) {
         console.error("Failed to delete user profile:", error);
         alert("Failed to delete profile. Please try again.");
       }
     }
   };
-  // ---------------------------------------------------------------------
 
-  // Determine the avatar URL.
+  // Determine avatar URL.
   let avatarUrl;
   if (userDetails.profilePic && userDetails.profilePic.trim() !== "") {
     if (userDetails.profilePic === "avatar") {
@@ -135,18 +136,14 @@ function Profile() {
     avatarUrl = "https://placehold.co/600x400?text=Upload+Picture";
   }
 
-  // Toggle function for the settings menu
   const toggleMenu = () => {
     setShowMenu((prev) => !prev);
   };
 
-  // Filter reviews for the current user.
+  // Filter reviews for current user.
   const userReviews = reviews.filter((review) => review.user_id === parsedUserId);
 
-  // Create a combined array of user reviews that includes:
-  // - The corresponding ranking (if exists)
-  // - Player information (team, position, name) from the players array.
-  // This additional player data will be used for filtering and sorting.
+  // Combine review with corresponding ranking and player info.
   const userReviewsWithPlayerData = userReviews.map((review) => {
     const player = players.find((p) => p.id === review.player_id);
     const rankingObj = rankings.find(
@@ -155,6 +152,7 @@ function Profile() {
     return {
       ...review,
       ranking: rankingObj ? rankingObj.rank : null,
+      ranking_id: rankingObj ? rankingObj.id : null, // NEW: store ranking ID for updates
       team: player ? player.team : '',
       position: player ? player.position : '',
       playerName: player ? player.name : 'Unknown Player',
@@ -162,22 +160,12 @@ function Profile() {
   });
 
   // Filtering & Sorting Logic
-  // Compute unique teams from the reviews data.
   const teams = [...new Set(userReviewsWithPlayerData.map((r) => r.team).filter(Boolean))];
-
-  // Derive available positions from the complete players list (to always show all positions)
   const positions = [...new Set(players.map((p) => p.position))];
 
-  // Filter reviews based on selected team and/or position.
   let filteredReviews = [...userReviewsWithPlayerData];
-  if (filterTeam) {
-    filteredReviews = filteredReviews.filter((review) => review.team === filterTeam);
-  }
-  if (filterPosition) {
-    filteredReviews = filteredReviews.filter((review) => review.position === filterPosition);
-  }
-
-  // Sort reviews based on the selected sort type.
+  if (filterTeam) filteredReviews = filteredReviews.filter((review) => review.team === filterTeam);
+  if (filterPosition) filteredReviews = filteredReviews.filter((review) => review.position === filterPosition);
   if (sortType === 'team') {
     filteredReviews.sort((a, b) => a.team.localeCompare(b.team));
   } else if (sortType === 'position') {
@@ -191,15 +179,15 @@ function Profile() {
   }
   const finalSortedReviews = filteredReviews;
 
-  // Event handlers for filtering and sorting controls.
+  // Handlers for filtering/sorting.
   const handleFilterByPosition = (position) => {
     setFilterPosition(position);
-    setFilterTeam(''); // Clear team filter when filtering by position
+    setFilterTeam('');
   };
 
   const handleFilterByTeam = (e) => {
     setFilterTeam(e.target.value);
-    setFilterPosition(''); // Clear position filter when filtering by team
+    setFilterPosition('');
   };
 
   const handleSortChange = (e) => {
@@ -217,16 +205,12 @@ function Profile() {
       <div className="profile-page">
         <div className="profile-header">
           <h2 className="profile-title">User Profile</h2>
-          {/* Remove delete button from header */}
         </div>
 
         {/* Settings Menu Toggle */}
         {currentUser && parsedUserId === currentUser.id && (
           <div className="profile-menu-container" ref={menuRef}>
-            <button
-              className={`profile-menu-toggle ${showMenu ? 'open' : ''}`}
-              onClick={toggleMenu}
-            >
+            <button className={`profile-menu-toggle ${showMenu ? 'open' : ''}`} onClick={toggleMenu}>
               <span className="bar"></span>
               <span className="bar"></span>
               <span className="bar"></span>
@@ -251,12 +235,7 @@ function Profile() {
 
         <div className="user-info">
           <div className="user-avatar-section">
-            <img
-              src={avatarUrl}
-              alt={`${userDetails.username}'s Avatar`}
-              className="user-avatar-img"
-              key={forceUpdate} // Forces re-render when profile picture changes
-            />
+            <img src={avatarUrl} alt={`${userDetails.username}'s Avatar`} className="user-avatar-img" key={forceUpdate} />
             {currentUser && parsedUserId === currentUser.id && (
               <ProfilePicUpdater 
                 userId={parsedUserId} 
@@ -279,38 +258,22 @@ function Profile() {
 
           {/* Filtering & Sorting Controls */}
           <div className="filter-sort-container">
-            {/* Position Filter Circles */}
             <div className="position-filter-container">
               {positions.map((position) => (
-                <button
-                  key={position}
-                  className="position-filter-circle"
-                  onClick={() => handleFilterByPosition(position)}
-                >
+                <button key={position} className="position-filter-circle" onClick={() => handleFilterByPosition(position)}>
                   {position}
                 </button>
               ))}
             </div>
-
-            {/* Team Dropdown for Filtering */}
             <div className="team-filter-container">
               <label htmlFor="team-filter" className="team-filter-label">Filter by Team:</label>
-              <select
-                id="team-filter"
-                value={filterTeam}
-                onChange={handleFilterByTeam}
-                className="team-filter-dropdown"
-              >
+              <select id="team-filter" value={filterTeam} onChange={handleFilterByTeam} className="team-filter-dropdown">
                 <option value="">All Teams</option>
                 {teams.map((team) => (
-                  <option key={team} value={team}>
-                    {team}
-                  </option>
+                  <option key={team} value={team}>{team}</option>
                 ))}
               </select>
             </div>
-
-            {/* Sort Options Dropdown */}
             <div className="sort-options">
               <label htmlFor="sort">Sort by: </label>
               <select id="sort" value={sortType} onChange={handleSortChange} className="sort-select">
@@ -322,43 +285,115 @@ function Profile() {
               <button onClick={handleClearFilters} className="clear-filters-button">Clear Filters</button>
             </div>
           </div>
-          {/* End Filtering & Sorting Controls */}
 
           {/* Display Filtered and Sorted Reviews/Rankings */}
           {finalSortedReviews.length > 0 ? (
             finalSortedReviews.map((review) => (
               <div key={review.id} className="review-ranking-item">
-                <div className="review-header">
-                  {/* 
-                    The player's name is now displayed with extra details in a neat, organized block.
-                  */}
-                  <div className="review-player-info">
-                    <p className="review-player">{review.playerName}</p>
-                    <p className="player-details">{review.position} | {review.team}</p>
-                  </div>
-                  <p className="ranking-info">
-                    <strong>Ranking:</strong> {review.ranking !== null ? review.ranking : 'N/A'}
-                  </p>
-                  {currentUser.id === parsedUserId && (
-                    <button
-                      className="delete-button"
-                      onClick={() =>
-                        handleDeleteReviewAndRanking(review.id, review.player_id)
+                {editingReviewId === review.id ? (
+                  // Inline edit form for review.
+                  <Formik
+                    initialValues={{
+                      rank: review.ranking !== null ? review.ranking : '',
+                      content: review.content,
+                    }}
+                    validationSchema={Yup.object({
+                      rank: Yup.number()
+                        .min(1, 'Rank must be at least 1')
+                        .max(100, 'Rank must be at most 100')
+                        .required('Required'),
+                      content: Yup.string().required('Required'),
+                    })}
+                    onSubmit={async (values, { setSubmitting }) => {
+                      try {
+                        if (review.ranking_id) {
+                          await dispatch(updateRanking({
+                            id: review.ranking_id,
+                            player_id: review.player_id,
+                            user_id: parsedUserId,
+                            rank: values.rank,
+                          })).unwrap();
+                        }
+                        await dispatch(updateReview({
+                          id: review.id,
+                          player_id: review.player_id,
+                          user_id: parsedUserId,
+                          content: values.content,
+                        })).unwrap();
+                        dispatch(fetchReviews());
+                        dispatch(fetchRankings());
+                        setEditingReviewId(null);
+                      } catch (error) {
+                        console.error('Failed to update review and ranking:', error);
+                      } finally {
+                        setSubmitting(false);
                       }
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-                <p className="review-content">
-                  <strong>Review:</strong> {review.content}
-                </p>
+                    }}
+                  >
+                    {({ isSubmitting }) => (
+                      <Form className="edit-review-form">
+                        <div className="form-group">
+                          <label htmlFor={`edit-rank-${review.id}`}>Rank</label>
+                          <Field type="number" id={`edit-rank-${review.id}`} name="rank" className="input-field" />
+                          <ErrorMessage name="rank" component="div" className="error-message" />
+                        </div>
+                        <div className="form-group">
+                          <label htmlFor={`edit-content-${review.id}`}>Review</label>
+                          <Field as="textarea" id={`edit-content-${review.id}`} name="content" className="input-field" />
+                          <ErrorMessage name="content" component="div" className="error-message" />
+                        </div>
+                        <button type="submit" disabled={isSubmitting} className="submit-button">Update</button>
+                        <button type="button" onClick={() => setEditingReviewId(null)} className="cancel-button">Cancel</button>
+                      </Form>
+                    )}
+                  </Formik>
+                ) : (
+                  <>
+                    <div className="review-header" style={{ position: 'relative' }}>
+                      <div className="review-player-info">
+                        <p className="review-player">{review.playerName}</p>
+                        <p className="player-details">{review.position} | {review.team}</p>
+                      </div>
+                      <p className="ranking-info">
+                        <strong>Ranking:</strong> {review.ranking !== null ? review.ranking : 'N/A'}
+                      </p>
+                      {currentUser.id === parsedUserId && (
+                        // NEW: Review action menu in the top right.
+                        <div className="review-menu-container" style={{ position: 'absolute', top: '5px', right: '5px' }}>
+                          <button
+                            className="review-menu-button"
+                            onClick={() =>
+                              setOpenMenuReviewId(openMenuReviewId === review.id ? null : review.id)
+                            }
+                          >
+                            ⋮
+                          </button>
+                          {openMenuReviewId === review.id && (
+                            <div className="review-menu" style={{ top: '25px', right: '5px' }}>
+                              <button
+                                className="review-menu-item"
+                                onClick={() => { setEditingReviewId(review.id); setOpenMenuReviewId(null); }}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="review-menu-item"
+                                onClick={() => { handleDeleteReviewAndRanking(review.id, review.player_id); setOpenMenuReviewId(null); }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <p className="review-content"><strong>Review:</strong> {review.content}</p>
+                  </>
+                )}
               </div>
             ))
           ) : (
-            <p className="no-reviews-rankings-message">
-              No reviews or rankings available.
-            </p>
+            <p className="no-reviews-rankings-message">No reviews or rankings available.</p>
           )}
         </div>
       </div>

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserById } from '../redux/slices/userSlice';
+import { fetchUserById, setUserDetails } from '../redux/slices/userSlice';
+
 import { fetchRankings } from '../redux/slices/rankingSlice';
 import { fetchPlayers } from '../redux/slices/playerSlice';
 import '../style/HomeStyle.css';

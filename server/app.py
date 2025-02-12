@@ -375,20 +375,28 @@ class ReviewResource(Resource):
         db.session.commit()
         return to_dict(review, ['id', 'content', 'user_id', 'player_id']), 201
 
+    @jwt_required()  # Require authentication for updating a review
     def put(self, id):
         review = Review.query.get(id)
         if not review:
             return {"error": "Review not found"}, 404
+        current_user_id = get_jwt_identity()
+        if review.user_id != current_user_id:
+            return {"error": "Unauthorized: You can only update your own review"}, 403
         data = request.get_json()
         for field in data:
             setattr(review, field, data[field])
         db.session.commit()
         return to_dict(review, ['id', 'content', 'user_id', 'player_id']), 200
 
+    @jwt_required()  # Require authentication for deleting a review
     def delete(self, id):
         review = Review.query.get(id)
         if not review:
             return {"error": "Review not found"}, 404
+        current_user_id = get_jwt_identity()
+        if review.user_id != current_user_id:
+            return {"error": "Unauthorized: You can only delete your own review"}, 403
         db.session.delete(review)
         db.session.commit()
         return '', 204
@@ -414,20 +422,28 @@ class RankingResource(Resource):
         db.session.commit()
         return to_dict(ranking, ['id', 'rank', 'user_id', 'player_id']), 201
 
+    @jwt_required()  # Require authentication for updating a ranking
     def put(self, id):
         ranking = Ranking.query.get(id)
         if not ranking:
             return {"error": "Ranking not found"}, 404
+        current_user_id = get_jwt_identity()
+        if ranking.user_id != current_user_id:
+            return {"error": "Unauthorized: You can only update your own ranking"}, 403
         data = request.get_json()
         for field in data:
             setattr(ranking, field, data[field])
         db.session.commit()
         return to_dict(ranking, ['id', 'rank', 'user_id', 'player_id']), 200
 
+    @jwt_required()  # Require authentication for deleting a ranking
     def delete(self, id):
         ranking = Ranking.query.get(id)
         if not ranking:
             return {"error": "Ranking not found"}, 404
+        current_user_id = get_jwt_identity()
+        if ranking.user_id != current_user_id:
+            return {"error": "Unauthorized: You can only delete your own ranking"}, 403
         db.session.delete(ranking)
         db.session.commit()
         return '', 204

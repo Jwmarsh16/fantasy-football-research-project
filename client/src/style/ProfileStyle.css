@@ -187,6 +187,64 @@
   background: #ececec;
 }
 
+/* Position the review menu container in the top right corner of each review */
+/* Review Menu Button */
+.review-menu-container {
+  position: absolute;
+  top: 5px;
+  right: 5px; /* Changed from left to right */
+  display: inline-block;
+}
+
+.review-menu-button {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--title-color);  /* Use your theme's title color */
+  padding: 2px;
+  transform: translateY(-0.5em); /* Move up about 1 character space; adjust as needed */
+}
+
+
+.review-menu-button:hover {
+  color: #1b4f72;
+}
+
+/* Dropdown Menu Styling */
+/* Adjust the review menu position */
+.review-menu {
+  position: absolute;
+  top: 15px;   /* Moved up from 25px */
+  right: 5px;
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 100px;
+}
+
+.review-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  color: #34495e;
+  transition: background 0.2s ease;
+}
+
+.review-menu-item:hover {
+  background: #f2f4f7;
+}
+
+
+
+
 /* -------------------------------
    Revised Review/Ranking Items Styling
    (Ensuring consistent placement of .ranking-info)
@@ -232,11 +290,12 @@
   This maintains your original font size, color, and weight.
 */
 .ranking-info {
-  flex: 0 0 100px;  /* Fixed width (adjust 100px as needed) */
+  flex: 0 0 100px;  /* Fixed width */
   text-align: center;
   font-size: 18px;
   color: var(--ranking-value-color);
   font-weight: bold;
+  transform: translateX(-2.0em);  /* Shift left (adjust as needed) */
 }
 
 
