@@ -1,35 +1,45 @@
 // rankingSlice.js - Creating ranking slice to handle rankings data
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import Cookies from 'js-cookie'; // Import js-cookie to retrieve the CSRF token
 
-// Option 1: Set axios defaults globally (optional)
-// axios.defaults.withCredentials = true;
-
-// Async thunk to fetch rankings data
+// Async thunk to fetch rankings data (GET requests don't require CSRF token)
 export const fetchRankings = createAsyncThunk('ranking/fetchRankings', async () => {
   const response = await axios.get('/api/rankings', { withCredentials: true });
   return response.data;
 });
 
-// Async thunk to delete a ranking
+// Async thunk to delete a ranking (state-changing, so include CSRF token)
 export const deleteRanking = createAsyncThunk('ranking/deleteRanking', async (rankingId) => {
-  await axios.delete(`/api/rankings/${rankingId}`, { withCredentials: true });
+  const csrfToken = Cookies.get('csrf_access_token');
+  await axios.delete(`/api/rankings/${rankingId}`, {
+    withCredentials: true,
+    headers: { 'X-CSRF-TOKEN': csrfToken }
+  });
   return rankingId;
 });
 
-// Async thunk to add a ranking
+// Async thunk to add a ranking (state-changing, so include CSRF token)
 export const addRanking = createAsyncThunk('ranking/addRanking', async (ranking) => {
-  const response = await axios.post('/api/rankings', ranking, { withCredentials: true });
+  const csrfToken = Cookies.get('csrf_access_token');
+  const response = await axios.post('/api/rankings', ranking, {
+    withCredentials: true,
+    headers: { 'X-CSRF-TOKEN': csrfToken }
+  });
   return response.data;
 });
 
-// NEW: Async thunk to update a ranking.
+// Async thunk to update a ranking (state-changing, so include CSRF token)
 // This thunk expects an object that includes the ranking's "id" along with the updated ranking data.
 export const updateRanking = createAsyncThunk('ranking/updateRanking', async (updatedRanking) => {
+  const csrfToken = Cookies.get('csrf_access_token');
   const response = await axios.put(
     `/api/rankings/${updatedRanking.id}`,
     updatedRanking,
-    { withCredentials: true }
+    {
+      withCredentials: true,
+      headers: { 'X-CSRF-TOKEN': csrfToken }
+    }
   );
   return response.data;
 });
@@ -59,7 +69,7 @@ const rankingSlice = createSlice({
       .addCase(addRanking.fulfilled, (state, action) => {
         state.rankings.push(action.payload);
       })
-      // NEW: Update reducer case for ranking updates.
+      // Update reducer case for ranking updates.
       .addCase(updateRanking.fulfilled, (state, action) => {
         const index = state.rankings.findIndex((ranking) => ranking.id === action.payload.id);
         if (index !== -1) {
