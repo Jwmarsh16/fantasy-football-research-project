@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "react-avatar-editor": "^13.0.2"
+    "react-avatar-editor": "^13.0.2",
+    "react-window": "^1.8.11"
   }
 }

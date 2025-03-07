@@ -6,6 +6,8 @@ import { fetchRankings, deleteRanking, updateRanking } from '../redux/slices/ran
 import { fetchReviews, deleteReview, updateReview } from '../redux/slices/reviewSlice';
 import { deleteUser } from '../redux/slices/authSlice';
 import axios from 'axios';
+// Import VariableSizeList for dynamic row heights.
+import { VariableSizeList as List } from 'react-window';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import '../style/ProfileStyle.css';
@@ -20,22 +22,25 @@ function Profile() {
   const reviews = useSelector((state) => state.review.reviews);
   const rankings = useSelector((state) => state.ranking.rankings);
   const [players, setPlayers] = useState([]);
-  const [forceUpdate, setForceUpdate] = useState(0); // Forces re-render when userDetails change
-  const [showMenu, setShowMenu] = useState(false);   // For the settings menu
-  // NEW: State to track which review is being edited.
-  const [editingReviewId, setEditingReviewId] = useState(null);
-  // NEW: State to track which review's action menu is open.
+  const [forceUpdate, setForceUpdate] = useState(0);
+  const [showMenu, setShowMenu] = useState(false);
   const [openMenuReviewId, setOpenMenuReviewId] = useState(null);
+  // State to track the review currently being edited via the modal.
+  const [editingReview, setEditingReview] = useState(null);
+  // State to track which reviews are expanded (for showing full content).
+  const [expandedReviewIds, setExpandedReviewIds] = useState([]);
 
   // Filtering and sorting state.
-  const [sortType, setSortType] = useState('');         // '', 'team', 'position', or 'ranking'
-  const [filterTeam, setFilterTeam] = useState('');       // Filter reviews by team
-  const [filterPosition, setFilterPosition] = useState(''); // Filter reviews by position
+  // UPDATED: Default sortType is now set to 'ranking' so reviews are sorted by rank by default.
+  const [sortType, setSortType] = useState('ranking');
+  const [filterTeam, setFilterTeam] = useState('');
+  const [filterPosition, setFilterPosition] = useState('');
 
-  // Ref for global settings menu.
   const menuRef = useRef(null);
-
   const parsedUserId = userId ? parseInt(userId, 10) : null;
+
+  // Create a ref for the VariableSizeList to allow dynamic row height resets.
+  const listRef = useRef(null);
 
   useEffect(() => {
     if (!parsedUserId) {
@@ -66,7 +71,6 @@ function Profile() {
     setForceUpdate((prev) => prev + 1);
   }, [userDetails]);
 
-  // Close global settings menu on outside click.
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -88,7 +92,6 @@ function Profile() {
     }
   };
 
-  // Helper function (not used in display).
   const getPlayerDetails = (playerId) => {
     const player = players.find((p) => p.id === playerId);
     return player ? `${player.name}, ${player.team}, ${player.position}` : 'Unknown Player';
@@ -124,7 +127,6 @@ function Profile() {
     }
   };
 
-  // Determine avatar URL.
   let avatarUrl;
   if (userDetails.profilePic && userDetails.profilePic.trim() !== "") {
     if (userDetails.profilePic === "avatar") {
@@ -140,10 +142,10 @@ function Profile() {
     setShowMenu((prev) => !prev);
   };
 
-  // Filter reviews for current user.
+  // Filter reviews for the current user.
   const userReviews = reviews.filter((review) => review.user_id === parsedUserId);
 
-  // Combine review with corresponding ranking and player info.
+  // Combine each review with its ranking and player info.
   const userReviewsWithPlayerData = userReviews.map((review) => {
     const player = players.find((p) => p.id === review.player_id);
     const rankingObj = rankings.find(
@@ -152,14 +154,13 @@ function Profile() {
     return {
       ...review,
       ranking: rankingObj ? rankingObj.rank : null,
-      ranking_id: rankingObj ? rankingObj.id : null, // NEW: store ranking ID for updates
+      ranking_id: rankingObj ? rankingObj.id : null, // Store ranking ID for updates.
       team: player ? player.team : '',
       position: player ? player.position : '',
       playerName: player ? player.name : 'Unknown Player',
     };
   });
 
-  // Filtering & Sorting Logic
   const teams = [...new Set(userReviewsWithPlayerData.map((r) => r.team).filter(Boolean))];
   const positions = [...new Set(players.map((p) => p.position))];
 
@@ -179,7 +180,36 @@ function Profile() {
   }
   const finalSortedReviews = filteredReviews;
 
-  // Handlers for filtering/sorting.
+  // Modified getItemSize: Calculate expanded row height based on review content length.
+  // Added an extra constant (20px) so the "Hide Review" button is fully visible.
+  const getItemSize = (index) => {
+    const review = finalSortedReviews[index];
+    const collapsedHeight = 200; // Default row height when not expanded.
+    if (expandedReviewIds.includes(review.id)) {
+      const contentLines = Math.ceil(review.content.length / 50);
+      // Constants: header (80px), estimated content (contentLines * 20px), button (30px), padding (20px),
+      // plus an extra 20px for ensuring the button is fully visible.
+      const estimatedExpandedHeight = 80 + contentLines * 20 + 30 + 20 + 20;
+      return Math.max(collapsedHeight, estimatedExpandedHeight);
+    } else {
+      return collapsedHeight;
+    }
+  };
+
+  // Reset the list's row sizes whenever expandedReviewIds changes.
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0, true);
+    }
+  }, [expandedReviewIds]);
+
+  // Toggle review expansion.
+  const toggleReviewExpansion = (reviewId) => {
+    setExpandedReviewIds((prev) =>
+      prev.includes(reviewId) ? prev.filter((id) => id !== reviewId) : [...prev, reviewId]
+    );
+  };
+
   const handleFilterByPosition = (position) => {
     setFilterPosition(position);
     setFilterTeam('');
@@ -197,7 +227,140 @@ function Profile() {
   const handleClearFilters = () => {
     setFilterTeam('');
     setFilterPosition('');
-    setSortType('');
+    setSortType('ranking'); // UPDATED: Reset sortType to 'ranking' by default when clearing filters.
+  };
+
+  // Define a row component for virtualization.
+  const ReviewRow = ({ index, style }) => {
+    const review = finalSortedReviews[index];
+    return (
+      <div key={review.id} className="review-ranking-item" style={{ ...style, overflowX: 'visible' }}>
+        <div className="review-header" style={{ position: 'relative' }}>
+          <div className="review-player-info">
+            <p className="review-player">{review.playerName}</p>
+            <p className="player-details">{review.position} | {review.team}</p>
+          </div>
+          <p className="ranking-info">
+            <strong>Ranking:</strong> {review.ranking !== null ? review.ranking : 'N/A'}
+          </p>
+          {currentUser.id === parsedUserId && (
+            <div className="review-menu-container" style={{ position: 'absolute', top: '5px', right: '5px' }}>
+              <button
+                className="review-menu-button"
+                style={{ transform: 'translateY(-0.5em)' }}
+                onClick={() =>
+                  setOpenMenuReviewId(openMenuReviewId === review.id ? null : review.id)
+                }
+              >
+                ⋮
+              </button>
+              {openMenuReviewId === review.id && (
+                <div className="review-menu" style={{ top: '22px', right: '5px' }}>
+                  <button
+                    className="review-menu-item"
+                    onClick={() => { setEditingReview(review); setOpenMenuReviewId(null); }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="review-menu-item"
+                    onClick={() => { handleDeleteReviewAndRanking(review.id, review.player_id); setOpenMenuReviewId(null); }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+        <div className="review-condensed">
+          {expandedReviewIds.includes(review.id) ? (
+            <div className="review-content">
+              <p><strong>Review:</strong> {review.content}</p>
+              <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">
+                Hide Review
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">
+              Show Review
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Edit modal for review and ranking updates.
+  // UPDATED: Added max(450, ...) to the Yup schema for "content" to enforce a 450-character limit.
+  const EditReviewModal = ({ review, onClose }) => {
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h3>Edit Review for {review.playerName}</h3>
+          <Formik
+            initialValues={{
+              rank: review.ranking !== null ? review.ranking : '',
+              content: review.content,
+            }}
+            validationSchema={Yup.object({
+              rank: Yup.number()
+                .min(1, 'Rank must be at least 1')
+                .max(100, 'Rank must be at most 100')
+                .required('Required'),
+              content: Yup.string()
+                .max(450, 'Review cannot exceed 450 characters')
+                .required('Required'),
+            })}
+            onSubmit={async (values, { setSubmitting }) => {
+              try {
+                if (review.ranking_id) {
+                  await dispatch(updateRanking({
+                    id: review.ranking_id,
+                    player_id: review.player_id,
+                    user_id: parsedUserId,
+                    rank: values.rank,
+                  })).unwrap();
+                }
+                await dispatch(updateReview({
+                  id: review.id,
+                  player_id: review.player_id,
+                  user_id: parsedUserId,
+                  content: values.content,
+                })).unwrap();
+                dispatch(fetchReviews());
+                dispatch(fetchRankings());
+                onClose();
+              } catch (error) {
+                console.error('Failed to update review and ranking:', error);
+              } finally {
+                setSubmitting(false);
+              }
+            }}
+          >
+            {({ isSubmitting }) => (
+              <Form className="edit-review-form">
+                <div className="form-group">
+                  <label htmlFor={`modal-edit-rank-${editingReview.id}`}>Rank</label>
+                  <Field type="number" id={`modal-edit-rank-${editingReview.id}`} name="rank" className="input-field" />
+                  <ErrorMessage name="rank" component="div" className="error-message" />
+                </div>
+                <div className="form-group">
+                  <label htmlFor={`modal-edit-content-${editingReview.id}`}>Review</label>
+                  <Field as="textarea" id={`modal-edit-content-${editingReview.id}`} name="content" className="input-field" />
+                  <ErrorMessage name="content" component="div" className="error-message" />
+                </div>
+                <button type="submit" disabled={isSubmitting} className="submit-button">Update</button>
+                <button type="button" onClick={() => setEditingReview(null)} className="cancel-button">Cancel</button>
+              </Form>
+            )}
+          </Formik>
+          <button className="modal-close-button" onClick={() => setEditingReview(null)}>
+            Close
+          </button>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -286,117 +449,92 @@ function Profile() {
             </div>
           </div>
 
-          {/* Display Filtered and Sorted Reviews/Rankings */}
+          {/* Virtualized list for faster scrolling through reviews */}
           {finalSortedReviews.length > 0 ? (
-            finalSortedReviews.map((review) => (
-              <div key={review.id} className="review-ranking-item">
-                {editingReviewId === review.id ? (
-                  // Inline edit form for review.
-                  <Formik
-                    initialValues={{
-                      rank: review.ranking !== null ? review.ranking : '',
-                      content: review.content,
-                    }}
-                    validationSchema={Yup.object({
-                      rank: Yup.number()
-                        .min(1, 'Rank must be at least 1')
-                        .max(100, 'Rank must be at most 100')
-                        .required('Required'),
-                      content: Yup.string().required('Required'),
-                    })}
-                    onSubmit={async (values, { setSubmitting }) => {
-                      try {
-                        if (review.ranking_id) {
-                          await dispatch(updateRanking({
-                            id: review.ranking_id,
-                            player_id: review.player_id,
-                            user_id: parsedUserId,
-                            rank: values.rank,
-                          })).unwrap();
-                        }
-                        await dispatch(updateReview({
-                          id: review.id,
-                          player_id: review.player_id,
-                          user_id: parsedUserId,
-                          content: values.content,
-                        })).unwrap();
-                        dispatch(fetchReviews());
-                        dispatch(fetchRankings());
-                        setEditingReviewId(null);
-                      } catch (error) {
-                        console.error('Failed to update review and ranking:', error);
-                      } finally {
-                        setSubmitting(false);
-                      }
-                    }}
-                  >
-                    {({ isSubmitting }) => (
-                      <Form className="edit-review-form">
-                        <div className="form-group">
-                          <label htmlFor={`edit-rank-${review.id}`}>Rank</label>
-                          <Field type="number" id={`edit-rank-${review.id}`} name="rank" className="input-field" />
-                          <ErrorMessage name="rank" component="div" className="error-message" />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor={`edit-content-${review.id}`}>Review</label>
-                          <Field as="textarea" id={`edit-content-${review.id}`} name="content" className="input-field" />
-                          <ErrorMessage name="content" component="div" className="error-message" />
-                        </div>
-                        <button type="submit" disabled={isSubmitting} className="submit-button">Update</button>
-                        <button type="button" onClick={() => setEditingReviewId(null)} className="cancel-button">Cancel</button>
-                      </Form>
-                    )}
-                  </Formik>
-                ) : (
-                  <>
-                    <div className="review-header" style={{ position: 'relative' }}>
-                      <div className="review-player-info">
-                        <p className="review-player">{review.playerName}</p>
-                        <p className="player-details">{review.position} | {review.team}</p>
-                      </div>
-                      <p className="ranking-info">
-                        <strong>Ranking:</strong> {review.ranking !== null ? review.ranking : 'N/A'}
-                      </p>
-                      {currentUser.id === parsedUserId && (
-                        // NEW: Review action menu in the top right.
-                        <div className="review-menu-container" style={{ position: 'absolute', top: '5px', right: '5px' }}>
-                          <button
-                            className="review-menu-button"
-                            onClick={() =>
-                              setOpenMenuReviewId(openMenuReviewId === review.id ? null : review.id)
-                            }
-                          >
-                            ⋮
-                          </button>
-                          {openMenuReviewId === review.id && (
-                            <div className="review-menu" style={{ top: '25px', right: '5px' }}>
-                              <button
-                                className="review-menu-item"
-                                onClick={() => { setEditingReviewId(review.id); setOpenMenuReviewId(null); }}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                className="review-menu-item"
-                                onClick={() => { handleDeleteReviewAndRanking(review.id, review.player_id); setOpenMenuReviewId(null); }}
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <p className="review-content"><strong>Review:</strong> {review.content}</p>
-                  </>
-                )}
-              </div>
-            ))
+            <List
+              ref={listRef}
+              height={600}
+              itemCount={finalSortedReviews.length}
+              itemSize={getItemSize}
+              width="100%"
+              style={{ overflowX: 'hidden' }}
+            >
+              {ReviewRow}
+            </List>
           ) : (
             <p className="no-reviews-rankings-message">No reviews or rankings available.</p>
           )}
         </div>
       </div>
+
+      {/* Edit Modal - shown when editingReview is set */}
+      {editingReview && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Edit Review for {editingReview.playerName}</h3>
+            <Formik
+              initialValues={{
+                rank: editingReview.ranking !== null ? editingReview.ranking : '',
+                content: editingReview.content,
+              }}
+              validationSchema={Yup.object({
+                rank: Yup.number()
+                  .min(1, 'Rank must be at least 1')
+                  .max(100, 'Rank must be at most 100')
+                  .required('Required'),
+                content: Yup.string()
+                  .max(450, 'Review cannot exceed 450 characters')
+                  .required('Required'),
+              })}
+              onSubmit={async (values, { setSubmitting }) => {
+                try {
+                  if (editingReview.ranking_id) {
+                    await dispatch(updateRanking({
+                      id: editingReview.ranking_id,
+                      player_id: editingReview.player_id,
+                      user_id: parsedUserId,
+                      rank: values.rank,
+                    })).unwrap();
+                  }
+                  await dispatch(updateReview({
+                    id: editingReview.id,
+                    player_id: editingReview.player_id,
+                    user_id: parsedUserId,
+                    content: values.content,
+                  })).unwrap();
+                  dispatch(fetchReviews());
+                  dispatch(fetchRankings());
+                  setEditingReview(null);
+                } catch (error) {
+                  console.error('Failed to update review and ranking:', error);
+                } finally {
+                  setSubmitting(false);
+                }
+              }}
+            >
+              {({ isSubmitting }) => (
+                <Form className="edit-review-form">
+                  <div className="form-group">
+                    <label htmlFor={`modal-edit-rank-${editingReview.id}`}>Rank</label>
+                    <Field type="number" id={`modal-edit-rank-${editingReview.id}`} name="rank" className="input-field" />
+                    <ErrorMessage name="rank" component="div" className="error-message" />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor={`modal-edit-content-${editingReview.id}`}>Review</label>
+                    <Field as="textarea" id={`modal-edit-content-${editingReview.id}`} name="content" className="input-field" />
+                    <ErrorMessage name="content" component="div" className="error-message" />
+                  </div>
+                  <button type="submit" disabled={isSubmitting} className="submit-button">Update</button>
+                  <button type="button" onClick={() => setEditingReview(null)} className="cancel-button">Cancel</button>
+                </Form>
+              )}
+            </Formik>
+            <button className="modal-close-button" onClick={() => setEditingReview(null)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

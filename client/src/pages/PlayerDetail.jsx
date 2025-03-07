@@ -224,7 +224,10 @@ function PlayerDetail() {
                 .min(1, 'Rank must be at least 1')
                 .max(maxRank, `Rank must be at most ${maxRank}`)
                 .required('Required'),
-              content: Yup.string().required('Required'),
+              // UPDATED: Added a maximum character limit of 450 for the review content.
+              content: Yup.string()
+                .max(450, 'Review cannot exceed 450 characters')
+                .required('Required'),
             })}
             onSubmit={handleCombinedSubmit}
           >
