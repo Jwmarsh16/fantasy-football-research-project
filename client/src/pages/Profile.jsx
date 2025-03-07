@@ -6,7 +6,7 @@ import { fetchRankings, deleteRanking, updateRanking } from '../redux/slices/ran
 import { fetchReviews, deleteReview, updateReview } from '../redux/slices/reviewSlice';
 import { deleteUser } from '../redux/slices/authSlice';
 import axios from 'axios';
-// Import VariableSizeList for dynamic row heights.
+// Import VariableSizeList. Switched to VariableSizeList for dynamic row heights based on review length.
 import { VariableSizeList as List } from 'react-window';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
