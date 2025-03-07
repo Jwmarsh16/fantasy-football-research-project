@@ -295,7 +295,7 @@ function Profile() {
     );
   };
 
-  // Edit modal for review and ranking updates.
+  // Edit modal for review and ranking updates. Added a modal for review updates.
   // UPDATED: Added max(450, ...) to the Yup schema for "content" to enforce a 450-character limit.
   const EditReviewModal = ({ review, onClose }) => {
     return (
