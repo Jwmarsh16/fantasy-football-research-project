@@ -6,7 +6,7 @@ import { fetchRankings, deleteRanking, updateRanking } from '../redux/slices/ran
 import { fetchReviews, deleteReview, updateReview } from '../redux/slices/reviewSlice';
 import { deleteUser } from '../redux/slices/authSlice';
 import axios from 'axios';
-// Import VariableSizeList. Switched to VariableSizeList for dynamic row heights based on review length.
+// Import VariableSizeList for dynamic row heights.
 import { VariableSizeList as List } from 'react-window';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -210,20 +210,24 @@ function Profile() {
     );
   };
 
+  // UPDATED: When filtering by position, collapse all expanded reviews.
   const handleFilterByPosition = (position) => {
     setFilterPosition(position);
     setFilterTeam('');
+    setExpandedReviewIds([]); // Collapse expanded reviews
   };
 
+  // UPDATED: When filtering by team, collapse all expanded reviews.
   const handleFilterByTeam = (e) => {
     setFilterTeam(e.target.value);
     setFilterPosition('');
+    setExpandedReviewIds([]); // Collapse expanded reviews
   };
 
   // UPDATED: When sorting method changes, collapse all expanded reviews.
   const handleSortChange = (e) => {
     setSortType(e.target.value);
-    setExpandedReviewIds([]); // Collapse all expanded reviews.
+    setExpandedReviewIds([]); // Collapse expanded reviews
   };
 
   // UPDATED: When clearing filters, reset sortType to 'ranking' and collapse expanded reviews.
@@ -231,7 +235,7 @@ function Profile() {
     setFilterTeam('');
     setFilterPosition('');
     setSortType('ranking');
-    setExpandedReviewIds([]);
+    setExpandedReviewIds([]); // Collapse expanded reviews
   };
 
   // Define a row component for virtualization.
@@ -295,7 +299,7 @@ function Profile() {
     );
   };
 
-  // Edit modal for review and ranking updates. Added a modal for review updates.
+  // Edit modal for review and ranking updates.
   // UPDATED: Added max(450, ...) to the Yup schema for "content" to enforce a 450-character limit.
   const EditReviewModal = ({ review, onClose }) => {
     return (
