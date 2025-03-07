@@ -31,7 +31,7 @@ function Profile() {
   const [expandedReviewIds, setExpandedReviewIds] = useState([]);
 
   // Filtering and sorting state.
-  // UPDATED: Default sortType is now set to 'ranking' so reviews are sorted by rank by default.
+  // Default sortType is 'ranking' to sort by rank.
   const [sortType, setSortType] = useState('ranking');
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPosition, setFilterPosition] = useState('');
@@ -220,14 +220,18 @@ function Profile() {
     setFilterPosition('');
   };
 
+  // UPDATED: When sorting method changes, collapse all expanded reviews.
   const handleSortChange = (e) => {
     setSortType(e.target.value);
+    setExpandedReviewIds([]); // Collapse all expanded reviews.
   };
 
+  // UPDATED: When clearing filters, reset sortType to 'ranking' and collapse expanded reviews.
   const handleClearFilters = () => {
     setFilterTeam('');
     setFilterPosition('');
-    setSortType('ranking'); // UPDATED: Reset sortType to 'ranking' by default when clearing filters.
+    setSortType('ranking');
+    setExpandedReviewIds([]);
   };
 
   // Define a row component for virtualization.
