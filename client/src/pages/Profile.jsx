@@ -180,17 +180,17 @@ function Profile() {
   }
   const finalSortedReviews = filteredReviews;
 
-  // Modified getItemSize: Calculate expanded row height based on review content length.
-  // Added an extra constant (20px) so the "Hide Review" button is fully visible.
+  // UPDATED: Reduced default collapsed height to 150px and added a minimum expanded height of 170px.
   const getItemSize = (index) => {
     const review = finalSortedReviews[index];
-    const collapsedHeight = 200; // Default row height when not expanded.
+    const collapsedHeight = 150; // New default row height when not expanded.
+    const minExpandedHeight = 190; // Minimum expanded height to ensure the "Hide Review" button is visible.
     if (expandedReviewIds.includes(review.id)) {
       const contentLines = Math.ceil(review.content.length / 50);
-      // Constants: header (80px), estimated content (contentLines * 20px), button (30px), padding (20px),
+      // Constants: header (60px), estimated content (contentLines * 20px), button (30px), padding (20px),
       // plus an extra 20px for ensuring the button is fully visible.
-      const estimatedExpandedHeight = 80 + contentLines * 20 + 30 + 20 + 20;
-      return Math.max(collapsedHeight, estimatedExpandedHeight);
+      const estimatedExpandedHeight = 60 + contentLines * 20 + 30 + 20 + 20;
+      return Math.max(collapsedHeight, estimatedExpandedHeight, minExpandedHeight);
     } else {
       return collapsedHeight;
     }
@@ -214,20 +214,20 @@ function Profile() {
   const handleFilterByPosition = (position) => {
     setFilterPosition(position);
     setFilterTeam('');
-    setExpandedReviewIds([]); // Collapse expanded reviews
+    setExpandedReviewIds([]);
   };
 
   // UPDATED: When filtering by team, collapse all expanded reviews.
   const handleFilterByTeam = (e) => {
     setFilterTeam(e.target.value);
     setFilterPosition('');
-    setExpandedReviewIds([]); // Collapse expanded reviews
+    setExpandedReviewIds([]);
   };
 
   // UPDATED: When sorting method changes, collapse all expanded reviews.
   const handleSortChange = (e) => {
     setSortType(e.target.value);
-    setExpandedReviewIds([]); // Collapse expanded reviews
+    setExpandedReviewIds([]);
   };
 
   // UPDATED: When clearing filters, reset sortType to 'ranking' and collapse expanded reviews.
@@ -235,7 +235,7 @@ function Profile() {
     setFilterTeam('');
     setFilterPosition('');
     setSortType('ranking');
-    setExpandedReviewIds([]); // Collapse expanded reviews
+    setExpandedReviewIds([]);
   };
 
   // Define a row component for virtualization.
