@@ -52,6 +52,11 @@ function Profile() {
 
   const menuRef = useRef(null);
   const parsedUserId = userId ? parseInt(userId, 10) : null;
+  // Determine if the profile being viewed is that of the current user.
+  const isOwnProfile = currentUser && parsedUserId === currentUser.id;
+
+  // Set default collapsed height (unchanged from previous logic)
+  const defaultCollapsedHeight = 150;
 
   // Create a ref for the VariableSizeList (desktop only)
   const listRef = useRef(null);
@@ -66,9 +71,6 @@ function Profile() {
       return { ...prev, [index]: height };
     });
   }, []);
-
-  // Default collapsed height (desktop) remains 150px.
-  const defaultCollapsedHeight = 150;
 
   useEffect(() => {
     if (!parsedUserId) {
@@ -282,7 +284,8 @@ function Profile() {
             <p className="review-player">{review.playerName}</p>
             <p className="player-details">{review.position} | {review.team}</p>
           </div>
-          <p className="ranking-info">
+          {/* Added inline style to prevent wrapping of ranking text */}
+          <p className="ranking-info" style={{ whiteSpace: 'nowrap' }}>
             <strong>Ranking:</strong> {review.ranking !== null ? review.ranking : 'N/A'}
           </p>
           {currentUser.id === parsedUserId && (
