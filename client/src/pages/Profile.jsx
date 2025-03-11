@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchUserById, setUserDetails, fetchUsers } from '../redux/slices/userSlice';
@@ -6,7 +6,7 @@ import { fetchRankings, deleteRanking, updateRanking } from '../redux/slices/ran
 import { fetchReviews, deleteReview, updateReview } from '../redux/slices/reviewSlice';
 import { deleteUser } from '../redux/slices/authSlice';
 import axios from 'axios';
-// Import VariableSizeList for dynamic row heights.
+// Import VariableSizeList for dynamic row heights on desktop
 import { VariableSizeList as List } from 'react-window';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -29,6 +29,20 @@ function Profile() {
   const [editingReview, setEditingReview] = useState(null);
   // State to track which reviews are expanded (for showing full content).
   const [expandedReviewIds, setExpandedReviewIds] = useState([]);
+  // State to store measured row heights (mapping row index -> height)
+  const [rowHeights, setRowHeights] = useState({});
+
+  // New state: whether we're on a mobile device (width <= 480px)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 480);
+
+  // Update isMobile on window resize
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 480);
+    window.addEventListener('resize', handleResize);
+    // Set initial value
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Filtering and sorting state.
   // Default sortType is 'ranking' to sort by rank.
@@ -39,8 +53,22 @@ function Profile() {
   const menuRef = useRef(null);
   const parsedUserId = userId ? parseInt(userId, 10) : null;
 
-  // Create a ref for the VariableSizeList to allow dynamic row height resets.
+  // Create a ref for the VariableSizeList (desktop only)
   const listRef = useRef(null);
+
+  // Define updateRowHeight as a callback for ReviewRow
+  const updateRowHeight = useCallback((index, height) => {
+    setRowHeights((prev) => {
+      const currentHeight = prev[index];
+      if (currentHeight !== undefined && Math.abs(currentHeight - height) < 1) {
+        return prev;
+      }
+      return { ...prev, [index]: height };
+    });
+  }, []);
+
+  // Default collapsed height (desktop) remains 150px.
+  const defaultCollapsedHeight = 150;
 
   useEffect(() => {
     if (!parsedUserId) {
@@ -180,28 +208,22 @@ function Profile() {
   }
   const finalSortedReviews = filteredReviews;
 
-  // UPDATED: Reduced default collapsed height to 150px and added a minimum expanded height of 170px.
+  // getItemSize: For desktop (react-window), when expanded use measured height; otherwise, use defaultCollapsedHeight.
   const getItemSize = (index) => {
     const review = finalSortedReviews[index];
-    const collapsedHeight = 150; // New default row height when not expanded.
-    const minExpandedHeight = 190; // Minimum expanded height to ensure the "Hide Review" button is visible.
     if (expandedReviewIds.includes(review.id)) {
-      const contentLines = Math.ceil(review.content.length / 50);
-      // Constants: header (60px), estimated content (contentLines * 20px), button (30px), padding (20px),
-      // plus an extra 20px for ensuring the button is fully visible.
-      const estimatedExpandedHeight = 60 + contentLines * 20 + 30 + 20 + 20;
-      return Math.max(collapsedHeight, estimatedExpandedHeight, minExpandedHeight);
+      return rowHeights[index] || (60 + Math.ceil(review.content.length / 90) * 20 + 30 + 20 + 30);
     } else {
-      return collapsedHeight;
+      return defaultCollapsedHeight;
     }
   };
 
-  // Reset the list's row sizes whenever expandedReviewIds changes.
+  // When rowHeights or expandedReviewIds change, force the list to recalc row sizes.
   useEffect(() => {
     if (listRef.current) {
       listRef.current.resetAfterIndex(0, true);
     }
-  }, [expandedReviewIds]);
+  }, [rowHeights, expandedReviewIds]);
 
   // Toggle review expansion.
   const toggleReviewExpansion = (reviewId) => {
@@ -210,27 +232,24 @@ function Profile() {
     );
   };
 
-  // UPDATED: When filtering by position, collapse all expanded reviews.
+  // When filtering or sorting, collapse expanded reviews.
   const handleFilterByPosition = (position) => {
     setFilterPosition(position);
     setFilterTeam('');
     setExpandedReviewIds([]);
   };
 
-  // UPDATED: When filtering by team, collapse all expanded reviews.
   const handleFilterByTeam = (e) => {
     setFilterTeam(e.target.value);
     setFilterPosition('');
     setExpandedReviewIds([]);
   };
 
-  // UPDATED: When sorting method changes, collapse all expanded reviews.
   const handleSortChange = (e) => {
     setSortType(e.target.value);
     setExpandedReviewIds([]);
   };
 
-  // UPDATED: When clearing filters, reset sortType to 'ranking' and collapse expanded reviews.
   const handleClearFilters = () => {
     setFilterTeam('');
     setFilterPosition('');
@@ -238,11 +257,26 @@ function Profile() {
     setExpandedReviewIds([]);
   };
 
-  // Define a row component for virtualization.
+  // Updated ReviewRow component.
   const ReviewRow = ({ index, style }) => {
     const review = finalSortedReviews[index];
+    const isExpanded = expandedReviewIds.includes(review.id);
+    // Ref for the expanded content area.
+    const contentRef = useRef(null);
+
+    useLayoutEffect(() => {
+      if (isExpanded && contentRef.current) {
+        const headerHeight = 60;
+        const buttonHeight = 30;
+        const padding = 20;
+        const contentHeight = contentRef.current.scrollHeight;
+        const newHeight = headerHeight + contentHeight + buttonHeight + padding;
+        updateRowHeight(index, newHeight);
+      }
+    }, [isExpanded, index, review.content, updateRowHeight]);
+
     return (
-      <div key={review.id} className="review-ranking-item" style={{ ...style, overflowX: 'visible' }}>
+      <div className="review-ranking-item" style={{ ...style, overflow: 'visible' }}>
         <div className="review-header" style={{ position: 'relative' }}>
           <div className="review-player-info">
             <p className="review-player">{review.playerName}</p>
@@ -264,16 +298,10 @@ function Profile() {
               </button>
               {openMenuReviewId === review.id && (
                 <div className="review-menu" style={{ top: '22px', right: '5px' }}>
-                  <button
-                    className="review-menu-item"
-                    onClick={() => { setEditingReview(review); setOpenMenuReviewId(null); }}
-                  >
+                  <button className="review-menu-item" onClick={() => { setEditingReview(review); setOpenMenuReviewId(null); }}>
                     Edit
                   </button>
-                  <button
-                    className="review-menu-item"
-                    onClick={() => { handleDeleteReviewAndRanking(review.id, review.player_id); setOpenMenuReviewId(null); }}
-                  >
+                  <button className="review-menu-item" onClick={() => { handleDeleteReviewAndRanking(review.id, review.player_id); setOpenMenuReviewId(null); }}>
                     Delete
                   </button>
                 </div>
@@ -282,90 +310,20 @@ function Profile() {
           )}
         </div>
         <div className="review-condensed">
-          {expandedReviewIds.includes(review.id) ? (
-            <div className="review-content">
+          {isExpanded ? (
+            <div className="review-content" ref={contentRef}>
               <p><strong>Review:</strong> {review.content}</p>
               <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">
                 Hide Review
               </button>
             </div>
           ) : (
-            <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">
-              Show Review
-            </button>
+            <div className="review-content">
+              <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">
+                Show Review
+              </button>
+            </div>
           )}
-        </div>
-      </div>
-    );
-  };
-
-  // Edit modal for review and ranking updates.
-  // UPDATED: Added max(450, ...) to the Yup schema for "content" to enforce a 450-character limit.
-  const EditReviewModal = ({ review, onClose }) => {
-    return (
-      <div className="modal-overlay">
-        <div className="modal-content">
-          <h3>Edit Review for {review.playerName}</h3>
-          <Formik
-            initialValues={{
-              rank: review.ranking !== null ? review.ranking : '',
-              content: review.content,
-            }}
-            validationSchema={Yup.object({
-              rank: Yup.number()
-                .min(1, 'Rank must be at least 1')
-                .max(100, 'Rank must be at most 100')
-                .required('Required'),
-              content: Yup.string()
-                .max(450, 'Review cannot exceed 450 characters')
-                .required('Required'),
-            })}
-            onSubmit={async (values, { setSubmitting }) => {
-              try {
-                if (review.ranking_id) {
-                  await dispatch(updateRanking({
-                    id: review.ranking_id,
-                    player_id: review.player_id,
-                    user_id: parsedUserId,
-                    rank: values.rank,
-                  })).unwrap();
-                }
-                await dispatch(updateReview({
-                  id: review.id,
-                  player_id: review.player_id,
-                  user_id: parsedUserId,
-                  content: values.content,
-                })).unwrap();
-                dispatch(fetchReviews());
-                dispatch(fetchRankings());
-                onClose();
-              } catch (error) {
-                console.error('Failed to update review and ranking:', error);
-              } finally {
-                setSubmitting(false);
-              }
-            }}
-          >
-            {({ isSubmitting }) => (
-              <Form className="edit-review-form">
-                <div className="form-group">
-                  <label htmlFor={`modal-edit-rank-${editingReview.id}`}>Rank</label>
-                  <Field type="number" id={`modal-edit-rank-${editingReview.id}`} name="rank" className="input-field" />
-                  <ErrorMessage name="rank" component="div" className="error-message" />
-                </div>
-                <div className="form-group">
-                  <label htmlFor={`modal-edit-content-${editingReview.id}`}>Review</label>
-                  <Field as="textarea" id={`modal-edit-content-${editingReview.id}`} name="content" className="input-field" />
-                  <ErrorMessage name="content" component="div" className="error-message" />
-                </div>
-                <button type="submit" disabled={isSubmitting} className="submit-button">Update</button>
-                <button type="button" onClick={() => setEditingReview(null)} className="cancel-button">Cancel</button>
-              </Form>
-            )}
-          </Formik>
-          <button className="modal-close-button" onClick={() => setEditingReview(null)}>
-            Close
-          </button>
         </div>
       </div>
     );
@@ -457,18 +415,26 @@ function Profile() {
             </div>
           </div>
 
-          {/* Virtualized list for faster scrolling through reviews */}
+          {/* Render list conditionally based on device */}
           {finalSortedReviews.length > 0 ? (
-            <List
-              ref={listRef}
-              height={600}
-              itemCount={finalSortedReviews.length}
-              itemSize={getItemSize}
-              width="100%"
-              style={{ overflowX: 'hidden' }}
-            >
-              {ReviewRow}
-            </List>
+            isMobile ? (
+              <div className="reviews-list">
+                {finalSortedReviews.map((review, index) => (
+                  <ReviewRow key={review.id} index={index} style={{}} />
+                ))}
+              </div>
+            ) : (
+              <List
+                ref={listRef}
+                height={600}
+                itemCount={finalSortedReviews.length}
+                itemSize={getItemSize}
+                width="100%"
+                style={{ overflowX: 'hidden' }}
+              >
+                {ReviewRow}
+              </List>
+            )
           ) : (
             <p className="no-reviews-rankings-message">No reviews or rankings available.</p>
           )}
