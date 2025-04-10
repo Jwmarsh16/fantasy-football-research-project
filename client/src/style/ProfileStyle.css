@@ -1,27 +1,23 @@
 /* ============================================
-   COMBINED PROFILE STYLE – LAYOUT FROM STYLE 1
-   & COLOR SCHEME FROM STYLE 2 (with yellow replaced)
-   ============================================ */
+   GLOBAL PROFILE STYLE (Shared Variables & Layout)
+============================================ */
 
-/* Define Variables (modified from Style 2) */
+/* Design Tokens */
 :root {
   --primary-bg-gradient: linear-gradient(135deg, #1abc9c, #2c3e50);
   --container-bg: linear-gradient(135deg, #035e0b, #0984e3);
-  /* Replacing yellow/gold with vibrant cyan accents */
-  --title-color: #166a79;               /* Cyan accent for titles */
-  --detail-color: #ffffff;              /* White text for details */
+  --title-color: #166a79;
+  --detail-color: #ffffff;
   --info-bg: rgba(255, 255, 255, 0.2);
   --avatar-border-color: #00bcd4;
   --delete-btn-gradient: linear-gradient(135deg, #b13a2d, #ff5733);
   --delete-btn-hover-bg: #c0392b;
   --section-title-color: #282a79;
   --review-player-color: #282a79;
-  --ranking-value-color: #26c6da;       /* A slightly lighter cyan variant */
+  --ranking-value-color: #26c6da;
 }
 
-/* -------------------------------
-   Container
-------------------------------- */
+/* Background Container */
 .profile-container {
   background: var(--container-bg);
   background-size: 200% 200%;
@@ -31,21 +27,19 @@
 }
 
 @keyframes bgShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* -------------------------------
-   Profile Card – Make it a positioned container
-------------------------------- */
+/* Profile Card Layout */
 .profile-page {
-  position: relative; /* Ensures that absolute children are positioned relative to this container */
+  position: relative;
   background: var(--primary-bg-gradient);
   border-top: 6px solid var(--title-color);
   color: var(--detail-color);
   max-width: 900px;
-  margin: 80px auto 40px; /* Reduced top margin from 120px to 80px */
+  margin: 80px auto 40px;
   padding: 40px 50px;
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
@@ -58,9 +52,7 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
 
-/* -------------------------------
-   Header Section
-------------------------------- */
+/* Page Header */
 .profile-header {
   display: flex;
   justify-content: space-between;
@@ -78,78 +70,7 @@
   letter-spacing: 1px;
 }
 
-.delete-profile-button {
-  background: var(--delete-btn-gradient);
-  color: #fff;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.delete-profile-button:hover {
-  background: var(--delete-btn-hover-bg);
-  transform: scale(1.05);
-}
-
-/* -------------------------------
-   User Info Section
-------------------------------- */
-.user-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding: 30px;
-  background: #ffffff;
-  border: 1px solid #dcdcdc;
-  border-radius: 15px;
-  margin-bottom: 30px;
-  transition: box-shadow 0.3s ease;
-}
-
-.user-info:hover {
-  box-shadow: 0 0 20px rgba(41, 128, 185, 0.3);
-}
-
-.user-avatar-section {
-  flex: 0 0 160px;
-  text-align: center;
-  position: relative; /* Needed for the file upload button overlay */
-}
-
-.user-avatar-img {
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid var(--avatar-border-color);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  transition: transform 0.6s ease;
-}
-
-.user-avatar-img:hover {
-  transform: rotate(360deg);
-}
-
-.user-info-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.user-detail {
-  font-size: 20px;
-  margin: 8px 0;
-  color: var(--title-color);
-  font-weight: bold;
-}
-
-/* -------------------------------
-   Reviews & Rankings Section
-------------------------------- */
+/* Section Wrapper (for reviews + filters) */
 .reviews-rankings-section {
   background: #ffffff;
   border: 2px solid #dcdcdc;
@@ -169,563 +90,41 @@
   letter-spacing: 0.5px;
 }
 
-/* -------------------------------
-   Review/Ranking Items
-------------------------------- */
-.review-ranking-item {
-  background: #f7f7f7;
-  border: 2px dashed #dcdcdc;
-  border-radius: 15px;
-  padding: 20px;
-  margin-bottom: 20px;
-  transition: transform 0.3s ease, background 0.3s ease;
-  overflow-x: visible; 
-  box-sizing: border-box;
-}
-
-.review-ranking-item:hover {
-  transform: scale(1.02);
-  background: #ececec;
-}
-
-/* Review Header & Content */
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.review-player {
-  font-size: 22px;
-  font-weight: bold;
-  color: var(--review-player-color);
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-  margin: 0;
-}
-
-.review-player-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.player-details {
+.no-reviews-rankings-message {
   font-size: 16px;
-  color: #555;
-  margin: 4px 0 0 0;
-  font-style: italic;
-}
-
-.ranking-info {
-  flex: 0 0 100px;
+  color: #ffffff;
   text-align: center;
-  font-size: 18px;
-  color: var(--ranking-value-color);
-  font-weight: bold;
-  transform: translateX(-2.0em);
-}
-
-.review-content {
-  font-size: 18px;
-  color: #555;
-  margin-top: 10px;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2000; /* Ensure this is high enough to appear above other content */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin-top: 20px;
 }
 
 
-/* --- Desktop Toggle Button Styling (applies same color as mobile) --- */
-.toggle-review-button {
-  background: var(--title-color);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  padding: 6px 12px;
-  margin-top: 8px;
-  position: static;
-  z-index: auto;
-}
-
-.toggle-review-button:hover {
-  background: #166a79;
-}
-
-/* --- Restore Original Desktop 3-Dot Button Styling --- */
-.review-menu-button {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: var(--title-color, #166a79);
-  padding: 2px;
-  transform: translateY(-0.5em);
-}
-
-.review-menu-button:hover {
-  color: #1b4f72;
-}
-
-/* --- Review Menu Styling: Matches the Profile Menu --- */
-.review-menu {
-  position: absolute;
-  top: 50px; /* Positioned similarly to the profile menu */
-  right: 0;
-  background: #e0f7fa;
-  color: #333;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  border-radius: 5px;
-  padding: 10px 0;
-  z-index: 100;  /* Ensure it appears above other content */
-}
-
-.review-menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.review-menu ul li {
-  padding: 8px 20px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  color: #333;
-  font-size: 12px;
-}
-
-.review-menu ul li:hover {
-  background: #b2ebf2;
-}
-
-.review-menu-item {
-  background: none;       /* Remove background */
-  border: none;           /* Remove border */
-  display: block;         /* Force block layout (like <li>) */
-  width: 100%;
-  padding: 8px 20px;      /* Same padding as profile menu items */
-  text-align: left;
-  font-size: 12px;
-  color: #333;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  -webkit-appearance: none; /* Remove any native styling */
-  -moz-appearance: none;
-}
-
-.review-menu-item:focus {
-  outline: none;          /* Remove focus outline */
-}
-
-.review-menu-item:hover {
-  background: #b2ebf2;
-}
-
-/* Ensure profile-menu-toggle bars use the correct color */
-.profile-menu-toggle .bar {
-  background-color: var(--title-color, #166a79);
-}
-
-/* -------------------------------
-   Delete Button (for reviews/rankings)
-------------------------------- */
-.delete-button {
-  background: var(--delete-btn-gradient);
-  color: #fff;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
-  transition: transform 0.3s ease, background 0.3s ease;
-  font-size: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.delete-button:hover {
-  background: var(--delete-btn-hover-bg);
-  transform: scale(1.05);
-}
-
-/* ============================================
-   SOCIAL MEDIA–INSPIRED ADDITIONS
-   ============================================ */
-
-/* Profile Menu Container – fixed so it remains visible */
-.profile-menu-container {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-}
-
-.profile-menu-toggle {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0;
-  transition: transform 0.3s ease;
-}
-
-.profile-menu-toggle:hover {
-  transform: scale(1.1);
-}
-
-.profile-menu-toggle .bar {
-  width: 100%;
-  height: 4px;
-  background-color: var(--title-color, #166a79);
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
-
-.profile-menu-toggle.open .bar:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-.profile-menu-toggle.open .bar:nth-child(2) {
-  opacity: 0;
-}
-.profile-menu-toggle.open .bar:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
-
-.profile-menu {
-  position: absolute;
-  top: 50px;
-  right: 0;
-  background: #e0f7fa;
-  color: #333;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  border-radius: 5px;
-  padding: 10px 0;
-}
-
-.profile-menu ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.profile-menu ul li {
-  padding: 8px 20px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  color: #333;
-  font-size: 12px;
-}
-
-.profile-menu ul li:hover {
-  background: #b2ebf2;
-}
-
-/* File Upload Button (for profile picture upload) */
-.file-upload-button {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background: var(--title-color);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  padding: 6px;
-  cursor: pointer;
-  transform: translate(25%, 25%);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  transition: background 0.3s ease;
-}
-
-.file-upload-button:hover {
-  background: #0097a7;
-}
-
-.profile-pic-updater input[type="file"] {
-  display: none;
-}
-
-.profile-pic-updater label.file-upload-label {
-  display: inline-block;
-  background-color: #166a79;
-  color: #fff;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.profile-pic-updater label.file-upload-label:hover {
-  background-color: #00bcd4;
-}
-
-/* -------------------------------
-   Filter and Sorting Controls Styling
-------------------------------- */
-.filter-sort-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-  padding: 15px;
-  background: var(--info-bg);
-  border: 1px solid #dcdcdc;
-  border-radius: 10px;
-}
-
-.position-filter-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.position-filter-circle {
-  background: #fff;
-  border: 2px solid var(--title-color);
-  color: var(--title-color);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-weight: bold;
-  text-align: center;
-  line-height: 36px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease, color 0.3s ease;
-}
-
-.position-filter-circle:hover,
-.position-filter-circle.active {
-  background: var(--title-color);
-  color: #fff;
-  transform: scale(1.1);
-}
-
-.team-filter-container,
-.sort-options {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.team-filter-label {
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--title-color);
-}
-
-.team-filter-dropdown,
-.sort-select {
-  padding: 6px 10px;
-  border: 1px solid #dcdcdc;
-  border-radius: 5px;
-  background: #fff;
-  font-size: 16px;
-  color: #333;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.team-filter-dropdown:focus,
-.sort-select:focus {
-  border-color: var(--title-color);
-}
-
-.clear-filters-button {
-  background: var(--delete-btn-gradient);
-  border: none;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s ease, transform 0.3s ease;
-}
-
-.clear-filters-button:hover {
-  background: var(--delete-btn-hover-bg);
-  transform: scale(1.05);
-}
-
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
-   @media (max-width: 768px) {
-    .profile-page {
-      padding: 20px 30px;
-      margin: 20px;
-    }
-    
-    .user-info {
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    .user-avatar-section {
-      margin-bottom: 20px;
-    }
-    
-    .user-info-section {
-      align-items: center;
-      text-align: center;
-    }
-    
-    .profile-title {
-      font-size: 24px;
-    }
-    
-    .user-detail {
-      font-size: 18px;
-    }
-    
-    .section-title {
-      font-size: 22px;
-    }
-    
-    .review-player {
-      font-size: 20px;
-    }
-    
-    .review-content {
-      font-size: 16px;
-    }
-    
-    .delete-button {
-      padding: 8px 12px;
-      font-size: 14px;
-    }
-    
-    .profile-menu-toggle {
-      font-size: 20px;
-      padding: 6px;
-    }
-    
-    .file-upload-button {
-      padding: 4px;
-    }
+/* Responsive Base Tweaks */
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 20px 30px;
+    margin: 20px;
   }
-  
-  @media (max-width: 768px) {
-    .filter-sort-container {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    
-    .team-filter-container,
-    .sort-options {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .team-filter-dropdown,
-    .sort-select {
-      width: 100%;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .profile-page {
-      padding: 15px 20px;
-      margin: 15px;
-    }
-    
-    .profile-title {
-      font-size: 20px;
-    }
-    
-    .user-detail {
-      font-size: 16px;
-    }
-    
-    .section-title {
-      font-size: 20px;
-    }
-    
-    /* REVIEW HEADER: Stack elements vertically */
-    .review-header {
-      display: block;
-      padding: 8px 10px;
-      position: relative;
-    }
-    
-    /* Player info remains unchanged */
-    .review-player-info {
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-    
-    /* Ranking info appears in its own block underneath, aligned to left */
-    .ranking-info {
-      display: block;
-      font-size: 14px;
-      margin: 4px 0 8px 0;
-      text-align: left;
-    }
-    
-    /* REVIEW CONDENSED: Let content and toggle button flow naturally */
-    .review-condensed {
-      padding: 8px 10px;
-      text-align: center;
-      min-height: 60px;
-      display: block;
-    }
-    
-    /* TOGGLE BUTTON: Remove absolute positioning so it sits naturally inside its container */
-    .toggle-review-button {
-      display: inline-block;
-      font-size: 12px;
-      padding: 6px 12px;
-      background: var(--title-color);
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      margin-top: 8px;
-      position: static;
-      z-index: auto;
-    }
-    
-    .toggle-review-button:hover {
-      background: #166a79;
-    }
-    
-    .review-content {
-      width: 100%;
-      box-sizing: border-box;
-    }
-    
-    .review-content p {
-      font-size: 14px;
-      line-height: 1.4;
-      word-wrap: break-word;
-    }
-  }
-  
-  
-  
-  
-  
-  
-  
-  
-  
 
-  
+  .profile-title {
+    font-size: 24px;
+  }
+
+  .section-title {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-page {
+    padding: 15px 20px;
+    margin: 15px;
+  }
+
+  .profile-title {
+    font-size: 20px;
+  }
+
+  .section-title {
+    font-size: 20px;
+  }
+}

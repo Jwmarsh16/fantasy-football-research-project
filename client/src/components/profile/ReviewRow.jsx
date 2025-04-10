@@ -1,20 +1,21 @@
-import React, { useLayoutEffect, useRef } from 'react';
+// components/profile/ReviewRow.jsx
+import React, { useRef, useLayoutEffect } from 'react';
 import '../../style/ReviewRow.css';
 
-const ReviewRow = ({
-  index,
+function ReviewRow({
   review,
+  index,
   style,
   isExpanded,
   currentUser,
   parsedUserId,
   openMenuReviewId,
-  toggleReviewExpansion,
   setOpenMenuReviewId,
   setEditingReview,
   handleDeleteReviewAndRanking,
+  toggleReviewExpansion,
   updateRowHeight
-}) => {
+}) {
   const contentRef = useRef(null);
 
   useLayoutEffect(() => {
@@ -35,36 +36,23 @@ const ReviewRow = ({
           <p className="review-player">{review.playerName}</p>
           <p className="player-details">{review.position} | {review.team}</p>
         </div>
-
         <p className="ranking-info" style={{ whiteSpace: 'nowrap' }}>
           <strong>Ranking:</strong> {review.ranking !== null ? review.ranking : 'N/A'}
         </p>
 
         {currentUser.id === parsedUserId && (
-          <div className="review-menu-container">
+          <div className="review-menu-container" style={{ position: 'absolute', top: '5px', right: '5px' }}>
             <button
               className="review-menu-button"
-              onClick={() =>
-                setOpenMenuReviewId(openMenuReviewId === review.id ? null : review.id)
-              }
+              style={{ transform: 'translateY(-0.5em)' }}
+              onClick={() => setOpenMenuReviewId(openMenuReviewId === review.id ? null : review.id)}
             >
               ⋮
             </button>
-
             {openMenuReviewId === review.id && (
-              <div className="review-menu">
-                <button className="review-menu-item" onClick={() => {
-                  setEditingReview(review);
-                  setOpenMenuReviewId(null);
-                }}>
-                  Edit
-                </button>
-                <button className="review-menu-item" onClick={() => {
-                  handleDeleteReviewAndRanking(review.id, review.player_id);
-                  setOpenMenuReviewId(null);
-                }}>
-                  Delete
-                </button>
+              <div className="review-menu" style={{ top: '22px', right: '5px' }}>
+                <button className="review-menu-item" onClick={() => { setEditingReview(review); setOpenMenuReviewId(null); }}>Edit</button>
+                <button className="review-menu-item" onClick={() => { handleDeleteReviewAndRanking(review.id, review.player_id); setOpenMenuReviewId(null); }}>Delete</button>
               </div>
             )}
           </div>
@@ -75,20 +63,16 @@ const ReviewRow = ({
         {isExpanded ? (
           <div className="review-content" ref={contentRef}>
             <p><strong>Review:</strong> {review.content}</p>
-            <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">
-              Hide Review
-            </button>
+            <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">Hide Review</button>
           </div>
         ) : (
           <div className="review-content">
-            <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">
-              Show Review
-            </button>
+            <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">Show Review</button>
           </div>
         )}
       </div>
     </div>
   );
-};
+}
 
 export default ReviewRow;
