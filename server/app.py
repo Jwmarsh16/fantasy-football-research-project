@@ -16,6 +16,10 @@ from resources.player import PlayerResource
 from resources.review import ReviewResource
 from resources.ranking import RankingResource
 
+# Serve frontend index
+@app.route('/')
+def serve_index():
+    return app.send_static_file('index.html')
 
 # Register API endpoints
 api.add_resource(RegisterResource, '/api/auth/register')
