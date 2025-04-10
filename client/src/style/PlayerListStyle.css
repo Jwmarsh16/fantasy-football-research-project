@@ -1,6 +1,5 @@
-/* Player List Page Styling */
 .player-list-page {
-  padding: 20px 10px; /* Adjust padding for smaller screens */
+  padding: 20px 10px;
   background: linear-gradient(to bottom right, #34495e, #f39c12);
   color: #ffffff;
   min-height: 100vh;
@@ -13,194 +12,21 @@
 }
 
 .player-list-title {
-  font-size: 32px; /* Reduced size for mobile */
+  font-size: 32px;
   margin-bottom: 20px;
   text-align: center;
   color: #ffffff;
   text-shadow: 2px 2px #2c3e50;
 }
 
-/* Position Filter Circle Styling */
-.position-filter-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px; /* Reduced gap for smaller screens */
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.position-filter-circle {
-  background-color: #2ecc71;
-  color: #ffffff;
-  border: none;
-  width: 50px; /* Adjusted size for mobile */
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px; /* Reduced font size */
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.position-filter-circle:hover {
-  background-color: #27ae60;
-  transform: scale(1.1);
-}
-
-/* Team Filter Container Styling */
-.team-filter-container {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  margin: 10px 0; /* Reduced margin for smaller screens */
-}
-
-.team-filter-label {
-  margin-right: 10px;
-  font-size: 16px; /* Reduced font size */
-  font-weight: bold;
-  color: #ffffff;
-}
-
-.team-filter-dropdown {
-  padding: 8px; /* Adjusted padding for smaller screens */
-  font-size: 14px; /* Reduced font size */
-  border-radius: 5px;
-  border: 2px solid #ffffff;
-  background-color: #ecf0f1;
-  transition: border-color 0.3s ease;
-}
-
-.team-filter-dropdown:focus {
-  border-color: #e67e22;
-}
-
-/* Sort and Clear Filters Styling */
-.sort-options {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.sort-select {
-  padding: 8px; /* Adjusted padding */
-  font-size: 14px; /* Reduced font size */
-  border-radius: 5px;
-  border: 2px solid #ffffff;
-  background-color: #ecf0f1;
-  transition: border-color 0.3s ease;
-}
-
-.clear-filters-button {
-  background-color: #e74c3c;
-  color: #ffffff;
-  padding: 8px 15px; /* Adjusted padding */
-  font-size: 14px; /* Reduced font size */
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.clear-filters-button:hover {
-  background-color: #c0392b;
-}
-
-/* Player Card Styling */
 .player-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px; /* Reduced gap for smaller screens */
+  gap: 15px;
   justify-content: center;
   padding: 20px 0;
 }
 
-.player-card {
-  background-color: #ecf0f1;
-  color: #34495e;
-  border-radius: 10px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  width: 100%; /* Full width for mobile */
-  max-width: 300px; /* Ensure consistent width */
-  padding: 15px; /* Adjusted padding */
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.player-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-}
-
-.player-link {
-  font-size: 20px; /* Adjusted font size for mobile */
-  color: #e67e22;
-  text-decoration: none;
-  transition: color 0.3s ease;
-  font-weight: bold;
-}
-
-.player-link:hover {
-  color: #d35400;
-}
-
-/* Updated Player Info Styling */
-.player-info {
-  padding: 10px 0;
-  border-top: 1px solid #ccc;
-  margin-top: 10px;
-}
-
-.player-info .player-name {
-  margin: 0;
-  font-size: 22px;
-  color: #e67e22;
-}
-
-.player-meta {
-  margin-top: 8px;
-  line-height: 1.5;
-}
-
-.player-meta p {
-  margin: 4px 0;
-  font-size: 14px;
-  color: #34495e;
-}
-
-.player-meta p strong {
-  color: #2980b9;
-}
-
-/* Existing Player Details Styling (if used elsewhere) */
-.player-details {
-  margin-top: 10px;
-  font-size: 14px; /* Reduced font size */
-}
-
-.player-team,
-.player-position,
-.player-ranking {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.player-card-content .player-avatar .player-avatar-img {
-  width: 75px; /* Half the original size */
-  height: 75px;
-  border-radius: 50%; /* Ensure the avatar remains circular */
-  object-fit: cover; /* Maintain aspect ratio of the image */
-  border: 3px solid #ccc; /* Optional border for aesthetics */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Optional shadow */
-}
-
-/* Responsive Design */
 @media screen and (max-width: 768px) {
   .player-list-title {
     font-size: 28px;
@@ -245,7 +71,7 @@
   }
 
   .player-card {
-    max-width: 100%; /* Use full width for very small screens */
+    max-width: 100%;
     padding: 10px;
   }
 
@@ -257,3 +83,4 @@
     font-size: 10px;
   }
 }
+

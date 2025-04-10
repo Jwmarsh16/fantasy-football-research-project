@@ -1,0 +1,37 @@
+.sort-controls-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sort-label {
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.sort-select {
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 2px solid #ffffff;
+  background-color: #ecf0f1;
+  transition: border-color 0.3s ease;
+}
+
+.clear-filters-button {
+  background-color: #e74c3c;
+  color: #ffffff;
+  padding: 8px 15px;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.clear-filters-button:hover {
+  background-color: #c0392b;
+}

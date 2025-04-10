@@ -1,0 +1,63 @@
+.player-card {
+  background-color: #ecf0f1;
+  color: #34495e;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 300px;
+  padding: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.player-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.player-link {
+  font-size: 20px;
+  color: #e67e22;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  font-weight: bold;
+}
+
+.player-link:hover {
+  color: #d35400;
+}
+
+.player-info {
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
+  margin-top: 10px;
+}
+
+.player-info .player-name {
+  margin: 0;
+  font-size: 22px;
+  color: #e67e22;
+}
+
+.player-meta {
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.player-meta p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #34495e;
+}
+
+.player-meta p strong {
+  color: #2980b9;
+}
+
+.player-card-content .player-avatar .player-avatar-img {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ccc;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}

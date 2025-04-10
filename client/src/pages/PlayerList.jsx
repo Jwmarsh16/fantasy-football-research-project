@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPlayers } from '../redux/slices/playerSlice';
 import { fetchRankings } from '../redux/slices/rankingSlice';
-import { Link } from 'react-router-dom';
+
+import PositionFilter from '../components/player/PositionFilter';
+import TeamDropdown from '../components/player/TeamDropdown';
+import SortControls from '../components/player/SortControls';
+import PlayerCard from '../components/player/PlayerCard';
+
 import '../style/PlayerListStyle.css';
 
-// Function to get player headshot (local images)
 const getPlayerHeadshot = (playerName) => {
   const formattedName = playerName.toLowerCase().replace(/ /g, "_");
-  const imagePath = `/images/players/${formattedName}.png`;
-  
-  return imagePath; // Local image path
+  return `/images/players/${formattedName}.png`;
 };
 
 function PlayerList() {
@@ -18,6 +20,7 @@ function PlayerList() {
   const players = useSelector((state) => state.player.players);
   const rankings = useSelector((state) => state.ranking.rankings);
   const status = useSelector((state) => state.player.status);
+
   const [sortedPlayers, setSortedPlayers] = useState([]);
   const [sortType, setSortType] = useState('');
   const [filterTeam, setFilterTeam] = useState('');
@@ -32,22 +35,18 @@ function PlayerList() {
 
   useEffect(() => {
     const playersWithRankings = players.map((player) => {
-      const playerRankings = rankings.filter((ranking) => ranking.player_id === player.id);
-      const averageRank = playerRankings.length > 0
-        ? playerRankings.reduce((sum, ranking) => sum + ranking.rank, 0) / playerRankings.length
+      const playerRankings = rankings.filter((r) => r.player_id === player.id);
+      const averageRank = playerRankings.length
+        ? playerRankings.reduce((sum, r) => sum + r.rank, 0) / playerRankings.length
         : null;
       return { ...player, average_rank: averageRank };
     });
 
-    let filteredPlayers = [...playersWithRankings];
-    if (filterTeam) {
-      filteredPlayers = filteredPlayers.filter((player) => player.team === filterTeam);
-    }
-    if (filterPosition) {
-      filteredPlayers = filteredPlayers.filter((player) => player.position === filterPosition);
-    }
+    let filtered = [...playersWithRankings];
+    if (filterTeam) filtered = filtered.filter(p => p.team === filterTeam);
+    if (filterPosition) filtered = filtered.filter(p => p.position === filterPosition);
 
-    let sorted = [...filteredPlayers];
+    let sorted = [...filtered];
     if (sortType === 'team') {
       sorted.sort((a, b) => a.team.localeCompare(b.team));
     } else if (sortType === 'position') {
@@ -59,127 +58,53 @@ function PlayerList() {
         return a.average_rank - b.average_rank;
       });
     }
+
     setSortedPlayers(sorted);
   }, [players, rankings, sortType, filterTeam, filterPosition]);
 
-  const handleSortChange = (e) => {
-    setSortType(e.target.value);
-  };
-
+  const handleSortChange = (e) => setSortType(e.target.value);
   const handleFilterByTeam = (e) => {
     setFilterTeam(e.target.value);
     setFilterPosition('');
   };
-
   const handleFilterByPosition = (position) => {
     setFilterPosition(position);
     setFilterTeam('');
     setSortType('ranking');
   };
-
   const handleClearFilters = () => {
     setFilterTeam('');
     setFilterPosition('');
     setSortType('');
   };
 
-  const teams = [...new Set(players.map((player) => player.team))];
-  const positions = [...new Set(players.map((player) => player.position))];
+  const teams = [...new Set(players.map((p) => p.team))];
+  const positions = [...new Set(players.map((p) => p.position))];
 
-  if (status === 'loading') {
-    return <div className="loading-message">Loading...</div>;
-  }
-
-  if (status === 'failed') {
-    return <div className="error-message">Error loading players.</div>;
-  }
+  if (status === 'loading') return <div className="loading-message">Loading...</div>;
+  if (status === 'failed') return <div className="error-message">Error loading players.</div>;
 
   return (
     <div className="player-list-page">
       <h2 className="player-list-title">Fantasy Football Player List</h2>
 
-      {/* Position Circles for Filtering */}
-      <div className="position-filter-container">
-        {positions.map((position) => (
-          <button
-            key={position}
-            className="position-filter-circle"
-            onClick={() => handleFilterByPosition(position)}
-          >
-            {position}
-          </button>
-        ))}
-      </div>
+      <PositionFilter positions={positions} onFilter={handleFilterByPosition} />
+      <TeamDropdown teams={teams} selectedTeam={filterTeam} onChange={handleFilterByTeam} />
+      <SortControls
+        sortType={sortType}
+        onSortChange={handleSortChange}
+        onClearFilters={handleClearFilters}
+      />
 
-      {/* Team Dropdown for Filtering */}
-      <div className="team-filter-container">
-        <label htmlFor="team-filter" className="team-filter-label">Filter by Team:</label>
-        <select
-          id="team-filter"
-          value={filterTeam}
-          onChange={handleFilterByTeam}
-          className="team-filter-dropdown"
-        >
-          <option value="">All Teams</option>
-          {teams.map((team) => (
-            <option key={team} value={team}>
-              {team}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Sort Options */}
-      <div className="sort-options">
-        <label htmlFor="sort">Sort by: </label>
-        <select id="sort" value={sortType} onChange={handleSortChange} className="sort-select">
-          <option value="">Select</option>
-          <option value="team">Team</option>
-          <option value="position">Position</option>
-          <option value="ranking">Ranking</option>
-        </select>
-        <button onClick={handleClearFilters} className="clear-filters-button">Clear Filters</button>
-      </div>
-
-      {/* Player List */}
       <ul className="player-list">
         {sortedPlayers.map((player) => (
-          <li key={player.id} className="player-card">
-            <div className="player-card-content">
-              {/* Player Avatar wrapped in a Link */}
-              <div className="player-avatar">
-                <Link to={`/players/${player.id}`}>
-                  <img 
-                    src={getPlayerHeadshot(player.name)}
-                    onError={(e) => { 
-                      e.target.onerror = null; 
-                      e.target.src = "https://via.placeholder.com/150"; 
-                    }} 
-                    alt={`${player.name}'s Headshot`} 
-                    className="player-avatar-img" 
-                  />
-                </Link>
-              </div>
-              {/* Updated Player Info */}
-              <div className="player-info">
-                <Link to={`/players/${player.id}`} className="player-link">
-                  <h3 className="player-name">{player.name}</h3>
-                </Link>
-                <div className="player-meta">
-                  <p><strong>Team:</strong> {player.team}</p>
-                  <p><strong>Position:</strong> {player.position}</p>
-                  <p>
-                    <strong>Avg Rank:</strong> {player.average_rank && !isNaN(player.average_rank)
-                      ? Number(player.average_rank).toFixed(2)
-                      : 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </li>
+          <PlayerCard
+            key={player.id}
+            player={player}
+            getPlayerHeadshot={getPlayerHeadshot}
+          />
         ))}
       </ul>
-
     </div>
   );
 }

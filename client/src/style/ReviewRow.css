@@ -1,0 +1,100 @@
+.review-ranking-item {
+    background-color: #fff;
+    border-left: 5px solid #2980b9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    transition: transform 0.2s ease;
+  }
+  
+  .review-ranking-item:hover {
+    transform: translateX(5px);
+  }
+  
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  
+  .review-player-info {
+    flex-grow: 1;
+  }
+  
+  .review-player {
+    font-weight: bold;
+    font-size: 16px;
+    color: #2c3e50;
+  }
+  
+  .player-details {
+    font-size: 14px;
+    color: #777;
+  }
+  
+  .ranking-info {
+    font-size: 14px;
+    color: #2980b9;
+  }
+  
+  .review-menu-container {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  }
+  
+  .review-menu-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #34495e;
+  }
+  
+  .review-menu {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ccc;
+    right: 0;
+    top: 25px;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  
+  .review-menu-item {
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    text-align: left;
+    width: 100%;
+  }
+  
+  .review-menu-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .review-content {
+    font-size: 14px;
+    color: #2c3e50;
+    padding-top: 5px;
+  }
+  
+  .toggle-review-button {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #2980b9;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .toggle-review-button:hover {
+    text-decoration: underline;
+  }
+  
