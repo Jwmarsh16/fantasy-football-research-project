@@ -6,16 +6,14 @@
     --primary-bg-size: 400% 400%;
     --gradient-animation-duration: 10s;
     
-    --welcome-bg: rgba(255, 255, 255, 0.2);
-    --welcome-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    
     --auth-btn-gradient: linear-gradient(135deg, #38ef7d, #11998e);
     --auth-btn-hover: #11998e;
-    
-    --sidebar-bg: #f0f9ff;
-    
-    --news-bg: #fff8e7;
-    
+  
+    --sidebar-bg: #f0f9ff; /* Keep if sidebar might reuse it globally */
+    --news-bg: #fff8e7;    /* Keep if news might reuse it globally */
+    --welcome-bg: rgba(255, 255, 255, 0.2); /* Keep if multiple sections reuse it */
+    --welcome-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  
     --toggle-btn-bg: #3498db;
     --toggle-btn-hover: #2980b9;
   }
@@ -41,37 +39,6 @@
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
-  }
-  
-  /* ===============================
-     WELCOME SECTION
-     =============================== */
-  .welcome-section {
-    background: var(--welcome-bg);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: var(--welcome-box-shadow);
-    margin: 80px 0 20px;
-    max-width: 800px;
-    transition: transform 0.3s ease-in-out;
-    text-align: center;
-  }
-  
-  .welcome-section:hover {
-    transform: scale(1.05);
-  }
-  
-  .home-title {
-    font-size: 52px;
-    color: #ffffff;
-    text-shadow: 4px 4px #002147;
-    margin-bottom: 15px;
-  }
-  
-  .home-subtitle {
-    font-size: 22px;
-    color: #ffffff;
-    text-shadow: 2px 2px #002147;
   }
   
   /* ===============================
@@ -114,185 +81,19 @@
   }
   
   /* ===============================
-     USER INFO CARD
+     MAIN CONTENT LAYOUT STYLES
      =============================== */
-  .user-info-container {
-    position: absolute;
-    top: 140px;
-    left: 15px;
-    width: 25%;
-    z-index: 10;
+  .home-content {
     display: flex;
-    justify-content: center;
-  }
-  
-  .user-info-card {
-    background: rgba(255, 255, 255, 0.25);
-    color: #333;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
     width: 100%;
+    max-width: 1200px;
+    margin-top: 20px;
   }
   
-  .user-avatar img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: 3px solid #ff5733;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-    margin-right: 15px;
-  }
-  
- /* ===============================
-   MAIN CONTENT LAYOUT & GLOBAL STYLES
-   =============================== */
-.home-content {
-  display: flex;
-  justify-content: space-between;
-  gap: 30px;
-  width: 100%;
-  max-width: 1200px;
-  margin-top: 20px;
-}
-
-/* NEW: Define main-content and sidebar proportions */
-.main-content {
-  flex: 3;         /* Takes up about 75% of the width */
-  /* Remove width:100% from news-section so that it respects the parent's width */
-}
-
-  
-  /* ===============================
-     SIDEBAR (RANKING LIST)
-     =============================== */
-  .sidebar {
-    flex: 1;
-    min-width: 250px;
-    background: var(--sidebar-bg);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .sidebar-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 15px;
-  }
-  
-  .sidebar:hover {
-    transform: scale(1.05);
-  }
-  
-  .ranking-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 15px;
-  }
-  
-  .ranking-item {
-    padding: 12px;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, #ffffff, #f3f3f3);
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    font-size: 16px;
-    color: #333;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .ranking-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  }
-  
-  /* ===============================
-   NEWS SECTION (within .main-content)
-   =============================== */
-.news-section {
-  margin-top: 30px;
-  padding: 20px;
-  background: var(--news-bg);
-  border-radius: 15px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-  /* Remove fixed width so it fills the main-content container */
-  width: auto;
-  text-align: left;
-  transition: transform 0.3s ease-in-out;
-}
-
-.news-section:hover {
-  transform: scale(1.02);
-}
-  
-  .news-title {
-    font-size: 26px;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 15px;
-  }
-  
-  .news-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .news-item {
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .news-item:hover {
-    transform: translateY(-5px);
-  }
-  
-  .news-article-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #34495e;
-    margin-bottom: 5px;
-  }
-  
-  .news-article-date {
-    font-size: 14px;
-    color: #7f8c8d;
-    margin-bottom: 10px;
-  }
-  
-  .news-article-content {
-    font-size: 16px;
-    color: #555;
-  }
-  
-  /* ===============================
-     TOGGLE BUTTON
-     =============================== */
-  .toggle-button {
-    background: var(--toggle-btn-bg);
-    color: #ffffff;
-    border: none;
-    padding: 12px 22px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 30px;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-  
-  .toggle-button:hover {
-    background: var(--toggle-btn-hover);
-    transform: scale(1.1);
+  .main-content {
+    flex: 3;
   }
   
   /* ===============================
@@ -303,61 +104,17 @@
       flex-direction: column;
       gap: 20px;
     }
-    
+  
     .auth-button {
       font-size: 20px;
       padding: 14px 35px;
     }
-    
-    .user-info-container {
-      position: relative;
-      top: 50px;
-      left: 0;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    
-    .user-info-card {
-      width: 90%;
-      margin: 0 auto;
-    }
-    
-    .sidebar {
-      width: 90%;
-      margin: 0 auto;
-    }
-    
-    .news-section {
-      width: 90%;
-      margin: 20px auto;
-    }
   }
   
   @media screen and (max-width: 480px) {
-    .home-title {
-      font-size: 32px;
-    }
-    
-    .home-subtitle {
-      font-size: 18px;
-    }
-    
     .auth-button {
       font-size: 18px;
       padding: 12px 30px;
-    }
-    
-    .news-section {
-      padding: 12px;
-    }
-    
-    .toggle-button {
-      font-size: 16px;
-      padding: 10px 18px;
-    }
-    
-    .ranking-item {
-      font-size: 14px;
     }
   }
   

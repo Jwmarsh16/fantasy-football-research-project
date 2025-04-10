@@ -2,10 +2,59 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserById, setUserDetails } from '../redux/slices/userSlice';
-
 import { fetchRankings } from '../redux/slices/rankingSlice';
 import { fetchPlayers } from '../redux/slices/playerSlice';
+import { shuffleArray, getTopRankedPlayers } from '../utils/homeUtils';
+
+import UserCard from '../components/home/UserCard';
+import NewsSection from '../components/home/NewsSection';
+import RankingSidebar from '../components/home/RankingSidebar';
+import WelcomeSection from '../components/home/WelcomeSection';
+
 import '../style/HomeStyle.css';
+
+const mockNews = [
+  {
+    id: 1,
+    title: "🚀 Fantasy Football Week 14: Must-Start Players",
+    content:
+      "Our experts break down the must-start players for this week, including a surprising breakout candidate at running back.",
+    date: "2024-12-08",
+    category: "Player Trends",
+  },
+  {
+    id: 2,
+    title: "🔄 Trade Rumors: Could This Star WR Be on the Move?",
+    content:
+      "Insider reports suggest a major trade could be happening soon. Find out how this could impact your fantasy team.",
+    date: "2024-12-07",
+    category: "Trade Rumors",
+  },
+  {
+    id: 3,
+    title: "🛑 Injury Report: Who’s Out for Week 14?",
+    content:
+      "Several big-name players are questionable heading into the week. See who's in, who's out, and how to adjust your lineup.",
+    date: "2024-12-06",
+    category: "Injury Report",
+  },
+  {
+    id: 4,
+    title: "🔥 Sleeper Picks: Under-the-Radar Players to Watch",
+    content:
+      "Looking for an edge? We highlight five sleeper picks who could deliver big performances this week.",
+    date: "2024-12-05",
+    category: "Sleeper Picks",
+  },
+  {
+    id: 5,
+    title: "📊 Fantasy Rankings Update: Who’s Climbing the Charts?",
+    content:
+      "Based on recent performances, some players are seeing major jumps in the rankings. Find out who’s trending up!",
+    date: "2024-12-04",
+    category: "Rankings",
+  },
+];
 
 function Home() {
   const dispatch = useDispatch();
@@ -25,167 +74,64 @@ function Home() {
       dispatch(fetchUserById(user.id))
         .unwrap()
         .then((response) => {
-          if (response) {
-            dispatch(setUserDetails(response));
-          }
+          if (response) dispatch(setUserDetails(response));
         })
-        .catch((error) => {
-          console.error("Error fetching user details:", error);
-        });
+        .catch(console.error);
     }
     dispatch(fetchRankings());
     dispatch(fetchPlayers());
   }, [isAuthenticated, user, dispatch]);
 
-  const handleAuthButtonClick = () => {
-    navigate('/register');
-  };
+  const handleAuthButtonClick = () => navigate('/register');
+  const toggleList = () => setShowOverall((prev) => !prev);
 
-  const toggleList = () => {
-    setShowOverall((prev) => !prev);
-  };
+  const shuffledNews = shuffleArray(mockNews).slice(0, 3);
 
-  const top5Overall =
-    players.length > 0 && rankings.length > 0
-      ? [...rankings]
-          .sort((a, b) => a.rank - b.rank)
-          .slice(0, 5)
-          .map((ranking) => players.find((player) => player.id === ranking.player_id))
-      : [];
-
-  const top5User =
-    players.length > 0 && rankings.length > 0
-      ? [...rankings]
-          .filter((ranking) => ranking.user_id === user?.id)
-          .sort((a, b) => a.rank - b.rank)
-          .slice(0, 5)
-          .map((ranking) => players.find((player) => player.id === ranking.player_id))
-      : [];
-
-  // Mock news articles (shuffled on every page load)
-  const mockNews = [
-    {
-      id: 1,
-      title: "🚀 Fantasy Football Week 14: Must-Start Players",
-      content:
-        "Our experts break down the must-start players for this week, including a surprising breakout candidate at running back.",
-      date: "2024-12-08",
-      category: "Player Trends",
-    },
-    {
-      id: 2,
-      title: "🔄 Trade Rumors: Could This Star WR Be on the Move?",
-      content:
-        "Insider reports suggest a major trade could be happening soon. Find out how this could impact your fantasy team.",
-      date: "2024-12-07",
-      category: "Trade Rumors",
-    },
-    {
-      id: 3,
-      title: "🛑 Injury Report: Who’s Out for Week 14?",
-      content:
-        "Several big-name players are questionable heading into the week. See who's in, who's out, and how to adjust your lineup.",
-      date: "2024-12-06",
-      category: "Injury Report",
-    },
-    {
-      id: 4,
-      title: "🔥 Sleeper Picks: Under-the-Radar Players to Watch",
-      content:
-        "Looking for an edge? We highlight five sleeper picks who could deliver big performances this week.",
-      date: "2024-12-05",
-      category: "Sleeper Picks",
-    },
-    {
-      id: 5,
-      title: "📊 Fantasy Rankings Update: Who’s Climbing the Charts?",
-      content:
-        "Based on recent performances, some players are seeing major jumps in the rankings. Find out who’s trending up!",
-      date: "2024-12-04",
-      category: "Rankings",
-    },
-  ];
-
-  const shuffledNews = [...mockNews].sort(() => Math.random() - 0.5).slice(0, 3);
-  const loggedInUser = user?.id === userDetails?.id ? userDetails : user;
+  // 👇 Prevent crash by checking both are loaded
+  const loggedInUser =
+    user?.id && userDetails?.id && user.id === userDetails.id
+      ? userDetails
+      : user;
 
   const avatarUrl =
-    loggedInUser?.profilePic && loggedInUser.profilePic.trim() !== ""
+    loggedInUser?.profilePic?.trim()
       ? loggedInUser.profilePic
       : "https://placehold.co/600x400?text=Upload+Picture";
+
+  const topPlayers = getTopRankedPlayers(
+    rankings,
+    players,
+    showOverall ? null : loggedInUser?.id
+  );
 
   return (
     <div className="home-page">
       {userLoadingStatus === 'loading' ? (
         <p className="loading-message">Loading user information...</p>
-      ) : isAuthenticated && user ? (
-        <div className="user-info-container">
-          <div className="user-info-card">
-            <div className="user-avatar">
-              <img src={avatarUrl} alt="User Avatar" />
-            </div>
-            <div className="user-info-text">
-              <p className="user-name">{loggedInUser?.username || "Loading..."}</p>
-              <p className="user-email">{loggedInUser?.email || "Unknown Email"}</p>
-            </div>
-          </div>
-        </div>
+      ) : isAuthenticated && loggedInUser ? (
+        <UserCard
+          avatarUrl={avatarUrl}
+          username={loggedInUser?.username}
+          email={loggedInUser?.email}
+        />
       ) : null}
 
-      <div className="welcome-section">
-        <h1 className="home-title">Welcome back to your Fantasy Football Portal!</h1>
-        <h2 className="home-subtitle">Stay on top of the stats and make your best picks!</h2>
-      </div>
+      <WelcomeSection />
 
       {!isAuthenticated ? (
         <div className="auth-center-wrapper">
-          <div className="auth-section">
-            <p className="login-message">
-              Please login or register to continue your journey.
-            </p>
-            <button className="auth-button" onClick={handleAuthButtonClick}>
-              Register
-            </button>
-          </div>
+          <button className="auth-button" onClick={handleAuthButtonClick}>
+            Register
+          </button>
         </div>
       ) : (
         <div className="home-content">
-          <div className="main-content">
-            <div className="news-section">
-              <h3 className="news-title">🏈 Fantasy Football News & Updates</h3>
-              <ul className="news-list">
-                {shuffledNews.map((article) => (
-                  <li key={article.id} className="news-item">
-                    <h4 className="news-article-title">{article.title}</h4>
-                    <p className="news-article-category">
-                      <strong>Category:</strong> {article.category}
-                    </p>
-                    <p className="news-article-date">{article.date}</p>
-                    <p className="news-article-content">{article.content}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="sidebar">
-            <h3 className="sidebar-title">
-              {showOverall ? 'Top 5 Overall Ranked Players' : 'Your Top 5 Ranked Players'}
-            </h3>
-            <button className="toggle-button" onClick={toggleList}>
-              {showOverall ? 'Switch to Your Top 5' : 'Switch to Overall Top 5'}
-            </button>
-            <ul className="ranking-list">
-              {(showOverall ? top5Overall : top5User)?.map((player, index) => (
-                <li key={player?.id || index} className="ranking-item">
-                  <span className="player-name">{player?.name || 'Unknown Player'}</span>{' '}
-                  <span className="player-team">{player?.team || 'Unknown Team'}</span>{' '}
-                  <span className="player-position">{player?.position || 'Unknown Position'}</span>{' '}
-                  <span className="player-rank">Rank: {index + 1}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <NewsSection articles={shuffledNews} />
+          <RankingSidebar
+            players={topPlayers}
+            showOverall={showOverall}
+            toggleList={toggleList}
+          />
         </div>
       )}
     </div>

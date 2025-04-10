@@ -1,0 +1,43 @@
+.sidebar {
+    flex: 1;
+    min-width: 250px;
+    background: var(--sidebar-bg);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .sidebar:hover {
+    transform: scale(1.05);
+  }
+  
+  .sidebar-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+  
+  .ranking-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+  }
+  
+  .ranking-item {
+    padding: 12px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #ffffff, #f3f3f3);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    color: #333;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .ranking-item:hover {
+    transform: translateY(-5px);
+  }
+  
