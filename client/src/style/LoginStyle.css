@@ -31,3 +31,26 @@ form {
     bottom: 0;
     width: 100%;
   }
+
+  .login-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 100px 15px 60px;
+    text-align: center;
+    min-height: 100vh;
+    background: #fefefe;
+  
+    /* ADD THESE: */
+    width: 100%;
+    max-width: 100%;        /* Allow full-width growth */
+    box-sizing: border-box; /* Ensure padding doesn't constrain content width */
+  }
+  
+  
+  .page-title {
+    font-size: 36px;
+    margin-bottom: 30px;
+    color: #333;
+  }
+  

@@ -1,0 +1,18 @@
+.sort-options {
+    margin: 20px 0;
+    text-align: center;
+  }
+  
+  .sort-options label {
+    font-weight: bold;
+    color: #2980b9;
+    margin-right: 10px;
+  }
+  
+  .sort-options select {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  

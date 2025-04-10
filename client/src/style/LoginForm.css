@@ -1,14 +1,15 @@
 /* Form Styling */
 form {
-  background-color: #fffbf1;
-  padding: 40px;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin: 20px 0;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
+    background-color: #fffbf1;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
+    max-width: 700px; /* 👈 Wider */
+    width: 100%;       /* 👈 Forces it to fill up available space */
+  }
+  
+
 
 input[type="text"],
 input[type="email"],
