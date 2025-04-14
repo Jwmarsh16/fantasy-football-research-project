@@ -1,7 +1,7 @@
 // App.jsx - Updated to use React Router v6
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import NavBar from './components/NavBar';
+import NavBar from './components/layout/NavBar';
 import PlayerList from './pages/PlayerList';
 import PlayerDetail from './pages/PlayerDetail';
 import AddReview from './components/player/AddReview';
