@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { logoutUser } from '../redux/slices/authSlice';
-import '../style/NavBarStyle.css';
+import { logoutUser } from '../../redux/slices/authSlice';
+import '../../style/NavBarStyle.css';
 
 function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);

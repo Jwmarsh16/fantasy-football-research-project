@@ -91,12 +91,11 @@
 }
 
 .no-reviews-rankings-message {
-  font-size: 16px;
-  color: #ffffff;
   text-align: center;
-  margin-top: 20px;
+  font-size: 18px;
+  color: #fff;
+  margin-top: 30px;
 }
-
 
 /* Responsive Base Tweaks */
 @media (max-width: 768px) {
