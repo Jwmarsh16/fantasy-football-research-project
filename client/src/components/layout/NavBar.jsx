@@ -1,3 +1,4 @@
+// src/components/layout/NavBar.jsx
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -36,7 +37,11 @@ function NavBar() {
       <Link to="/" className="navbar-logo" onClick={closeMenu}>
         Fantasy Football Hub
       </Link>
-      <button className="hamburger" onClick={toggleMenu} aria-label="Toggle navigation">
+      <button
+        className="hamburger"
+        onClick={toggleMenu}
+        aria-label="Toggle navigation"
+      >
         <span className="hamburger-bar"></span>
         <span className="hamburger-bar"></span>
         <span className="hamburger-bar"></span>

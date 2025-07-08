@@ -1,8 +1,10 @@
-/* Navbar Styling */
+/* src/style/NavBarStyle.css */
+/* Updated to use design tokens from theme.css */
+
 .navbar {
-  background-color: #34495e;
-  color: #ffffff;
-  padding: 15px 30px;
+  background-color: var(--color-primary);      /* Use primary color */
+  color: var(--color-bg);                      /* Light text on dark bg */
+  padding: var(--space-3) var(--space-4);      /* 16px 24px */
   position: fixed;
   top: 0;
   width: 100%;
@@ -11,135 +13,100 @@
   align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  flex-wrap: wrap;
-  overflow: hidden;
 }
 
 .navbar-logo {
-  font-size: 1.8rem;
+  font-family: var(--font-heading);            /* Heading font */
+  font-size: var(--fs-h2);                     /* 2rem */
   font-weight: bold;
-  color: #ecf0f1;
+  color: var(--color-bg);                      /* Text on primary */
   text-decoration: none;
-  flex-shrink: 0;
 }
 
-.navbar-links {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap; /* Ensures links wrap if necessary */
-  flex-grow: 1;
-  justify-content: center; /* Center-aligns the links */
-  list-style: none; /* Removes bullets from list items */
-  padding: 0; /* Ensures no padding is applied to the container */
-  margin: 0; /* Removes default margins */
-  width: 100%; /* Makes the container span the full width of the navbar */
-  box-sizing: border-box; /* Includes padding and border in width calculation */
-}
-
-.navbar-links a {
-  color: #ecf0f1;
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.navbar-links a:hover {
-  color: #f39c12;
-  transform: scale(1.05);
-}
-
-.navbar-button {
-  background-color: #e74c3c;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 25px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  flex-shrink: 0;
-  margin-left: auto; /* Pushes the button to the right */
-  margin-right: 50px; /* Adds spacing from the right edge */
-  margin-top: -80px;
-}
-
-.navbar-button:hover {
-  background-color: #c0392b;
-  transform: translateY(-2px);
-}
-
-/* Adjust Logout Button Margin */
-.logout-button {
-  margin-left: auto;
-}
-
-/* Hamburger Menu */
 .hamburger {
-  display: none; /* Hidden on desktop */
+  display: none;
   flex-direction: column;
-  gap: 5px;
+  gap: var(--space-1);                         /* 4px */
   cursor: pointer;
   background: none;
   border: none;
-  padding: 10px;
+  padding: var(--space-2);                     /* 8px */
   z-index: 1100;
 }
 
 .hamburger-bar {
-  width: 25px;
+  width: var(--space-5);                       /* 32px */
   height: 3px;
-  background-color: #ecf0f1;
+  background-color: var(--color-bg);           /* Text on primary */
   border-radius: 2px;
-  transition: all 0.3s ease;
+  transition: all 150ms ease-in-out;
 }
 
-/* Navbar Links - Mobile Menu */
 .navbar-links {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  flex-grow: 1;
-  justify-content: center;
+  gap: var(--space-4);                         /* 24px */
   list-style: none;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  box-sizing: border-box;
-  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .navbar-links.open {
-  display: flex; /* Ensure links show when menu is open */
   transform: translateY(0);
   opacity: 1;
 }
 
-/* Responsive Design */
+.navbar-links a {
+  color: var(--color-bg);
+  text-decoration: none;
+  font-size: var(--fs-base);
+  font-weight: 500;
+  transition: color 150ms ease-in-out, transform 150ms ease-in-out;
+}
+
+.navbar-links a:hover {
+  color: var(--color-secondary);
+  transform: translateY(-2px);
+}
+
+.navbar-button {
+  margin-left: auto;                           /* Push to right */
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  border: none;
+  padding: var(--space-2) var(--space-3);      /* 8px 16px */
+  border-radius: var(--space-4);               /* 24px */
+  font-size: var(--fs-base);
+  cursor: pointer;
+  transition: transform 150ms ease-in-out;      /* Consider adding bg color change token */
+}
+
+.navbar-button:hover {
+  transform: translateY(-1px);
+}
+
 @media screen and (max-width: 768px) {
   .navbar {
     flex-direction: column;
     align-items: flex-start;
-    padding: 10px 0px;
+    padding: var(--space-2) var(--space-3);
   }
 
   .navbar-logo {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+    font-size: var(--fs-h3);                   /* 1.5rem */
+    margin-bottom: var(--space-2);              /* 8px */
+  }
+
+  .hamburger {
+    display: flex;
   }
 
   .navbar-links {
-    display: none; /* Hide links by default */
+    display: none;
     flex-direction: column;
-    align-items: flex-start;
-    background-color: #34495e;
-    padding: 10px;
-    top: 100%;
-    left: 0;
     width: 100%;
+    background-color: var(--color-primary);
+    padding: var(--space-2) 0;
     transform: translateY(-10px);
     opacity: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 150ms ease-in-out, opacity 150ms ease-in-out;
   }
 
   .navbar-links.open {
@@ -149,53 +116,31 @@
   }
 
   .navbar-links a {
-    font-size: 0.9rem;
-    padding: 10px 20px;
+    font-size: 0.875rem;
+    padding: var(--space-2) var(--space-3);
     width: 100%;
     text-align: left;
   }
 
   .navbar-button {
-    padding: 8px 15px;
-    font-size: 0.9rem;
-    margin-top: 10px;
-  }
-
-  .logout-button {
-    margin-left: 0;
-    align-self: flex-start;
-  }
-
-  .hamburger {
-    display: flex; /* Show hamburger menu on mobile */
-  }
-  .navbar-button {
-    background-color: #e74c3c;
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    flex-shrink: 0;
-    margin-left: auto; /* Pushes the button to the right */
-    margin-right: 40px; /* Adds spacing from the right edge */
-    margin-top: -40px;
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.875rem;
+    margin-top: var(--space-2);
+    margin-left: var(--space-3);
   }
 }
 
 @media screen and (max-width: 480px) {
   .navbar-logo {
-    font-size: 1.2rem;
+    font-size: var(--fs-h3);
   }
 
   .navbar-links a {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 
   .navbar-button {
-    font-size: 0.8rem;
-    padding: 6px 10px;
+    font-size: 0.75rem;
+    padding: var(--space-1) var(--space-2);
   }
 }
