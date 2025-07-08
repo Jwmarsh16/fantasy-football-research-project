@@ -1,29 +1,17 @@
-/* Global Styles */
+/* src/index.css */
+
+/* Import design tokens from theme.css */
+@import './style/theme.css'; /* Added theme.css import */
+
+/* Base styles */
 body {
-  font-family: 'Arial', sans-serif;
-  background-color: #fffbf1;
-  color: #222;
+  font-family: var(--font-body);       /* Use body font token */
+  font-size: var(--fs-base);           /* Use base font size token */
+  line-height: var(--line-height);     /* Use line-height token */
+  background-color: var(--color-bg);   /* Use background color token */
+  color: var(--color-text);            /* Use text color token */
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  line-height: 1.6;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+  box-sizing: border-box;              /* Ensure padding/borders are included in width */
+  overflow-x: hidden;                  /* Prevent horizontal scrolling */
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
