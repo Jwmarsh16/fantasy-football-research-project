@@ -1,27 +1,39 @@
 /* src/style/theme.css */
 
-/* Color palette design tokens */
 :root {
-  --color-primary: #1E3A8A;       /* Primary accent color */
-  --color-secondary: #FBBF24;     /* Secondary accent color */
-  --color-accent: #EF4444;        /* Highlight/accent color */
-  --color-surface: #1F2937;       /* Dark surface background */
-  --color-bg: #FFFBF1;            /* Page background */
-  --color-text: #222222;          /* Default text color */
+  /* Color palette design tokens */
+  --color-primary: #1E3A8A;         /* Primary accent color */
+  --color-secondary: #FBBF24;       /* Secondary accent color */
+  --color-accent: #EF4444;          /* Highlight/accent color */
+  --color-accent-dark: #C0392B;     /* Darker accent for hover states */
+
+  --color-surface: #1F2937;         /* Dark surface background */
+  --color-bg: #FFFBF1;              /* Page background */
+  --color-text: #222222;            /* Default text color */
 
   /* Typography design tokens */
-  --font-body: 'Arial', sans-serif;          /* Body font */
-  --font-heading: 'Poppins', sans-serif;     /* Heading font (import separately) */
-  --fs-base: 16px;                           /* Base font size */
-  --fs-h1: 2.5rem;                           /* H1 font size */
-  --fs-h2: 2rem;                             /* H2 font size */
-  --fs-h3: 1.5rem;                           /* H3 font size */
-  --line-height: 1.6;                        /* Default line height */
+  --font-body: 'Arial', sans-serif;
+  --font-heading: 'Poppins', sans-serif; /* Heading font (imported in index.html) */
+  --fs-base: 16px;
+  --fs-h1: 2.5rem;
+  --fs-h2: 2rem;
+  --fs-h3: 1.5rem;
+  --line-height: 1.6;
 
   /* Spacing design tokens */
-  --space-1: 4px;    /* Extra-tight spacing */
-  --space-2: 8px;    /* Tight spacing */
-  --space-3: 16px;   /* Regular spacing */
-  --space-4: 24px;   /* Comfortable spacing */
-  --space-5: 32px;   /* Spacious spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+}
+
+/* Container utility for centered, responsive content */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-3);
+  padding-right: var(--space-3);
 }

@@ -1,63 +1,67 @@
+/* src/style/PlayerCard.css */
+/* Refactored to use design tokens */
+
 .player-card {
-  background-color: #ecf0f1;
-  color: #34495e;
-  border-radius: 10px;
+  background-color: var(--color-bg);                   /* Light card bg */
+  color: var(--color-text);                             /* Default text */
+  border-radius: var(--space-3);                        /* 16px */
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 300px;
-  padding: 15px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: var(--space-3);                              /* 16px */
+  transition: transform 150ms ease-in-out, 
+              box-shadow 150ms ease-in-out;
 }
 
 .player-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(calc(-1 * var(--space-2)));     /* -8px */
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
 .player-link {
-  font-size: 20px;
-  color: #e67e22;
+  font-size: var(--fs-h3);
+  color: var(--color-secondary);
   text-decoration: none;
-  transition: color 0.3s ease;
   font-weight: bold;
+  transition: color 150ms ease-in-out;
 }
 
 .player-link:hover {
-  color: #d35400;
+  color: var(--color-accent-dark);
 }
 
 .player-info {
-  padding: 10px 0;
-  border-top: 1px solid #ccc;
-  margin-top: 10px;
+  padding: var(--space-2) 0;                            /* 8px 0 */
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: var(--space-2);                           /* 8px */
 }
 
 .player-info .player-name {
   margin: 0;
-  font-size: 22px;
-  color: #e67e22;
+  font-size: var(--fs-h3);
+  color: var(--color-secondary);
 }
 
 .player-meta {
-  margin-top: 8px;
-  line-height: 1.5;
+  margin-top: var(--space-2);
+  line-height: var(--line-height);
 }
 
 .player-meta p {
-  margin: 4px 0;
-  font-size: 14px;
-  color: #34495e;
+  margin: var(--space-1) 0;
+  font-size: 0.875rem;                                  /* 14px */
+  color: var(--color-text);
 }
 
 .player-meta p strong {
-  color: #2980b9;
+  color: var(--color-primary);
 }
 
-.player-card-content .player-avatar .player-avatar-img {
+.player-avatar-img {
   width: 75px;
   height: 75px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #ccc;
+  border: 3px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

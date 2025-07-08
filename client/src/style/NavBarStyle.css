@@ -1,50 +1,59 @@
 /* src/style/NavBarStyle.css */
-/* Updated to use design tokens from theme.css */
+/* Updated to use design tokens, container & active indicator, plus mobile active state */
 
 .navbar {
-  background-color: var(--color-primary);      /* Use primary color */
-  color: var(--color-bg);                      /* Light text on dark bg */
-  padding: var(--space-3) var(--space-4);      /* 16px 24px */
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  padding: var(--space-3) var(--space-4);
   position: fixed;
   top: 0;
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;  
   align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
 }
 
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .navbar-logo {
-  font-family: var(--font-heading);            /* Heading font */
-  font-size: var(--fs-h2);                     /* 2rem */
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
   font-weight: bold;
-  color: var(--color-bg);                      /* Text on primary */
+  color: var(--color-bg);
   text-decoration: none;
 }
 
 .hamburger {
   display: none;
   flex-direction: column;
-  gap: var(--space-1);                         /* 4px */
+  gap: var(--space-1);
   cursor: pointer;
   background: none;
   border: none;
-  padding: var(--space-2);                     /* 8px */
+  padding: var(--space-2);
   z-index: 1100;
 }
 
 .hamburger-bar {
-  width: var(--space-5);                       /* 32px */
+  width: var(--space-5);
   height: 3px;
-  background-color: var(--color-bg);           /* Text on primary */
+  background-color: var(--color-bg);
   border-radius: 2px;
   transition: all 150ms ease-in-out;
 }
 
 .navbar-links {
   display: flex;
-  gap: var(--space-4);                         /* 24px */
+  gap: var(--space-4);
   list-style: none;
 }
 
@@ -53,7 +62,8 @@
   opacity: 1;
 }
 
-.navbar-links a {
+.navbar-links .nav-link {
+  position: relative;
   color: var(--color-bg);
   text-decoration: none;
   font-size: var(--fs-base);
@@ -61,37 +71,49 @@
   transition: color 150ms ease-in-out, transform 150ms ease-in-out;
 }
 
-.navbar-links a:hover {
+.navbar-links .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: calc(-1 * var(--space-2));
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--space-2);
+  height: var(--space-2);
+  background-color: var(--color-secondary);
+  border-radius: 50%;
+}
+
+.navbar-links .nav-link:hover {
   color: var(--color-secondary);
   transform: translateY(-2px);
 }
 
 .navbar-button {
-  margin-left: auto;                           /* Push to right */
+  margin-left: auto;
   background-color: var(--color-accent);
   color: var(--color-bg);
   border: none;
-  padding: var(--space-2) var(--space-3);      /* 8px 16px */
-  border-radius: var(--space-4);               /* 24px */
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--space-4);
   font-size: var(--fs-base);
   cursor: pointer;
-  transition: transform 150ms ease-in-out;      /* Consider adding bg color change token */
+  transition: background-color 150ms ease-in-out, transform 150ms ease-in-out;
 }
 
 .navbar-button:hover {
+  background-color: var(--color-accent-dark);
   transform: translateY(-1px);
 }
 
 @media screen and (max-width: 768px) {
   .navbar {
     flex-direction: column;
-    align-items: flex-start;
     padding: var(--space-2) var(--space-3);
   }
 
   .navbar-logo {
-    font-size: var(--fs-h3);                   /* 1.5rem */
-    margin-bottom: var(--space-2);              /* 8px */
+    font-size: var(--fs-h3);
+    margin-bottom: var(--space-2);
   }
 
   .hamburger {
@@ -115,11 +137,17 @@
     opacity: 1;
   }
 
-  .navbar-links a {
+  .navbar-links .nav-link {
     font-size: 0.875rem;
     padding: var(--space-2) var(--space-3);
     width: 100%;
     text-align: left;
+  }
+
+  /* Mobile active state background highlight */
+  .navbar-links .nav-link.active {
+    background-color: var(--color-secondary);
+    color: var(--color-bg);
   }
 
   .navbar-button {
@@ -135,7 +163,7 @@
     font-size: var(--fs-h3);
   }
 
-  .navbar-links a {
+  .navbar-links .nav-link {
     font-size: 0.75rem;
   }
 
