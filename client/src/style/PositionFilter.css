@@ -1,28 +1,41 @@
+/* src/style/PositionFilter.css */
+/* Professional styling for position filter buttons */
+
 .position-filter-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 20px;
+  gap: var(--space-3);            /* 24px gap */
+  margin-bottom: var(--space-4);  /* 24px bottom margin */
 }
 
 .position-filter-circle {
-  background-color: #2ecc71;
-  color: #ffffff;
-  border: none;
-  width: 50px;
-  height: 50px;
+  width: var(--space-5);          /* 32px */
+  height: var(--space-5);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-muted);
   border-radius: 50%;
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  transition: background 150ms ease-in-out,
+              border-color 150ms ease-in-out,
+              transform 150ms ease-in-out;
 }
 
 .position-filter-circle:hover {
-  background-color: #27ae60;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-surface);
   transform: scale(1.1);
+}
+
+.position-filter-circle:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
 }

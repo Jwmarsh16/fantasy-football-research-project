@@ -1,8 +1,8 @@
+// src/pages/Profile.jsx
 import React, {
   useEffect,
   useState,
   useRef,
-  useLayoutEffect,
   useCallback
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -50,7 +50,6 @@ function Profile() {
   const [editingReview, setEditingReview] = useState(null);
   const [expandedReviewIds, setExpandedReviewIds] = useState([]);
   const [rowHeights, setRowHeights] = useState({});
-
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 480);
   const [sortType, setSortType] = useState('ranking');
   const [filterTeam, setFilterTeam] = useState('');
@@ -73,17 +72,14 @@ function Profile() {
       navigate('/login');
       return;
     }
-
     if (!userDetails || userDetails.id !== parsedUserId) {
       dispatch(fetchUserById(parsedUserId))
         .unwrap()
         .then((res) => res && dispatch(setUserDetails(res)))
         .catch((err) => console.error('Error fetching user details:', err));
     }
-
     dispatch(fetchRankings());
     dispatch(fetchReviews());
-
     if (players.length === 0) fetchPlayers();
   }, [parsedUserId, userDetails, dispatch, navigate, players.length]);
 
@@ -181,9 +177,7 @@ function Profile() {
     const p = players.find((pl) => pl.id === r.player_id);
     return p?.team;
   }).filter(Boolean))];
-
   const positions = [...new Set(players.map((p) => p.position))];
-
   const userReviewsWithData = userReviews.map((review) => {
     const player = players.find((p) => p.id === review.player_id);
     const rankObj = rankings.find(
@@ -220,80 +214,55 @@ function Profile() {
 
   return (
     <div className="profile-container">
-      <div className="profile-page">
-        <div className="profile-header">
-          <h2 className="profile-title">User Profile</h2>
-        </div>
+      <div className="container"> {/* Wrap for centered max-width */}
+        <div className="profile-page">
+          <div className="profile-header">
+            <h2 className="profile-title">User Profile</h2>
+          </div>
 
-        <ProfileMenu
-          currentUser={currentUser}
-          parsedUserId={parsedUserId}
-          navigate={navigate}
-          showMenu={showMenu}
-          setShowMenu={setShowMenu}
-          handleDeleteProfile={handleDeleteProfile}
-        />
-
-        <UserInfoCard
-          avatarUrl={avatarUrl}
-          forceUpdate={forceUpdate}
-          userDetails={userDetails}
-          currentUser={currentUser}
-          parsedUserId={parsedUserId}
-          dispatch={dispatch}
-          fetchUsers={fetchUsers}
-          setUserDetails={setUserDetails}
-        />
-
-        <div className="reviews-rankings-section">
-          <h3 className="section-title">Your Reviews and Rankings</h3>
-
-          <ReviewFilterSort
-            teams={teams}
-            positions={positions}
-            sortType={sortType}
-            filterTeam={filterTeam}
-            handleFilterByTeam={handleFilterByTeam}
-            handleFilterByPosition={handleFilterByPosition}
-            handleSortChange={handleSortChange}
-            handleClearFilters={handleClearFilters}
+          <ProfileMenu
+            currentUser={currentUser}
+            parsedUserId={parsedUserId}
+            navigate={navigate}
+            showMenu={showMenu}
+            setShowMenu={setShowMenu}
+            handleDeleteProfile={handleDeleteProfile}
           />
 
-          <div className="reviews-list">
-            {filtered.length > 0 ? (
-              isMobile ? (
-                filtered.map((review, index) => (
-                  <ReviewRow
-                    key={review.id}
-                    review={review}
-                    index={index}
-                    isExpanded={expandedReviewIds.includes(review.id)}
-                    currentUser={currentUser}
-                    parsedUserId={parsedUserId}
-                    openMenuReviewId={openMenuReviewId}
-                    setOpenMenuReviewId={setOpenMenuReviewId}
-                    setEditingReview={setEditingReview}
-                    handleDeleteReviewAndRanking={handleDeleteReviewAndRanking}
-                    toggleReviewExpansion={toggleReviewExpansion}
-                    updateRowHeight={updateRowHeight}
-                  />
-                ))
-              ) : (
-                <List
-                  ref={listRef}
-                  height={600}
-                  itemCount={filtered.length}
-                  itemSize={getItemSize}
-                  width="100%"
-                  style={{ overflowX: 'hidden' }}
-                >
-                  {({ index, style }) => (
+          <UserInfoCard
+            avatarUrl={avatarUrl}
+            forceUpdate={forceUpdate}
+            userDetails={userDetails}
+            currentUser={currentUser}
+            parsedUserId={parsedUserId}
+            dispatch={dispatch}
+            fetchUsers={fetchUsers}
+            setUserDetails={setUserDetails}
+          />
+
+          <div className="reviews-rankings-section">
+            <h3 className="section-title">Your Reviews and Rankings</h3>
+
+            <ReviewFilterSort
+              teams={teams}
+              positions={positions}
+              sortType={sortType}
+              filterTeam={filterTeam}
+              handleFilterByTeam={handleFilterByTeam}
+              handleFilterByPosition={handleFilterByPosition}
+              handleSortChange={handleSortChange}
+              handleClearFilters={handleClearFilters}
+            />
+
+            <div className="reviews-list">
+              {filtered.length > 0 ? (
+                isMobile ? (
+                  filtered.map((review, index) => (
                     <ReviewRow
-                      key={filtered[index].id}
-                      review={filtered[index]}
+                      key={review.id}
+                      review={review}
                       index={index}
-                      style={style}
-                      isExpanded={expandedReviewIds.includes(filtered[index].id)}
+                      isExpanded={expandedReviewIds.includes(review.id)}
                       currentUser={currentUser}
                       parsedUserId={parsedUserId}
                       openMenuReviewId={openMenuReviewId}
@@ -303,18 +272,44 @@ function Profile() {
                       toggleReviewExpansion={toggleReviewExpansion}
                       updateRowHeight={updateRowHeight}
                     />
-                  )}
-                </List>
-              )
-            ) : (
-              <p className="no-reviews-rankings-message">
-                No reviews or rankings available.
-              </p>
-            )}
+                  ))
+                ) : (
+                  <List
+                    ref={listRef}
+                    height={600}
+                    itemCount={filtered.length}
+                    itemSize={getItemSize}
+                    width="100%"
+                    style={{ overflowX: 'hidden' }}
+                  >
+                    {({ index, style }) => (
+                      <ReviewRow
+                        key={filtered[index].id}
+                        review={filtered[index]}
+                        index={index}
+                        style={style}
+                        isExpanded={expandedReviewIds.includes(filtered[index].id)}
+                        currentUser={currentUser}
+                        parsedUserId={parsedUserId}
+                        openMenuReviewId={openMenuReviewId}
+                        setOpenMenuReviewId={setOpenMenuReviewId}
+                        setEditingReview={setEditingReview}
+                        handleDeleteReviewAndRanking={handleDeleteReviewAndRanking}
+                        toggleReviewExpansion={toggleReviewExpansion}
+                        updateRowHeight={updateRowHeight}
+                      />
+                    )}
+                  </List>
+                )
+              ) : (
+                <p className="no-reviews-rankings-message">
+                  No reviews or rankings available.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
       {editingReview && (
         <EditReviewModal
           editingReview={editingReview}

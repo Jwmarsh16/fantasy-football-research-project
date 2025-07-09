@@ -1,57 +1,59 @@
-/* style/RegisterForm.css */
+/* src/style/RegisterForm.css */
+/* Refactored to use design tokens */
+
 .register-form {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 12px;
+  background-color: var(--color-bg);
+  padding: var(--space-4);                    /* 24px */
+  border-radius: var(--space-2);               /* 8px */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   max-width: 400px;
-  margin: 30px auto;
+  margin: var(--space-4) auto;                 /* 24px auto */
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-4);               /* 24px */
 }
 
 .form-control {
   width: 100%;
-  padding: 12px;
-  border: 2px solid #dcdcdc;
-  border-radius: 6px;
-  font-size: 14px;
-  background: #f9f9f9;
+  padding: var(--space-3);                     /* 16px */
+  border: 2px solid var(--color-surface);
+  border-radius: var(--space-2);
+  font-size: var(--fs-base);
+  background: var(--color-surface);
 }
 
 .form-control:focus {
   outline: none;
-  border-color: #2980b9;
-  background: #fff;
+  border-color: var(--color-primary);
+  background: var(--color-bg);
 }
 
 .error-message {
-  font-size: 13px;
-  color: #e74c3c;
-  margin-top: 5px;
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  margin-top: var(--space-1);                  /* 4px */
 }
 
 .register-button {
-  background-color: #3498db;
-  color: #fff;
-  padding: 12px 20px;
+  background-color: var(--color-primary);
+  color: var(--color-bg);
+  padding: var(--space-3) var(--space-4);       /* 16px 24px */
   font-weight: bold;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--space-2);
   cursor: pointer;
   width: 100%;
-  font-size: 16px;
-  transition: background 0.3s ease;
+  font-size: var(--fs-base);
+  transition: background 150ms ease-in-out;
 }
 
 .register-button:hover {
-  background-color: #2980b9;
+  background-color: var(--color-secondary);
 }
 
 .status-message,
 .error-message {
   text-align: center;
-  margin-top: 10px;
+  margin-top: var(--space-2);
 }

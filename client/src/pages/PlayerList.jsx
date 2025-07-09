@@ -1,13 +1,12 @@
+// src/pages/PlayerList.jsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPlayers } from '../redux/slices/playerSlice';
 import { fetchRankings } from '../redux/slices/rankingSlice';
-
 import PositionFilter from '../components/player/PositionFilter';
 import TeamDropdown from '../components/player/TeamDropdown';
 import SortControls from '../components/player/SortControls';
-import PlayerCard from '../components/player/PlayerCard';
-
+import { Link } from 'react-router-dom';
 import '../style/PlayerListStyle.css';
 
 const getPlayerHeadshot = (playerName) => {
@@ -35,11 +34,11 @@ function PlayerList() {
 
   useEffect(() => {
     const playersWithRankings = players.map((player) => {
-      const playerRankings = rankings.filter((r) => r.player_id === player.id);
-      const averageRank = playerRankings.length
-        ? playerRankings.reduce((sum, r) => sum + r.rank, 0) / playerRankings.length
+      const prs = rankings.filter((r) => r.player_id === player.id);
+      const avg = prs.length
+        ? prs.reduce((sum, r) => sum + r.rank, 0) / prs.length
         : null;
-      return { ...player, average_rank: averageRank };
+      return { ...player, average_rank: avg };
     });
 
     let filtered = [...playersWithRankings];
@@ -53,30 +52,14 @@ function PlayerList() {
       sorted.sort((a, b) => a.position.localeCompare(b.position));
     } else if (sortType === 'ranking') {
       sorted.sort((a, b) => {
-        if (a.average_rank === undefined) return 1;
-        if (b.average_rank === undefined) return -1;
-        return a.average_rank - b.average_rank;
+        const aRank = a.average_rank ?? Infinity;
+        const bRank = b.average_rank ?? Infinity;
+        return aRank - bRank;
       });
     }
 
     setSortedPlayers(sorted);
   }, [players, rankings, sortType, filterTeam, filterPosition]);
-
-  const handleSortChange = (e) => setSortType(e.target.value);
-  const handleFilterByTeam = (e) => {
-    setFilterTeam(e.target.value);
-    setFilterPosition('');
-  };
-  const handleFilterByPosition = (position) => {
-    setFilterPosition(position);
-    setFilterTeam('');
-    setSortType('ranking');
-  };
-  const handleClearFilters = () => {
-    setFilterTeam('');
-    setFilterPosition('');
-    setSortType('');
-  };
 
   const teams = [...new Set(players.map((p) => p.team))];
   const positions = [...new Set(players.map((p) => p.position))];
@@ -85,26 +68,53 @@ function PlayerList() {
   if (status === 'failed') return <div className="error-message">Error loading players.</div>;
 
   return (
-    <div className="player-list-page">
+    <div className="player-list-page container">
       <h2 className="player-list-title">Fantasy Football Player List</h2>
 
-      <PositionFilter positions={positions} onFilter={handleFilterByPosition} />
-      <TeamDropdown teams={teams} selectedTeam={filterTeam} onChange={handleFilterByTeam} />
-      <SortControls
-        sortType={sortType}
-        onSortChange={handleSortChange}
-        onClearFilters={handleClearFilters}
-      />
+      <div className="player-list-controls">
+        <PositionFilter positions={positions} onFilter={(pos) => { setFilterPosition(pos); setFilterTeam(''); setSortType('ranking'); }} />
+        <TeamDropdown teams={teams} selectedTeam={filterTeam} onChange={(e) => { setFilterTeam(e.target.value); setFilterPosition(''); }} />
+        <SortControls
+          sortType={sortType}
+          onSortChange={(e) => setSortType(e.target.value)}
+          onClearFilters={() => { setFilterTeam(''); setFilterPosition(''); setSortType(''); }}
+        />
+      </div>
 
-      <ul className="player-list">
-        {sortedPlayers.map((player) => (
-          <PlayerCard
-            key={player.id}
-            player={player}
-            getPlayerHeadshot={getPlayerHeadshot}
-          />
-        ))}
-      </ul>
+      <div className="player-table-container">
+        <table className="player-table">
+          <thead>
+            <tr>
+              <th>Avatar</th>
+              <th>Name</th>
+              <th>Team</th>
+              <th>Position</th>
+              <th>Avg Rank</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedPlayers.map((player) => (
+              <tr key={player.id}>
+                <td>
+                  <img
+                    src={getPlayerHeadshot(player.name)}
+                    alt={`${player.name} headshot`}
+                    className="player-table-avatar"
+                  />
+                </td>
+                <td>
+                  <Link to={`/players/${player.id}`} className="player-link">
+                    {player.name}
+                  </Link>
+                </td>
+                <td>{player.team}</td>
+                <td>{player.position}</td>
+                <td>{player.average_rank !== null ? Number(player.average_rank).toFixed(2) : 'N/A'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

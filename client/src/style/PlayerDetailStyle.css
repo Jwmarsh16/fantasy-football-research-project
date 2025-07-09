@@ -1,67 +1,65 @@
+/* src/style/PlayerDetailStyle.css */
+/* Refactored to use design tokens and container */
+
+.player-detail-page {
+  padding: var(--space-5) var(--space-3);
+  padding-top: calc(var(--space-5) * 3); /* 96px from top */
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
 .player-detail-container {
-  max-width: 800px;
-  margin: 120px auto;
-  padding: 20px;
-  background-color: #f7f9fc;
-  border-radius: 10px;
+  background-color: var(--color-bg);
+  padding: var(--space-4);
+  border-radius: var(--space-2);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 95%;
 }
 
 .toggle-reviews-section {
   text-align: center;
-  margin-top: 20px;
+  margin-top: var(--space-4);
 }
 
 .toggle-button {
-  background-color: #2e86de;
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-bg);
   border: none;
-  padding: 10px 20px;
-  margin-top: 15px;
-  border-radius: 5px;
-  font-size: 16px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--space-2);
+  font-size: var(--fs-base);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 150ms ease-in-out;
 }
 
 .toggle-button:hover {
-  background-color: #1b4f72;
+  background-color: var(--color-secondary);
+}
+
+/* Loading & error messages */
+.loading-message,
+.error-message {
+  text-align: center;
+  font-size: var(--fs-base);
+  color: var(--color-accent);
+  margin-top: var(--space-4);
 }
 
 @media (max-width: 768px) {
-  .player-name {
-    font-size: 20px;
+  .player-detail-container {
+    padding: var(--space-3);
   }
-
-  .form-title {
-    font-size: 18px;
-  }
-
-  .submit-button,
   .toggle-button {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-
-  .review-content,
-  .review-ranking {
-    font-size: 12px;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--fs-base);
   }
 }
 
 @media (max-width: 480px) {
   .player-detail-container {
-    padding: 15px;
+    padding: var(--space-2);
   }
-
-  .player-name {
-    font-size: 18px;
-  }
-
-  .submit-button,
   .toggle-button {
-    padding: 5px 10px;
-    font-size: 10px;
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.875rem;
   }
 }

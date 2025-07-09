@@ -1,7 +1,12 @@
+# server/seed.py
+# Seed script: generate fake users, players, reviews, and rankings,
+# now with ESPN-style player metadata and realistic stats.
+
 from config import app, db
 from faker import Faker
-from random import randint, sample, choice as rc
-from models import db, User, Player, Review, Ranking
+from random import randint, sample, choice as rc, uniform
+from datetime import date
+from models import User, Player, Review, Ranking
 
 if __name__ == '__main__':
     fake = Faker()
@@ -12,20 +17,20 @@ if __name__ == '__main__':
 
         def create_users():
             users = []
-            for _ in range(10):  # Seeding only 10 initial users
+            for _ in range(10):
                 user = User(
                     username=fake.user_name()[:20],
                     email=fake.email()[:50],
                     password=fake.password()[:20],
-                    isFake=True,      # Mark this account as a seeded fake account
-                    profilePic="avatar"  # Set profilePic to "avatar" so that seeded accounts display a fake avatar
+                    isFake=True,         # flag seeded accounts as fake
+                    profilePic="avatar"  # use placeholder avatar
                 )
                 users.append(user)
                 db.session.add(user)
             db.session.commit()
-            return users  # Return only the initially seeded users
+            return users
 
-         # List of real NFL players with their respective positions and teams
+        # Core NFL player list
         nfl_players = [
             {"name": "Patrick Mahomes", "position": "QB", "team": "Kansas City Chiefs"},
             {"name": "Josh Allen", "position": "QB", "team": "Buffalo Bills"},
@@ -66,55 +71,133 @@ if __name__ == '__main__':
 
         def create_players():
             players = []
-            for player_info in nfl_players:
+            current_year = date.today().year
+            for info in nfl_players:
+                # Generate metadata
+                birthdate = fake.date_of_birth(minimum_age=22, maximum_age=35)
+                height = rc(["6'5\"", "6'3\"", "6'1\"", "5'11\"", "5'9\""])
+                weight = f"{randint(180, 260)} lbs"
+                college = rc(["Alabama", "Ohio State", "LSU", "Clemson", "Georgia"])
+                draft_year = randint(2008, current_year)
+                draft_round = randint(1, 7)
+                draft_pick = randint(1, 32)
+                draft_info = f"{draft_year} Rd {draft_round}, Pk {draft_pick} ({info['team']})"
+                status = rc(["Active", "Injured Reserve", "Suspended"])
+
+                # Build nested stats per category
+                stats = {}
+
+                # Passing stats
+                passing_stats = {
+                    "season": current_year,
+                    "team": info["team"],
+                    "gp": randint(10, 17),
+                    "cmp": randint(200, 400),
+                    "att": randint(300, 600),
+                    "cmp_pct": round(uniform(50.0, 70.0), 1),
+                    "yds": randint(1000, 5000),
+                    "avg": round(uniform(5.0, 10.0), 1),
+                    "td": randint(10, 40),
+                    "int": randint(0, 20),
+                    "lng": randint(20, 80),
+                    "sack": randint(5, 40),
+                    "rtg": round(uniform(70.0, 120.0), 1),
+                    "qbr": round(uniform(20.0, 100.0), 1),
+                }
+
+                # Rushing stats
+                rushing_stats = {
+                    "season": current_year,
+                    "team": info["team"],
+                    "gp": randint(10, 17),
+                    "car": randint(0, 300),
+                    "yds": randint(0, 1500),
+                    "avg": round(uniform(0.0, 6.0), 1),
+                    "td": randint(0, 20),
+                    "lng": randint(5, 80),
+                    "fd": randint(0, 50),
+                    "fum": randint(0, 5),
+                }
+
+                # Receiving stats
+                receiving_stats = {
+                    "season": current_year,
+                    "team": info["team"],
+                    "gp": randint(10, 17),
+                    "rec": randint(0, 150),
+                    "tgts": randint(0, 200),
+                    "yds": randint(0, 2000),
+                    "avg": round(uniform(0.0, 20.0), 1),
+                    "td": randint(0, 15),
+                    "lng": randint(5, 80),
+                    "fd": randint(0, 60),
+                    "fum": randint(0, 5),
+                }
+
+                pos = info["position"]
+                # Assign only relevant stats per position
+                if pos == "QB":
+                    stats["passing"] = passing_stats
+                    stats["rushing"] = rushing_stats
+                    stats["receiving"] = { **receiving_stats, **{k: 0 for k in ["rec","tgts","yds","avg","td","lng","fd","fum"]} }
+                elif pos == "RB":
+                    stats["passing"] = { **passing_stats, **{k: 0 for k in ["cmp","att","cmp_pct","yds","avg","td","int","lng","sack","rtg","qbr"]} }
+                    stats["rushing"] = rushing_stats
+                    stats["receiving"] = receiving_stats
+                elif pos in ["WR", "TE"]:
+                    stats["passing"] = { **passing_stats, **{k: 0 for k in ["cmp","att","cmp_pct","yds","avg","td","int","lng","sack","rtg","qbr"]} }
+                    stats["rushing"] = { **rushing_stats, **{k: 0 for k in ["car","yds","avg","td","lng","fd","fum"]} }
+                    stats["receiving"] = receiving_stats
+                else:
+                    # Fallback: all zeros
+                    stats["passing"] = { **passing_stats, **{k: 0 for k in ["cmp","att","cmp_pct","yds","avg","td","int","lng","sack","rtg","qbr"]} }
+                    stats["rushing"] = { **rushing_stats, **{k: 0 for k in ["car","yds","avg","td","lng","fd","fum"]} }
+                    stats["receiving"] = { **receiving_stats, **{k: 0 for k in ["rec","tgts","yds","avg","td","lng","fd","fum"]} }
+
                 player = Player(
-                    name=player_info["name"],
-                    position=player_info["position"],
-                    team=player_info["team"],
-                    stats={
-                        "games_played": randint(10, 16),
-                        "touchdowns": randint(0, 20),
-                        "yards": randint(0, 2000)
-                    }
+                    name=info["name"],
+                    position=pos,
+                    team=info["team"],
+                    height=height,
+                    weight=weight,
+                    birthdate=birthdate,
+                    college=college,
+                    draft_info=draft_info,
+                    status=status,
+                    stats=stats
                 )
                 players.append(player)
                 db.session.add(player)
+
             db.session.commit()
             return players
 
         def create_reviews(seed_users, players):
-            reviews = []
-            for _ in range(50):  # Limit to initial seed users only
+            for _ in range(50):
                 review = Review(
                     content=fake.text(max_nb_chars=200),
                     user_id=rc(seed_users).id,
                     player_id=rc(players).id
                 )
-                reviews.append(review)
                 db.session.add(review)
             db.session.commit()
-            return reviews
 
         def create_rankings(seed_users, players):
-            rankings = []
-            for user in seed_users:  # Only use initially seeded users
-                player_ids = [player.id for player in players]
+            for user in seed_users:
+                player_ids = [p.id for p in players]
                 sample_ranks = sample(range(1, len(players) + 1), len(players))
-                for i in range(len(players)):
+                for idx, pid in enumerate(player_ids):
                     ranking = Ranking(
-                        rank=sample_ranks[i],
+                        rank=sample_ranks[idx],
                         user_id=user.id,
-                        player_id=player_ids[i]
+                        player_id=pid
                     )
-                    rankings.append(ranking)
                     db.session.add(ranking)
             db.session.commit()
-            return rankings
 
-        # Create initial users and players
+        # Run all creation functions
         seeded_users = create_users()
         players = create_players()
-
-        # Pass only the initially seeded users to avoid auto-adding for new users
         create_reviews(seeded_users, players)
         create_rankings(seeded_users, players)
+        print("Seeding complete!")

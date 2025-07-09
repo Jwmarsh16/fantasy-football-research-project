@@ -1,24 +1,28 @@
 /* src/style/theme.css */
 
 :root {
-  /* Color palette design tokens */
-  --color-primary: #1E3A8A;         /* Primary accent color */
-  --color-secondary: #FBBF24;       /* Secondary accent color */
-  --color-accent: #EF4444;          /* Highlight/accent color */
-  --color-accent-dark: #C0392B;     /* Darker accent for hover states */
+  /* Color palette design tokens (Business/Professional) */
+  --color-primary: #0A3D62;        /* Deep corporate blue */
+  --color-secondary: #0077B6;      /* Accent blue */
+  --color-accent: #F2994A;         /* Warm accent */
+  --color-accent-dark: #D35400;    /* Darker accent for hover */
 
-  --color-surface: #1F2937;         /* Dark surface background */
-  --color-bg: #FFFBF1;              /* Page background */
-  --color-text: #222222;            /* Default text color */
+  --color-surface: #FFFFFF;        /* Card & panel background */
+  --color-bg: #F4F6F8;             /* Page background (light gray) */
+  --color-text: #333333;           /* Dark gray text */
+  --color-muted: #6C757D;          /* Subdued text */
 
   /* Typography design tokens */
-  --font-body: 'Arial', sans-serif;
-  --font-heading: 'Poppins', sans-serif; /* Heading font (imported in index.html) */
+  --font-body: 'Roboto', sans-serif;       /* Professional sans-serif */
+  --font-heading: 'Merriweather', serif;   /* Elegant serif for headings */
   --fs-base: 16px;
+  --fs-small: 14px;
   --fs-h1: 2.5rem;
   --fs-h2: 2rem;
   --fs-h3: 1.5rem;
+  --fs-h4: 1.25rem;
   --line-height: 1.6;
+  --letter-spacing: 0.5px;
 
   /* Spacing design tokens */
   --space-1: 4px;
@@ -26,14 +30,36 @@
   --space-3: 16px;
   --space-4: 24px;
   --space-5: 32px;
+
+  /* Radius & shadow tokens */
+  --radius-small: 4px;
+  --radius-base: 8px;
+  --radius-large: 16px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
 }
 
 /* Container utility for centered, responsive content */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1200px;                /* Constrain content at wide viewports */
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--space-3);
-  padding-right: var(--space-3);
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+/* Utility classes */
+.text-muted {
+  color: var(--color-muted);
+}
+.rounded {
+  border-radius: var(--radius-base);
+}
+.shadow {
+  box-shadow: var(--shadow-md);
+}
+.transition {
+  transition: all 150ms ease-in-out;
 }

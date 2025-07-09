@@ -1,30 +1,29 @@
 /* src/style/NavBarStyle.css */
-/* Updated to use design tokens, container & active indicator, plus mobile active state */
+/* Navbar layout: logo left, links exactly centered, logout right via CSS Grid */
 
 .navbar {
   background-color: var(--color-primary);
   color: var(--color-bg);
-  padding: var(--space-3) var(--space-4);
   position: fixed;
   top: 0;
   width: 100%;
-  display: flex;
-  justify-content: center;  
-  align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  padding: var(--space-3) 0; /* vertical padding */
 }
 
 .navbar-container {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* left/right flex, center auto */
   align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;           
+  padding: 0 var(--space-4); /* horizontal padding */
 }
 
+/* Logo at far left */
 .navbar-logo {
+  grid-column: 1;
+  justify-self: start;
   font-family: var(--font-heading);
   font-size: var(--fs-h2);
   font-weight: bold;
@@ -32,29 +31,13 @@
   text-decoration: none;
 }
 
-.hamburger {
-  display: none;
-  flex-direction: column;
-  gap: var(--space-1);
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: var(--space-2);
-  z-index: 1100;
-}
-
-.hamburger-bar {
-  width: var(--space-5);
-  height: 3px;
-  background-color: var(--color-bg);
-  border-radius: 2px;
-  transition: all 150ms ease-in-out;
-}
-
+/* Links exactly centered */
 .navbar-links {
+  grid-column: 2;
   display: flex;
   gap: var(--space-4);
   list-style: none;
+  transition: transform 150ms ease-in-out, opacity 150ms ease-in-out;
 }
 
 .navbar-links.open {
@@ -88,8 +71,10 @@
   transform: translateY(-2px);
 }
 
+/* Logout button at far right */
 .navbar-button {
-  margin-left: auto;
+  grid-column: 3;
+  justify-self: end;
   background-color: var(--color-accent);
   color: var(--color-bg);
   border: none;
@@ -98,6 +83,8 @@
   font-size: var(--fs-base);
   cursor: pointer;
   transition: background-color 150ms ease-in-out, transform 150ms ease-in-out;
+  display: inline-flex;
+  align-items: center;
 }
 
 .navbar-button:hover {
@@ -105,56 +92,70 @@
   transform: translateY(-1px);
 }
 
+/* Hamburger (mobile) */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-1);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: var(--space-2);
+  z-index: 1100;
+}
+
+.hamburger-bar {
+  width: var(--space-5);
+  height: 3px;
+  background-color: var(--color-bg);
+  border-radius: 2px;
+  transition: all 150ms ease-in-out;
+}
+
+/* Responsive */
 @media screen and (max-width: 768px) {
   .navbar {
-    flex-direction: column;
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-2) 0;
   }
-
+  .navbar-container {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    row-gap: var(--space-2);
+    padding: 0 var(--space-3);
+  }
   .navbar-logo {
-    font-size: var(--fs-h3);
-    margin-bottom: var(--space-2);
+    grid-column: 1 / -1;
+    justify-self: center;
   }
-
   .hamburger {
     display: flex;
+    grid-column: 2 / 3;
   }
-
   .navbar-links {
+    grid-column: 1 / -1;
     display: none;
     flex-direction: column;
-    width: 100%;
     background-color: var(--color-primary);
     padding: var(--space-2) 0;
     transform: translateY(-10px);
     opacity: 0;
-    transition: transform 150ms ease-in-out, opacity 150ms ease-in-out;
   }
-
   .navbar-links.open {
     display: flex;
     transform: translateY(0);
     opacity: 1;
   }
-
   .navbar-links .nav-link {
-    font-size: 0.875rem;
-    padding: var(--space-2) var(--space-3);
     width: 100%;
-    text-align: left;
-  }
-
-  /* Mobile active state background highlight */
-  .navbar-links .nav-link.active {
-    background-color: var(--color-secondary);
-    color: var(--color-bg);
-  }
-
-  .navbar-button {
     padding: var(--space-2) var(--space-3);
+    text-align: left;
     font-size: 0.875rem;
+  }
+  .navbar-button {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: auto;
     margin-top: var(--space-2);
-    margin-left: var(--space-3);
   }
 }
 
@@ -162,11 +163,9 @@
   .navbar-logo {
     font-size: var(--fs-h3);
   }
-
   .navbar-links .nav-link {
     font-size: 0.75rem;
   }
-
   .navbar-button {
     font-size: 0.75rem;
     padding: var(--space-1) var(--space-2);

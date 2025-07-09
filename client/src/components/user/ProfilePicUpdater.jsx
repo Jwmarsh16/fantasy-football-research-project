@@ -1,6 +1,11 @@
+// src/components/user/ProfilePicUpdater.jsx
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateProfilePic, setUserDetails, fetchUsers } from "../../redux/slices/userSlice";
+import {
+  updateProfilePic,
+  setUserDetails,
+  fetchUsers
+} from "../../redux/slices/userSlice";
 import ProfilePicEditor from "./ProfilePicEditor";
 import axios from "axios";
 
@@ -10,9 +15,9 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const userDetails = useSelector((state) => state.user.userDetails); // ✅ Get user details from Redux
+  const userDetails = useSelector((state) => state.user.userDetails);
 
-  // ✅ Handle file selection
+  // Handle file input change
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
@@ -20,20 +25,17 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
     }
   };
 
-  // ✅ Handle save action after image editing
+  // Handle save after cropping/editing
   const handleEditorSave = async (blob) => {
-    console.log("Attempting to upload profile picture for userId:", userId);
-
     if (!userId || isNaN(userId)) {
-      console.error("Error: userId is undefined or invalid:", userId);
       setMessage("Error: User ID is missing.");
       return;
     }
 
-    const fileToUpload = new File([blob], "profilePic.png", { type: blob.type });
-
+    const fileToUpload = new File([blob], "profilePic.png", {
+      type: blob.type
+    });
     if (!fileToUpload) {
-      console.error("Error: No file selected for upload.");
       setMessage("Error: No file selected.");
       return;
     }
@@ -43,33 +45,21 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
       const formData = new FormData();
       formData.append("profilePic", fileToUpload);
       formData.append("userId", userId);
-
-      // ✅ Send file to Flask backend (uploads to AWS S3)
       const response = await axios.put(
-        `/api/users/${userId}`,  // ✅ Use a relative path
+        `/api/users/${userId}`,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
-      
-
-      console.log("Server response:", response);
 
       if (response.status === 200 && response.data.profilePic) {
         setMessage("Profile picture updated successfully!");
-
-        // ✅ Use the full pre-signed URL directly from the backend
         const newProfilePic = response.data.profilePic;
-
-        dispatch(setUserDetails({ ...userDetails, profilePic: newProfilePic }));
+        dispatch(setUserDetails({
+          ...userDetails,
+          profilePic: newProfilePic
+        }));
         dispatch(fetchUsers());
-
-        // ✅ Call `onUpdate` to refresh UI immediately
-        if (onUpdate) {
-          console.log("Calling onUpdate to refresh UI with new profile picture.");
-          onUpdate({ profilePic: newProfilePic }); // ✅ Ensure Redux and UI update with the correct pre-signed URL
-        }
-
-        // ✅ Reset state
+        if (onUpdate) onUpdate({ profilePic: newProfilePic });
         setEditorVisible(false);
         setSelectedFile(null);
       }
@@ -81,7 +71,7 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
     }
   };
 
-  // ✅ Handle cancel action
+  // Cancel editing
   const handleCancel = () => {
     setEditorVisible(false);
     setSelectedFile(null);
@@ -91,16 +81,20 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
     <div className="profile-pic-updater">
       {!selectedFile && (
         <>
-          {/* Hide the actual input */}
-          <input 
-            id="profile-pic-upload" 
-            type="file" 
-            accept="image/*" 
-            onChange={handleFileChange} 
+          {/* Hidden file input */}
+          <input
+            id="profile-pic-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
           />
-          {/* Styled label acting as a button */}
-          <label htmlFor="profile-pic-upload" className="file-upload-label">
-            Choose File
+          {/* Professional text button */}
+          <label
+            htmlFor="profile-pic-upload"
+            className="file-upload-button"
+            aria-label="Upload Profile Photo"
+          >
+            Upload Photo {/* Replaced emoji with clear, professional text */}
           </label>
         </>
       )}
@@ -111,8 +105,8 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
           onCancel={handleCancel}
         />
       )}
-      {loading && <p>Uploading...</p>}
-      {message && <p>{message}</p>}
+      {loading && <p className="status-message">Uploading…</p>}
+      {message && <p className="status-message">{message}</p>}
     </div>
   );
 };

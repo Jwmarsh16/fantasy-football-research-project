@@ -1,25 +1,34 @@
 /* src/style/PlayerCard.css */
-/* Refactored to use design tokens */
+/* Refactored to use design tokens; full-width cards with reduced avatar size */
 
 .player-card {
-  background-color: var(--color-bg);                   /* Light card bg */
-  color: var(--color-text);                             /* Default text */
-  border-radius: var(--space-3);                        /* 16px */
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border-radius: var(--space-3);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  width: 100%;
-  max-width: 300px;
-  padding: var(--space-3);                              /* 16px */
-  transition: transform 150ms ease-in-out, 
-              box-shadow 150ms ease-in-out;
+  width: 100%;                  /* Extend horizontally to fill list */
+  max-width: none;              /* Remove previous max-width */
+  padding: var(--space-3);
+  transition: transform 150ms ease-in-out, box-shadow 150ms ease-in-out;
 }
 
 .player-card:hover {
-  transform: translateY(calc(-1 * var(--space-2)));     /* -8px */
+  transform: translateY(calc(-1 * var(--space-2)));
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
+.player-avatar-img {
+  width: 40px;                  /* Reduced avatar size */
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-right: var(--space-2);
+}
+
 .player-link {
-  font-size: var(--fs-h3);
+  font-size: var(--fs-base);
   color: var(--color-secondary);
   text-decoration: none;
   font-weight: bold;
@@ -31,14 +40,14 @@
 }
 
 .player-info {
-  padding: var(--space-2) 0;                            /* 8px 0 */
+  padding: var(--space-2) 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
-  margin-top: var(--space-2);                           /* 8px */
+  margin-top: var(--space-2);
 }
 
 .player-info .player-name {
   margin: 0;
-  font-size: var(--fs-h3);
+  font-size: var(--fs-base);
   color: var(--color-secondary);
 }
 
@@ -49,19 +58,10 @@
 
 .player-meta p {
   margin: var(--space-1) 0;
-  font-size: 0.875rem;                                  /* 14px */
+  font-size: 0.75rem;
   color: var(--color-text);
 }
 
 .player-meta p strong {
   color: var(--color-primary);
-}
-
-.player-avatar-img {
-  width: 75px;
-  height: 75px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

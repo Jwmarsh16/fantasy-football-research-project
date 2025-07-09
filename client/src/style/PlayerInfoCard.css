@@ -1,93 +1,170 @@
+/* src/style/PlayerInfoCard.css */
+/* Updated layout for info-header and dynamic team color on summary-stats-card */
+
 .player-info-card {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+  background-color: var(--color-surface);
+  padding: var(--space-4);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-5);
+}
+
+/* Header: avatar, metadata, and summary side-by-side */
+.info-header {
+  display: flex;                                /* updated: use flex layout */
+  align-items: flex-start;                      /* align items at top */
+  justify-content: space-between;               /* space between columns */
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.avatar-section {
+  text-align: center;
+}
+
+/* Avatar image */
+.player-avatar-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-muted);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-3);
+}
+
+.player-name {
+  font-size: var(--fs-3xl);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.player-position {
+  font-size: var(--fs-base);
+  color: var(--color-muted);
+  margin: 0;
+}
+
+/* Meta details column */
+.meta-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex: 0 0 200px;                              /* updated: fixed column width */
+}
+
+.meta-section p {
+  margin: 0;
+  font-size: var(--fs-base);
+  color: var(--color-text);
+}
+
+/* Summary Stats Card with dynamic border and header color */
+.summary-stats-card {
+  flex: 0 0 300px;                              /* updated: fixed width for consistency */
+  background-color: var(--color-surface);
+  border-radius: var(--radius-base);
+  overflow: hidden;
+  border: 2px solid var(--summary-color);       /* updated: dynamic team color */
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-header {
+  background-color: var(--summary-color);       /* updated: dynamic team color */
+  color: var(--color-surface);
+  padding: var(--space-2);
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+}
+
+.summary-body {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-3);
+}
+
+.summary-item {
+  text-align: center;
+}
+
+.summary-value {
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+}
+
+.summary-label {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Detailed stats tables */
+.player-stats {
+  margin-bottom: var(--space-4);
+}
+
+.stats-title {
+  font-size: var(--fs-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--space-3);
+  font-weight: 700;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+}
+
+.stats-table th,
+.stats-table td {
+  padding: var(--space-2) var(--space-3);
+  text-align: center;
+  border: 1px solid var(--color-muted);
+}
+
+.stats-table th {
+  background-color: var(--color-primary);
+  color: var(--color-surface);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-table tr:nth-child(even) td {
+  background-color: var(--color-bg);
+}
+
+.stats-table tr:nth-child(odd) td {
+  background-color: var(--color-surface);
+}
+
+/* Average Rank */
+.average-rank {
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  text-align: right;
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .info-header {
+    flex-direction: column;                     /* updated: stack on mobile */
+    align-items: center;
   }
-  
-  .player-name {
-    font-size: 24px;
-    color: #34495e;
-  }
-  
-  .player-details p {
-    margin: 10px 0;
-    font-size: 16px;
-    color: #555;
-  }
-  
-  .player-avatar {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .player-avatar-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #ccc;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Stats Section */
-  .player-stats {
-    margin: 20px 0;
-    background: linear-gradient(135deg, #ffffff, #f9fbfd);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #dcdcdc;
-  }
-  
-  .stats-title {
-    font-size: 22px;
-    color: #2980b9;
-    text-align: center;
-    margin-bottom: 20px;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-bottom: 2px solid #2980b9;
-    padding-bottom: 10px;
-  }
-  
-  .stats-table {
+  .meta-section {
+    flex: none;                                 /* updated: allow full width */
     width: 100%;
-    border-collapse: collapse;
-    margin: 0 auto;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
-  
-  .stats-table th,
-  .stats-table td {
-    padding: 12px 15px;
-    text-align: center;
-    border: 1px solid #dcdcdc;
+  .summary-stats-card {
+    flex: none;                                 /* updated: full width */
+    width: 100%;
+    margin-top: var(--space-4);
   }
-  
-  .stats-table th {
-    background-color: #2980b9;
-    color: #fff;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  .summary-body {
+    flex-direction: column;
+    gap: var(--space-3);
   }
-  
-  .stats-table td {
-    font-size: 16px;
-    color: #2c3e50;
-  }
-  
-  .stats-table tr:nth-child(even) td {
-    background-color: #f2f7fc;
-  }
-  
-  .stats-table tr:nth-child(odd) td {
-    background-color: #ffffff;
-  }
-  
-  .stats-table tr:last-child td {
-    border-bottom: 2px solid #dcdcdc;
-  }
-  
+}

@@ -1,58 +1,90 @@
+/* src/style/NewsSection.css */
+/* Professional/business styling for news section */
+
 .news-section {
-    margin-top: 30px;
-    padding: 20px;
-    background: var(--news-bg);
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    width: auto;
-    text-align: left;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .news-section:hover {
-    transform: scale(1.02);
-  }
-  
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  background: var(--color-bg);               /* Light-gray container */
+}
+
+.news-title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: var(--space-4);
+  letter-spacing: var(--letter-spacing);
+}
+
+/* List reset */
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Individual news item */
+.news-item {
+  background: var(--color-surface);          /* White card */
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* Meta line: category & date */
+.news-article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+  font-family: var(--font-body);
+  font-size: var(--fs-small);
+  color: var(--color-muted);
+}
+
+.news-article-category strong {
+  color: var(--color-secondary);
+  font-weight: 600;
+  margin-right: var(--space-1);
+}
+
+.news-article-date {
+  font-style: italic;
+}
+
+/* Article title */
+.news-article-title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  color: var(--color-text);
+  margin: 0 0 var(--space-2) 0;
+}
+
+/* Article content */
+.news-article-content {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  margin: 0;
+  line-height: var(--line-height);
+}
+
+/* Hover effects via utility classes, no extra CSS needed */
+
+/* Responsive */
+@media (max-width: 768px) {
   .news-title {
-    font-size: 26px;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 15px;
+    font-size: var(--fs-h3);
   }
-  
-  .news-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .news-item {
-    padding: 15px;
-    margin-bottom: 15px;
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .news-item:hover {
-    transform: translateY(-5px);
-  }
-  
   .news-article-title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #34495e;
-    margin-bottom: 5px;
+    font-size: var(--fs-h4);
   }
-  
-  .news-article-date {
-    font-size: 14px;
-    color: #7f8c8d;
-    margin-bottom: 10px;
+}
+
+@media (max-width: 480px) {
+  .news-title {
+    font-size: var(--fs-h4);
   }
-  
   .news-article-content {
-    font-size: 16px;
-    color: #555;
+    font-size: 0.875rem;
   }
-  
+}

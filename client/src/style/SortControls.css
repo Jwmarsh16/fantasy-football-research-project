@@ -1,37 +1,93 @@
+/* src/style/SortControls.css */
+/* Professional styling for sort controls with visible custom arrow and colored Clear Filters button */
+
 .sort-controls-container {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: var(--space-4);           /* 24px gap */
+  margin-bottom: var(--space-4); /* 24px margin */
 }
 
 .sort-label {
-  font-size: 14px;
-  color: #ffffff;
-  font-weight: bold;
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* Wrapper around select to hold custom arrow */
+.select-wrapper {
+  position: relative;
+  display: inline-block;
 }
 
 .sort-select {
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 2px solid #ffffff;
-  background-color: #ecf0f1;
-  transition: border-color 0.3s ease;
+  /* Hide native arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Spacing */
+  padding: var(--space-2) var(--space-3);
+  padding-right: var(--space-5); /* allocate space for arrow */
+  /* Typography & colors */
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  /* Border & shadow */
+  border: 1px solid var(--color-muted);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-sm);
+  /* Transitions */
+  transition: border-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
 }
 
+/* Remove IE/Edge default arrow */
+.sort-select::-ms-expand {
+  display: none;
+}
+
+/* Custom arrow using ::after on wrapper */
+.select-wrapper::after {
+  content: "▼";
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);          /* 16px from right */
+  transform: translateY(-50%);
+  color: var(--color-primary);    /* dark blue arrow */
+  font-size: 0.6em;
+  pointer-events: none;
+}
+
+/* Focus state */
+.sort-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(10, 61, 98, 0.2);
+  outline: none;
+}
+
+/* Clear Filters button */
 .clear-filters-button {
-  background-color: #e74c3c;
-  color: #ffffff;
-  padding: 8px 15px;
-  font-size: 14px;
-  border-radius: 5px;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--color-text);           /* updated: use main text color for contrast */
+  background: var(--color-secondary);
+  border: none;
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background 150ms ease-in-out, transform 150ms ease-in-out;
 }
 
 .clear-filters-button:hover {
-  background-color: #c0392b;
+  background: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.clear-filters-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 153, 74, 0.3);
 }

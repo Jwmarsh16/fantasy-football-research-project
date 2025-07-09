@@ -1,56 +1,46 @@
-/* Form Styling */
-form {
-    background-color: #fffbf1;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin: 20px 0;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  input[type="text"], input[type="email"], input[type="password"] {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 20px;
-    border: 2px solid #f0932b;
-    border-radius: 5px;
-    transition: border-color 0.3s ease;
-  }
-  input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
-    border-color: #e74c3c;
-  }
-  
-  /* Footer Styling */
-  .footer {
-    background-color: #ff5733;
-    color: #ffffff;
-    text-align: center;
-    padding: 30px;
-    position: relative;
-    bottom: 0;
-    width: 100%;
-  }
+/* src/style/LoginStyle.css */
+/* Refactored to use design tokens */
 
-  .login-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 100px 15px 60px;
-    text-align: center;
-    min-height: 100vh;
-    background: #fefefe;
-  
-    /* ADD THESE: */
-    width: 100%;
-    max-width: 100%;        /* Allow full-width growth */
-    box-sizing: border-box; /* Ensure padding doesn't constrain content width */
-  }
-  
-  
-  .page-title {
-    font-size: 36px;
-    margin-bottom: 30px;
-    color: #333;
-  }
-  
+.login-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-5) var(--space-3) var(--space-4);
+  text-align: center;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.page-title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  color: var(--color-primary);
+  margin-bottom: var(--space-4);
+}
+
+.footer {
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  text-align: center;
+  padding: var(--space-5);
+  width: 100%;
+  margin-top: auto;
+}
+
+/* Footer link styling */
+.footer-link {
+  font-size: var(--fs-base);
+  margin-top: var(--space-3);                      /* 24px */
+  color: var(--color-text);
+}
+
+.footer-link a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.footer-link a:hover {
+  text-decoration: underline;
+}

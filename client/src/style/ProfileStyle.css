@@ -1,28 +1,19 @@
-/* ============================================
-   GLOBAL PROFILE STYLE (Shared Variables & Layout)
-============================================ */
+/* src/style/ProfileStyle.css */
 
-/* Design Tokens */
 :root {
+  /* Component-specific tokens (kept here) */
   --primary-bg-gradient: linear-gradient(135deg, #1abc9c, #2c3e50);
   --container-bg: linear-gradient(135deg, #035e0b, #0984e3);
-  --title-color: #166a79;
-  --detail-color: #ffffff;
-  --info-bg: rgba(255, 255, 255, 0.2);
-  --avatar-border-color: #00bcd4;
-  --delete-btn-gradient: linear-gradient(135deg, #b13a2d, #ff5733);
-  --delete-btn-hover-bg: #c0392b;
-  --section-title-color: #282a79;
-  --review-player-color: #282a79;
-  --ranking-value-color: #26c6da;
+  --section-bg: var(--color-bg);
+  --section-border: rgba(0, 0, 0, 0.1);
 }
 
-/* Background Container */
+/* Full-page animated background */
 .profile-container {
   background: var(--container-bg);
   background-size: 200% 200%;
   animation: bgShift 15s ease infinite;
-  padding: 80px 0;
+  padding: calc(var(--space-5) * 2.5) 0; /* 80px top/bottom */
   min-height: 100vh;
 }
 
@@ -32,19 +23,15 @@
   100% { background-position: 0% 50%; }
 }
 
-/* Profile Card Layout */
+/* Card wrapper (now inside .container) */
 .profile-page {
-  position: relative;
   background: var(--primary-bg-gradient);
-  border-top: 6px solid var(--title-color);
-  color: var(--detail-color);
-  max-width: 900px;
-  margin: 80px auto 40px;
-  padding: 40px 50px;
-  border-radius: 20px;
+  border-top: 6px solid var(--color-secondary);
+  color: var(--color-bg);
+  padding: var(--space-4) var(--space-5); /* 24px 32px */
+  border-radius: var(--space-4);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 150ms ease-in-out, box-shadow 150ms ease-in-out;
 }
 
 .profile-page:hover {
@@ -52,78 +39,76 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
 }
 
-/* Page Header */
 .profile-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid var(--title-color);
-  padding-bottom: 20px;
-  margin-bottom: 30px;
+  border-bottom: 2px solid var(--color-secondary);
+  padding-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .profile-title {
-  font-size: 32px;
-  color: var(--title-color);
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  color: var(--color-secondary);
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-/* Section Wrapper (for reviews + filters) */
+/* Reviews & Rankings section */
 .reviews-rankings-section {
-  background: #ffffff;
-  border: 2px solid #dcdcdc;
-  border-radius: 15px;
-  padding: 30px;
-  margin-bottom: 30px;
+  background: var(--section-bg);
+  border: 2px solid var(--section-border);
+  border-radius: var(--space-3);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  color: var(--color-text);
 }
 
 .section-title {
-  font-size: 28px;
-  color: var(--section-title-color);
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  color: var(--color-primary);
   text-align: center;
-  margin-bottom: 20px;
-  border-bottom: 2px solid var(--title-color);
-  padding-bottom: 10px;
+  margin-bottom: var(--space-3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--color-secondary);
+  padding-bottom: var(--space-2);
 }
 
 .no-reviews-rankings-message {
   text-align: center;
-  font-size: 18px;
-  color: #fff;
-  margin-top: 30px;
+  font-size: var(--fs-base);
+  color: var(--color-accent);
+  margin-top: var(--space-4);
 }
 
-/* Responsive Base Tweaks */
+/* Responsive tweaks */
 @media (max-width: 768px) {
   .profile-page {
-    padding: 20px 30px;
-    margin: 20px;
+    padding: var(--space-3) var(--space-4);
+    margin: 0 var(--space-3);
   }
-
   .profile-title {
-    font-size: 24px;
+    font-size: var(--fs-h3);
   }
-
   .section-title {
-    font-size: 22px;
+    font-size: var(--fs-base);
   }
 }
 
 @media (max-width: 480px) {
   .profile-page {
-    padding: 15px 20px;
-    margin: 15px;
+    padding: var(--space-2) var(--space-3);
+    margin: 0 var(--space-2);
   }
-
   .profile-title {
-    font-size: 20px;
+    font-size: var(--fs-h3);
   }
-
   .section-title {
-    font-size: 20px;
+    font-size: var(--fs-h3);
   }
 }

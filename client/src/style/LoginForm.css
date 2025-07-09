@@ -1,64 +1,53 @@
-/* Form Styling */
-form {
-    background-color: #fffbf1;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin: 40px auto;
-    max-width: 700px; /* 👈 Wider */
-    width: 100%;       /* 👈 Forces it to fill up available space */
-  }
-  
+/* src/style/LoginForm.css */
+/* Refactored to use design tokens */
 
+form {
+  background-color: var(--color-bg);
+  padding: var(--space-5);                    /* 32px */
+  border-radius: var(--space-3);               /* 16px */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: var(--space-4) auto;                 /* 24px auto */
+  max-width: 600px;
+  width: 100%;
+}
 
 input[type="text"],
 input[type="email"],
 input[type="password"] {
   width: 100%;
-  padding: 15px;
-  margin-bottom: 20px;
-  border: 2px solid #f0932b;
-  border-radius: 5px;
-  transition: border-color 0.3s ease;
+  padding: var(--space-3);                     /* 16px */
+  margin-bottom: var(--space-4);               /* 24px */
+  border: 2px solid var(--color-secondary);
+  border-radius: var(--space-2);               /* 8px */
+  transition: border-color 150ms ease-in-out;
 }
 
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus {
-  border-color: #e74c3c;
+  border-color: var(--color-accent);
 }
 
 .error-message {
-  color: #e74c3c;
-  font-size: 14px;
-  margin-top: -15px;
-  margin-bottom: 15px;
+  color: var(--color-accent);
+  font-size: 0.875rem;
+  margin-top: calc(-1 * var(--space-3));       /* -16px */
+  margin-bottom: var(--space-3);
 }
 
 .login-button {
   width: 100%;
-  background: #3498db;
-  color: #fff;
-  padding: 14px;
-  font-size: 18px;
+  background: var(--color-primary);
+  color: var(--color-bg);
+  padding: var(--space-3);
+  font-size: var(--fs-base);
   font-weight: bold;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--space-2);
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 150ms ease-in-out;
 }
 
 .login-button:hover {
-  background: #2980b9;
-}
-
-/* Footer Styling */
-.footer {
-  background-color: #ff5733;
-  color: #ffffff;
-  text-align: center;
-  padding: 30px;
-  position: relative;
-  bottom: 0;
-  width: 100%;
+  background: var(--color-secondary);
 }

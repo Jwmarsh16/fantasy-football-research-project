@@ -1,8 +1,6 @@
 // components/profile/ReviewFilterSort.jsx
 import React from 'react';
-import '../../style/ReviewFilterSort.css';
-
-
+ // Ensure you have the correct path to your CSS file
 function ReviewFilterSort({
   teams,
   positions,

@@ -1,27 +1,63 @@
+/* src/style/TeamDropdown.css */
+/* Professional styling for team filter dropdown with custom arrow */
+
 .team-filter-container {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  margin: 10px 0;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .team-filter-label {
-  margin-right: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* Wrapper to position custom arrow */
+.team-filter-container .select-wrapper {
+  position: relative;
+  display: inline-block;
 }
 
 .team-filter-dropdown {
-  padding: 8px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 2px solid #ffffff;
-  background-color: #ecf0f1;
-  transition: border-color 0.3s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: var(--space-2) var(--space-3);
+  padding-right: var(--space-5); /* space for arrow */
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-muted);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
 }
 
+/* Hide native arrow in IE/Edge */
+.team-filter-dropdown::-ms-expand {
+  display: none;
+}
+
+/* Custom arrow */
+.team-filter-container .select-wrapper::after {
+  content: '▼';
+  position: absolute;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-primary);
+  pointer-events: none;
+  font-size: 0.6em;
+}
+
+/* Focus styles */
 .team-filter-dropdown:focus {
-  border-color: #e67e22;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(10, 61, 98, 0.2);
+  outline: none;
 }

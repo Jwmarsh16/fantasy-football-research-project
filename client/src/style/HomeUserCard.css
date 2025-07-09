@@ -1,0 +1,85 @@
+/* src/style/HomeUserCard.css */
+/* Ensure the card and text contrast properly against the page background */
+
+.user-info-container {
+  position: absolute;
+  top: calc(var(--space-5) * 3);
+  left: var(--space-4);
+  z-index: 10;
+  max-width: 360px;
+  width: auto;
+}
+
+.user-info-card {
+  background: var(--color-surface);       /* opaque white for full contrast */
+  color: var(--color-text);               /* dark text */
+  padding: var(--space-3);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  width: 100%;
+  transition: transform 150ms ease-in-out;
+}
+
+.user-info-card:hover {
+  transform: translateY(-4px);
+}
+
+.user-avatar img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid var(--color-accent);
+  box-shadow: var(--shadow-sm);
+  margin-right: var(--space-3);
+  object-fit: cover;
+}
+
+.user-info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Dark blue heading for strong contrast */
+.user-name {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 var(--space-2) 0;
+}
+
+/* Muted gray for secondary text */
+.user-email {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--color-muted);
+  margin: 0;
+  word-break: break-all;
+}
+
+@media (max-width: 768px) {
+  .user-info-container {
+    top: calc(var(--space-4) + var(--space-3));
+    left: var(--space-4);
+    max-width: 100%;
+    padding: 0 var(--space-3);
+  }
+  .user-info-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  .user-avatar img {
+    margin: 0 auto var(--space-3);
+  }
+}
+
+@media (max-width: 480px) {
+  .user-name {
+    font-size: var(--fs-base);
+  }
+  .user-email {
+    font-size: 0.875rem;
+  }
+}

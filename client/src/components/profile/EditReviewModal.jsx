@@ -1,3 +1,4 @@
+// src/components/profile/EditReviewModal.jsx
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -13,11 +14,17 @@ function EditReviewModal({
   fetchReviews,
   fetchRankings
 }) {
+  // Guard: only render when there is a review to edit
+  if (!editingReview) return null;
+
+  // Use `rank` property (not `ranking`) if available
+  const initialRank = editingReview.rank ?? '';
+
   return (
     <div className="modal-overlay">
       <Formik
         initialValues={{
-          rank: editingReview.ranking !== null ? editingReview.ranking : '',
+          rank: initialRank,                       // updated: use editingReview.rank
           content: editingReview.content,
         }}
         validationSchema={Yup.object({
@@ -76,7 +83,6 @@ function EditReviewModal({
               <ErrorMessage name="content" component="div" className="error-message" />
             </div>
 
-            {/* ✅ Correct layout: button spacing container */}
             <div className="form-actions">
               <button type="submit" disabled={isSubmitting} className="submit-button">
                 Update
