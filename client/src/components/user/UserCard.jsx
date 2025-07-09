@@ -1,3 +1,4 @@
+// src/components/user/UserCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -11,12 +12,16 @@ function UserCard({ user }) {
 
   return (
     <div className="user-card">
-      <div className="user-avatar">
+      {/* RENAMED: user-avatar → user-card__avatar for modularity */}
+      <div className="user-card__avatar">
         <img src={avatarUrl} alt={`${user.username}'s Avatar`} />
       </div>
-      <div className="user-info">
-        <span className="user-username">{user.username}</span>
-        <Link to={`/profile/${user.id}`} className="view-profile-link">
+      {/* RENAMED: user-info → user-card__info to prevent global conflicts */}
+      <div className="user-card__info">
+        {/* OPTIONAL BEM: adjust if you’d like to rename user-username */}
+        <span className="user-card__username">{user.username}</span>
+        {/* RENAMED: view-profile-link → user-card__link for consistency */}
+        <Link to={`/profile/${user.id}`} className="user-card__link">
           View Profile
         </Link>
       </div>

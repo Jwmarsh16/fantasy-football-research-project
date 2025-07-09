@@ -1,5 +1,4 @@
 /* src/style/UserListStyle.css */
-
 .user-list-page {
   padding: var(--space-5) var(--space-3);
   background-color: var(--color-bg);
@@ -44,6 +43,49 @@
   padding: var(--space-3);
 }
 
+/* RENAMED: target avatar within user-card */
+.user-card__avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: var(--space-2);
+  object-fit: cover;
+  border: 3px solid var(--color-secondary);
+}
+
+/* RENAMED: target info container within user-card */
+.user-card__info {
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+
+/* RENAMED: username styling in BEM style */
+.user-card__username {
+  display: block;
+  font-size: var(--fs-h3);
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: var(--space-1);
+}
+
+/* RENAMED: profile link in BEM style */
+.user-card__link {
+  display: inline-block;
+  color: var(--color-bg);
+  background-color: var(--color-accent);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-base);
+  border-radius: var(--space-4);
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 150ms ease-in-out, transform 150ms ease-in-out;
+}
+
+.user-card__link:hover {
+  background-color: var(--color-accent-dark);
+  transform: translateY(calc(-1 * var(--space-1)));
+}
+
 .user-card {
   background-color: var(--color-bg);
   border-radius: var(--space-3);
@@ -56,51 +98,6 @@
 .user-card:hover {
   transform: translateY(calc(-1 * var(--space-2)));
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-.user-avatar img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin-bottom: var(--space-2);
-  object-fit: cover;
-  border: 3px solid var(--color-secondary);
-}
-
-.user-info {
-  font-size: 0.875rem;
-  color: var(--color-text);
-}
-
-.user-username {
-  display: block;
-  font-size: var(--fs-h3);
-  font-weight: bold;
-  color: var(--color-primary);
-  margin-bottom: var(--space-1);
-}
-
-.user-id {
-  font-size: 0.75rem;
-  color: var(--color-surface);
-  margin-bottom: var(--space-3);
-}
-
-.view-profile-link {
-  display: inline-block;
-  color: var(--color-bg);
-  background-color: var(--color-accent);
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-base);
-  border-radius: var(--space-4);
-  font-weight: bold;
-  text-decoration: none;
-  transition: background-color 150ms ease-in-out, transform 150ms ease-in-out;
-}
-
-.view-profile-link:hover {
-  background-color: var(--color-accent-dark);
-  transform: translateY(calc(-1 * var(--space-1)));
 }
 
 .loading-message,
@@ -129,16 +126,16 @@
     padding: var(--space-2);
   }
 
-  .user-avatar img {
+  .user-card__avatar img {
     width: 70px;
     height: 70px;
   }
 
-  .user-username {
+  .user-card__username {
     font-size: 1rem;
   }
 
-  .view-profile-link {
+  .user-card__link {
     font-size: 0.75rem;
     padding: var(--space-1) var(--space-2);
   }
@@ -149,16 +146,16 @@
     font-size: 1.25rem;
   }
 
-  .user-avatar img {
+  .user-card__avatar img {
     width: 60px;
     height: 60px;
   }
 
-  .user-username {
+  .user-card__username {
     font-size: 0.875rem;
   }
 
-  .view-profile-link {
+  .user-card__link {
     font-size: 0.625rem;
     padding: var(--space-1) var(--space-2);
   }

@@ -1,8 +1,8 @@
-"""init migration
+"""Initial migration with full Player schema
 
-Revision ID: 1239e3b841aa
+Revision ID: d65d7ba3a17b
 Revises: 
-Create Date: 2025-02-07 13:12:45.424914
+Create Date: 2025-07-09 12:09:12.195440
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1239e3b841aa'
+revision = 'd65d7ba3a17b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,6 +23,12 @@ def upgrade():
     sa.Column('name', sa.String(length=50), nullable=False),
     sa.Column('position', sa.String(length=20), nullable=False),
     sa.Column('team', sa.String(length=50), nullable=False),
+    sa.Column('height', sa.String(length=10), nullable=True),
+    sa.Column('weight', sa.String(length=10), nullable=True),
+    sa.Column('birthdate', sa.Date(), nullable=True),
+    sa.Column('college', sa.String(length=100), nullable=True),
+    sa.Column('draft_info', sa.String(length=100), nullable=True),
+    sa.Column('status', sa.String(length=20), server_default='Active', nullable=False),
     sa.Column('stats', sa.JSON(), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_players'))
     )
