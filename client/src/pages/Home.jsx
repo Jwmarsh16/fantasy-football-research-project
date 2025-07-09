@@ -6,7 +6,7 @@ import { fetchRankings } from '../redux/slices/rankingSlice';
 import { fetchPlayers } from '../redux/slices/playerSlice';
 import { shuffleArray, getTopRankedPlayers } from '../utils/homeUtils';
 
-import UserCard from '../components/home/UserCard';
+import UserCard from '../components/home/HomeUserCard';
 import NewsSection from '../components/home/NewsSection';
 import RankingSidebar from '../components/home/RankingSidebar';
 import WelcomeSection from '../components/home/WelcomeSection';
