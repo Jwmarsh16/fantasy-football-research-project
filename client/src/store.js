@@ -1,21 +1,19 @@
-// store.js - Setting up Redux store using Redux Toolkit
+// src/store.js
 import { configureStore } from '@reduxjs/toolkit';
-import playerReducer from './redux/slices/playerSlice';
-import userReducer from './redux/slices/userSlice';
-import reviewReducer from './redux/slices/reviewSlice';
 import authReducer from './redux/slices/authSlice';
-import groupReducer from './redux/slices/groupSlice';
-import rankingReducer from './redux/slices/rankingSlice'
+import userReducer from './redux/slices/userSlice';
+import playerReducer from './redux/slices/playerSlice';
+import rankingReducer from './redux/slices/rankingSlice';
+import reviewReducer from './redux/slices/reviewSlice';
+import teamReducer from './redux/slices/teamSlice'; // added team reducer
 
-const store = configureStore({
+export default configureStore({
   reducer: {
-    player: playerReducer,
-    user: userReducer,
-    review: reviewReducer,
     auth: authReducer,
-    group: groupReducer,
+    user: userReducer,
+    player: playerReducer,
     ranking: rankingReducer,
-  },
+    review: reviewReducer,
+    team: teamReducer          // register team slice here
+  }
 });
-
-export default store;
