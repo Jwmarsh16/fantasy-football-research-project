@@ -1,46 +1,99 @@
 /* src/style/MyTeam.css */
 
+/* Container around the entire roster table */
 .myteam-container {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+  background: var(--color-surface);
+  padding: var(--space-4);
+  border-radius: var(--radius-base);
+  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--color-secondary);
+  color: var(--color-text); /* use defined text color for readability */
 }
 
+/* Section titles (Starters / Bench) */
 .myteam-section-title {
   font-family: var(--font-heading);
   font-size: var(--fs-h4);
-  color: var(--color-primary);
-  margin: var(--space-3) 0 var(--space-2);
+  color: var(--color-secondary);
+  margin: var(--space-4) 0 var(--space-2);
   text-transform: uppercase;
+  border-bottom: 2px solid var(--color-secondary);
+  padding-bottom: var(--space-1);
 }
 
+/* Table wrapping the roster entries */
 .myteam-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-base);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-secondary);
+  color: var(--color-text); /* ensure cell text is visible */
 }
 
 .myteam-table th,
 .myteam-table td {
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--section-border);
+  border: 1px solid var(--color-muted);
   text-align: left;
+  color: var(--color-text); /* explicit text color */
 }
 
+/* Header row styling */
 .myteam-table th {
   background: var(--color-secondary);
-  color: var(--color-bg);
+  color: var(--color-surface);
   font-weight: 600;
   text-transform: uppercase;
 }
 
+/* Highlight every even row for readability */
 .myteam-table tr:nth-child(even) {
-  background: var(--color-surface);
+  background: var(--color-bg);
 }
 
+/* Hover effect on rows */
+.myteam-table tr:hover {
+  background: rgba(0, 119, 182, 0.1);
+  transform: translateY(-1px);
+  transition: transform 150ms ease;
+}
+
+/* Loading and error messages styling */
 .myteam-loading,
 .myteam-error {
   text-align: center;
   font-size: var(--fs-base);
-  color: var(--color-accent);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-base);
+  margin: var(--space-3) 0;
+  color: var(--color-text); /* consistent message color */
+}
+
+.myteam-error {
+  color: #d32f2f;
+  border: 2px solid #ffebee;
+  background: #fef7f7;
+}
+
+/* Empty-state cell styling */
+.myteam-table tbody tr td[colspan="5"] {
+  text-align: center;
+  font-style: italic;
+  color: var(--color-muted);
+  padding: var(--space-4);
+  background: var(--color-bg);
+}
+
+/* Highlight player name column with accent color */
+.myteam-player-name {
+  color: var(--color-primary); /* accentuate player names */
+  font-weight: 600;
 }

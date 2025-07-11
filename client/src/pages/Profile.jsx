@@ -25,6 +25,7 @@ import {
   updateReview
 } from '../redux/slices/reviewSlice';
 import { deleteUser } from '../redux/slices/authSlice';
+import { fetchRoster } from '../redux/slices/teamSlice'; // added to fetch roster entries
 
 import '../style/ProfileStyle.css';
 import UserInfoCard from '../components/profile/UserInfoCard';
@@ -32,6 +33,7 @@ import ProfileMenu from '../components/profile/ProfileMenu';
 import ReviewFilterSort from '../components/profile/ReviewFilterSort';
 import ReviewRow from '../components/profile/ReviewRow';
 import EditReviewModal from '../components/profile/EditReviewModal';
+import MyTeam from '../components/profile/MyTeam'; // added MyTeam component
 
 function Profile() {
   const { userId } = useParams();
@@ -62,6 +64,7 @@ function Profile() {
   const defaultCollapsedHeight = 150;
   const ROW_GAP = 16; // match var(--space-4)
 
+  // handle window resize for mobile layout
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 480);
     window.addEventListener('resize', handleResize);
@@ -69,6 +72,7 @@ function Profile() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // fetch user data, reviews, rankings, roster, and players on mount/user change
   useEffect(() => {
     if (!parsedUserId) {
       navigate('/login');
@@ -82,9 +86,18 @@ function Profile() {
     }
     dispatch(fetchRankings());
     dispatch(fetchReviews());
+    dispatch(fetchRoster(parsedUserId)); // fetch roster on mount
     if (players.length === 0) fetchPlayers();
   }, [parsedUserId, userDetails, dispatch, navigate, players.length]);
 
+  // re-fetch roster when switching back to My Team tab
+  useEffect(() => {
+    if (activeTab === 'myteam' && parsedUserId) {
+      dispatch(fetchRoster(parsedUserId)); // re-fetch roster on tab switch
+    }
+  }, [activeTab, parsedUserId, dispatch]);
+
+  // force re-render when userDetails updates
   useEffect(() => {
     setForceUpdate((prev) => prev + 1);
   }, [userDetails]);
@@ -153,10 +166,13 @@ function Profile() {
 
   // Prepare data for Reviews tab
   const userReviews = reviews.filter((r) => r.user_id === parsedUserId);
-  const teams = [...new Set(userReviews.map((r) => {
-    const p = players.find((pl) => pl.id === r.player_id);
-    return p?.team;
-  }).filter(Boolean))];
+  const teams = [
+    ...new Set(
+      userReviews
+        .map((r) => players.find((pl) => pl.id === r.player_id)?.team)
+        .filter(Boolean)
+    ),
+  ];
   const positions = [...new Set(players.map((p) => p.position))];
   const enrichedReviews = userReviews.map((r) => {
     const p = players.find((p) => p.id === r.player_id) || {};
@@ -168,7 +184,7 @@ function Profile() {
       playerName: p.name,
       team: p.team,
       position: p.position,
-      ranking: rankObj?.rank ?? null
+      ranking: rankObj?.rank ?? null,
     };
   });
   let filtered = enrichedReviews;
@@ -262,8 +278,7 @@ function Profile() {
             {activeTab === 'myteam' && (
               <div className="myteam-section">
                 <h3 className="section-title">My Team</h3>
-                {/* TODO: Replace with MyTeam component */}
-                <p>Your roster overview goes here.</p>
+                <MyTeam userId={parsedUserId} />
               </div>
             )}
 
@@ -275,10 +290,26 @@ function Profile() {
                   positions={positions}
                   sortType={sortType}
                   filterTeam={filterTeam}
-                  handleFilterByTeam={(team) => { setFilterTeam(team); setFilterPosition(''); setExpandedReviewIds([]); }}
-                  handleFilterByPosition={(pos) => { setFilterPosition(pos); setFilterTeam(''); setExpandedReviewIds([]); }}
-                  handleSortChange={(e) => { setSortType(e.target.value); setExpandedReviewIds([]); }}
-                  handleClearFilters={() => { setFilterTeam(''); setFilterPosition(''); setSortType('ranking'); setExpandedReviewIds([]); }}
+                  handleFilterByTeam={(team) => {
+                    setFilterTeam(team);
+                    setFilterPosition('');
+                    setExpandedReviewIds([]);
+                  }}
+                  handleFilterByPosition={(pos) => {
+                    setFilterPosition(pos);
+                    setFilterTeam('');
+                    setExpandedReviewIds([]);
+                  }}
+                  handleSortChange={(e) => {
+                    setSortType(e.target.value);
+                    setExpandedReviewIds([]);
+                  }}
+                  handleClearFilters={() => {
+                    setFilterTeam('');
+                    setFilterPosition('');
+                    setSortType('ranking');
+                    setExpandedReviewIds([]);
+                  }}
                 />
                 <div className="reviews-list">
                   {filtered.length > 0 ? (
@@ -314,7 +345,9 @@ function Profile() {
                             review={filtered[index]}
                             index={index}
                             style={style}
-                            isExpanded={expandedReviewIds.includes(filtered[index].id)}
+                            isExpanded={expandedReviewIds.includes(
+                              filtered[index].id
+                            )}
                             currentUser={currentUser}
                             parsedUserId={parsedUserId}
                             openMenuReviewId={openMenuReviewId}
@@ -339,15 +372,13 @@ function Profile() {
             {activeTab === 'watchlist' && (
               <div className="watchlist-section">
                 <h3 className="section-title">Watchlist</h3>
-                {/* TODO: Replace with Watchlist component */}
                 <p>Your tracked players go here.</p>
               </div>
-            )}
+            )}  
 
             {activeTab === 'comparisons' && (
               <div className="comparisons-section">
                 <h3 className="section-title">Player Comparisons</h3>
-                {/* TODO: Replace with Comparisons component */}
                 <p>Comparison tool goes here.</p>
               </div>
             )}
@@ -355,7 +386,6 @@ function Profile() {
             {activeTab === 'groups' && (
               <div className="groups-section">
                 <h3 className="section-title">Groups &amp; Leagues</h3>
-                {/* TODO: Replace with Groups & Leagues component */}
                 <p>Your group and league links go here.</p>
               </div>
             )}
@@ -363,7 +393,6 @@ function Profile() {
             {activeTab === 'video' && (
               <div className="video-section">
                 <h3 className="section-title">Video Hub</h3>
-                {/* TODO: Replace with Video Hub component */}
                 <p>Embedded videos or bookmarks go here.</p>
               </div>
             )}

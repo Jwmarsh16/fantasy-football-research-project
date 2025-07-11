@@ -36,7 +36,7 @@ function MyTeam({ userId }) {
 
   return (
     <div className="myteam-container">
-      <h4 className="myteam-section-title">Starters</h4>
+      <h4 className="myteam-section-title">Starters ({starters.length})</h4>
       <table className="myteam-table">
         <thead>
           <tr>
@@ -48,19 +48,27 @@ function MyTeam({ userId }) {
           </tr>
         </thead>
         <tbody>
-          {starters.map(r => (
-            <tr key={r.id}>
-              <td>{r.slot}</td>
-              <td>{r.player.name}</td>
-              <td>{r.player.position}</td>
-              <td>{r.player.team}</td>
-              <td>{r.player.average_rank ?? '—'}</td>
+          {starters.length > 0 ? (
+            starters.map(r => (
+              <tr key={r.id}>
+                <td>{r.slot}</td>
+                <td>{r.player.name}</td>
+                <td>{r.player.position}</td>
+                <td>{r.player.team}</td>
+                <td>{r.player.average_rank ?? '—'}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" style={{ textAlign: 'center', fontStyle: 'italic' }}>
+                No starters selected
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
-      <h4 className="myteam-section-title">Bench</h4>
+      <h4 className="myteam-section-title">Bench ({bench.length})</h4>
       <table className="myteam-table">
         <thead>
           <tr>
@@ -72,15 +80,23 @@ function MyTeam({ userId }) {
           </tr>
         </thead>
         <tbody>
-          {bench.map(r => (
-            <tr key={r.id}>
-              <td>{r.slot}</td>
-              <td>{r.player.name}</td>
-              <td>{r.player.position}</td>
-              <td>{r.player.team}</td>
-              <td>{r.player.average_rank ?? '—'}</td>
+          {bench.length > 0 ? (
+            bench.map(r => (
+              <tr key={r.id}>
+                <td>{r.slot}</td>
+                <td>{r.player.name}</td>
+                <td>{r.player.position}</td>
+                <td>{r.player.team}</td>
+                <td>{r.player.average_rank ?? '—'}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" style={{ textAlign: 'center', fontStyle: 'italic' }}>
+                No bench players
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
