@@ -1,4 +1,4 @@
-// components/profile/ReviewRow.jsx
+// src/components/profile/ReviewRow.jsx
 import React, { useRef, useLayoutEffect } from 'react';
 import '../../style/ReviewRow.css';
 
@@ -16,58 +16,137 @@ function ReviewRow({
   toggleReviewExpansion,
   updateRowHeight
 }) {
+  const headerRef = useRef(null);
   const contentRef = useRef(null);
+  const buttonRef = useRef(null);
+  const collapsedMeasured = useRef(false);
+  const expandedMeasured = useRef(false);
 
   useLayoutEffect(() => {
-    if (isExpanded && contentRef.current) {
-      const headerHeight = 60;
-      const buttonHeight = 30;
-      const padding = 20;
-      const contentHeight = contentRef.current.scrollHeight;
-      const newHeight = headerHeight + contentHeight + buttonHeight + padding;
-      updateRowHeight(index, newHeight);
+    // Measure collapsed height once
+    if (!isExpanded && !collapsedMeasured.current) {
+      if (headerRef.current && buttonRef.current) {
+        const headerH = headerRef.current.getBoundingClientRect().height;
+        const buttonH = buttonRef.current.getBoundingClientRect().height;
+        const styles = getComputedStyle(buttonRef.current.parentElement);
+        const margin =
+          parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
+        const collapsedTotal = headerH + buttonH + margin;
+        updateRowHeight(index, collapsedTotal);
+        collapsedMeasured.current = true;
+      }
     }
-  }, [isExpanded, index, review.content, updateRowHeight]);
+
+    // Measure expanded height once
+    if (isExpanded && !expandedMeasured.current) {
+      if (
+        headerRef.current &&
+        contentRef.current &&
+        buttonRef.current
+      ) {
+        const headerH = headerRef.current.getBoundingClientRect().height;
+        const contentH = contentRef.current.scrollHeight;
+        const buttonH = buttonRef.current.getBoundingClientRect().height;
+        const styles = getComputedStyle(contentRef.current);
+        const margin =
+          parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
+        const total = headerH + contentH + buttonH + margin;
+        updateRowHeight(index, total);
+        expandedMeasured.current = true;
+      }
+    }
+  }, [isExpanded, index, updateRowHeight]);
+
+  // ensure we never spread undefined
+  const wrapperStyle = { ...(style || {}), overflow: 'visible' };
 
   return (
-    <div className="review-ranking-item" style={{ ...style, overflow: 'visible' }}>
-      <div className="review-header" style={{ position: 'relative' }}>
-        <div className="review-player-info">
-          <p className="review-player">{review.playerName}</p>
-          <p className="player-details">{review.position} | {review.team}</p>
+    <div
+      className={`review-row${isExpanded ? ' expanded' : ''}`}
+      style={wrapperStyle}
+    >
+      <div className="review-row__header" ref={headerRef}>
+        <div className="review-row__player-info">
+          <p className="review-row__player-name">
+            {review.playerName}
+          </p>
+          <p className="review-row__details">
+            {review.position} | {review.team}
+          </p>
         </div>
-        <p className="ranking-info" style={{ whiteSpace: 'nowrap' }}>
-          <strong>Ranking:</strong> {review.ranking !== null ? review.ranking : 'N/A'}
+        <p className="review-row__ranking">
+          Ranking:&nbsp;
+          {review.ranking !== null ? review.ranking : 'N/A'}
         </p>
-
-        {currentUser.id === parsedUserId && (
-          <div className="review-menu-container" style={{ position: 'absolute', top: '5px', right: '5px' }}>
+        {currentUser?.id === parsedUserId && (
+          <div className="review-row__menu-container">
             <button
-              className="review-menu-button"
-              style={{ transform: 'translateY(-0.5em)' }}
-              onClick={() => setOpenMenuReviewId(openMenuReviewId === review.id ? null : review.id)}
+              className="review-row__menu-button"
+              onClick={() =>
+                setOpenMenuReviewId(
+                  openMenuReviewId === review.id ? null : review.id
+                )
+              }
             >
               ⋮
             </button>
             {openMenuReviewId === review.id && (
-              <div className="review-menu" style={{ top: '22px', right: '5px' }}>
-                <button className="review-menu-item" onClick={() => { setEditingReview(review); setOpenMenuReviewId(null); }}>Edit</button>
-                <button className="review-menu-item" onClick={() => { handleDeleteReviewAndRanking(review.id, review.player_id); setOpenMenuReviewId(null); }}>Delete</button>
+              <div className="review-row__menu">
+                <button
+                  className="review-row__menu-item"
+                  onClick={() => {
+                    setEditingReview(review);
+                    setOpenMenuReviewId(null);
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  className="review-row__menu-item"
+                  onClick={() => {
+                    handleDeleteReviewAndRanking(
+                      review.id,
+                      review.player_id
+                    );
+                    setOpenMenuReviewId(null);
+                  }}
+                >
+                  Delete
+                </button>
               </div>
             )}
           </div>
         )}
       </div>
 
-      <div className="review-condensed">
+      <div className="review-row__body">
         {isExpanded ? (
-          <div className="review-content" ref={contentRef}>
-            <p><strong>Review:</strong> {review.content}</p>
-            <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">Hide Review</button>
+          <div
+            className="review-row__content"
+            ref={contentRef}
+          >
+            <p>{review.content}</p>
+            <button
+              ref={buttonRef}
+              onClick={() =>
+                toggleReviewExpansion(review.id)
+              }
+              className="review-row__toggle-button"
+            >
+              Hide Review
+            </button>
           </div>
         ) : (
-          <div className="review-content">
-            <button onClick={() => toggleReviewExpansion(review.id)} className="toggle-review-button">Show Review</button>
+          <div className="review-row__content collapsed">
+            <button
+              ref={buttonRef}
+              onClick={() =>
+                toggleReviewExpansion(review.id)
+              }
+              className="review-row__toggle-button"
+            >
+              Show Review
+            </button>
           </div>
         )}
       </div>

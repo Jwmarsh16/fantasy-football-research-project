@@ -1,186 +1,171 @@
-.review-ranking-item {
-    background: #f7f7f7;
-    border: 2px dashed #dcdcdc;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 20px;
-    transition: transform 0.3s ease, background 0.3s ease;
-    overflow-x: visible;
-    box-sizing: border-box;
+/* src/style/ReviewRow.css */
+.review-row {
+  position: relative;
+  box-sizing: border-box;
+  background: var(--color-surface);
+  border: 1px solid var(--section-border);
+  border-radius: var(--space-3);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  overflow: visible;
+}
+
+.review-row.expanded {
+  z-index: 10;
+}
+
+.review-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.review-row__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.review-row__player-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.review-row__player-name {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.review-row__details {
+  font-size: var(--fs-base);
+  color: var(--color-text);
+  font-style: italic;
+  margin-top: var(--space-1);
+}
+
+.review-row__ranking {
+  background: var(--color-secondary);
+  color: var(--color-bg);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-small);
+  font-weight: 700;
+  border-radius: var(--space-4);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  transition: background 150ms ease;
+}
+
+.review-row__ranking:hover {
+  background: var(--color-accent);
+}
+
+.review-row__menu-container {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-1);
+}
+
+.review-row__menu-button {
+  background: transparent;
+  border: none;
+  font-size: var(--fs-h4);
+  color: var(--color-text);
+  padding: var(--space-2);
+  border-radius: var(--space-5);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease,
+    transform 150ms ease;
+}
+
+.review-row__menu-button:hover,
+.review-row__menu-button:focus {
+  background: var(--color-surface);
+  color: var(--color-accent);
+  transform: scale(1.1);
+  outline: none;
+}
+
+.review-row__menu {
+  position: absolute;
+  top: calc(var(--space-5));
+  right: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--section-border);
+  border-radius: var(--space-3);
+  padding: var(--space-2) 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.review-row__menu-item {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: var(--fs-small);
+  color: var(--color-text);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.review-row__menu-item:hover {
+  background: var(--color-secondary);
+  color: var(--color-bg);
+}
+
+.review-row__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.review-row__content p {
+  transition: opacity 300ms ease;
+  opacity: 1;
+}
+
+.review-row__content.collapsed p {
+  opacity: 0;
+}
+
+.review-row__toggle-button {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border: none;
+  border-radius: var(--space-4);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: var(--space-2);
+  transition: background 200ms ease, transform 200ms ease;
+}
+
+.review-row__toggle-button:hover {
+  background: var(--color-accent-dark);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .review-row {
+    padding: var(--space-3);
   }
-  
-  .review-ranking-item:hover {
-    transform: scale(1.02);
-    background: #ececec;
-  }
-  
-  .review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .review-player {
-    font-size: 22px;
-    font-weight: bold;
-    color: var(--review-player-color);
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-    margin: 0;
-  }
-  
-  .review-player-info {
-    display: flex;
+  .review-row__header {
     flex-direction: column;
-    justify-content: center;
+    align-items: flex-start;
   }
-  
-  .player-details {
-    font-size: 16px;
-    color: #555;
-    margin: 4px 0 0 0;
-    font-style: italic;
+  .review-row__details {
+    margin-top: var(--space-2);
   }
-  
-  .ranking-info {
-    flex: 0 0 100px;
-    text-align: center;
-    font-size: 18px;
-    color: var(--ranking-value-color);
-    font-weight: bold;
-    transform: translateX(-2.0em);
+  .review-row__toggle-button {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--fs-small);
   }
-  
-  .review-content {
-    font-size: 18px;
-    color: #555;
-    margin-top: 10px;
-    text-align: left;
-  }
-  
-  /*.review-condensed {
-    padding: 8px 10px;
-    text-align: center;
-    min-height: 60px;
-    display: block;
-  }*/
-  
-  .toggle-review-button {
-    background: var(--title-color);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    padding: 6px 12px;
-    margin-top: 8px;
-    position: static;
-    z-index: auto;
-    cursor: pointer;
-  }
-  
-  .toggle-review-button:hover {
-    background: #166a79;
-  }
-  
-  /* Review menu (⋮ and dropdown) */
-  .review-menu-button {
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: var(--title-color, #166a79);
-    padding: 2px;
-    transform: translateY(-0.5em);
-  }
-  
-  .review-menu-button:hover {
-    color: #1b4f72;
-  }
-  
-  .review-menu {
-    position: absolute;
-    top: 50px;
-    right: 0;
-    background: #e0f7fa;
-    color: #333;
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    border-radius: 5px;
-    padding: 10px 0;
-    z-index: 100;
-  }
-  
-  .review-menu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .review-menu ul li {
-    padding: 8px 20px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    color: #333;
-    font-size: 12px;
-  }
-  
-  .review-menu ul li:hover {
-    background: #b2ebf2;
-  }
-  
-  .review-menu-item {
-    background: none;
-    border: none;
-    display: block;
-    width: 100%;
-    padding: 8px 20px;
-    text-align: left;
-    font-size: 12px;
-    color: #333;
-    cursor: pointer;
-    transition: background 0.2s ease;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-  
-  .review-menu-item:focus {
-    outline: none;
-  }
-  
-  .review-menu-item:hover {
-    background: #b2ebf2;
-  }
-  
-  /* Responsive Adjustments */
-  @media (max-width: 480px) {
-    .review-header {
-      display: block;
-      padding: 8px 10px;
-      position: relative;
-    }
-  
-    .review-player-info {
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-  
-    .ranking-info {
-      display: block;
-      font-size: 14px;
-      margin: 4px 0 8px 0;
-      text-align: left;
-    }
-  
-    .toggle-review-button {
-      display: inline-block;
-      font-size: 12px;
-      padding: 6px 12px;
-    }
-  
-    .review-content p {
-      font-size: 14px;
-      line-height: 1.4;
-      word-wrap: break-word;
-    }
-  }
-  
+}

@@ -55,11 +55,14 @@ function Profile() {
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPosition, setFilterPosition] = useState('');
 
-  const menuRef = useRef(null);
   const parsedUserId = userId ? parseInt(userId, 10) : null;
   const listRef = useRef(null);
-  const defaultCollapsedHeight = 150;
 
+  // Base collapsed height (px) and Gap between rows (px)
+  const defaultCollapsedHeight = 150;
+  const ROW_GAP = 16; // match var(--space-4) in CSS
+
+  // Recalculate mobile breakpoint
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 480);
     window.addEventListener('resize', handleResize);
@@ -67,6 +70,7 @@ function Profile() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Fetch data on mount
   useEffect(() => {
     if (!parsedUserId) {
       navigate('/login');
@@ -76,13 +80,14 @@ function Profile() {
       dispatch(fetchUserById(parsedUserId))
         .unwrap()
         .then((res) => res && dispatch(setUserDetails(res)))
-        .catch((err) => console.error('Error fetching user details:', err));
+        .catch((err) => console.error(err));
     }
     dispatch(fetchRankings());
     dispatch(fetchReviews());
     if (players.length === 0) fetchPlayers();
   }, [parsedUserId, userDetails, dispatch, navigate, players.length]);
 
+  // Force re-render on userDetails change
   useEffect(() => {
     setForceUpdate((prev) => prev + 1);
   }, [userDetails]);
@@ -92,7 +97,7 @@ function Profile() {
       const res = await axios.get('/api/players');
       setPlayers(res.data);
     } catch (err) {
-      console.error('Error fetching players:', err);
+      console.error(err);
     }
   };
 
@@ -104,7 +109,7 @@ function Profile() {
       );
       if (ranking) await dispatch(deleteRanking(ranking.id)).unwrap();
     } catch (err) {
-      console.error('Failed to delete review and ranking:', err);
+      console.error(err);
     }
   };
 
@@ -114,8 +119,7 @@ function Profile() {
       try {
         await dispatch(deleteUser(parsedUserId)).unwrap();
         navigate('/register');
-      } catch (err) {
-        console.error('Failed to delete user profile:', err);
+      } catch {
         alert('Failed to delete profile. Please try again.');
       }
     }
@@ -144,77 +148,54 @@ function Profile() {
     });
   }, []);
 
+  // Reset virtualization layout when rows expand/collapse
   useEffect(() => {
-    if (listRef.current) listRef.current.resetAfterIndex(0, true);
-  }, [rowHeights, expandedReviewIds]);
+    if (listRef.current) {
+      listRef.current.resetAfterIndex(0, true);
+    }
+  }, [expandedReviewIds]);
 
-  const handleFilterByPosition = (position) => {
-    setFilterPosition(position);
-    setFilterTeam('');
-    setExpandedReviewIds([]);
-  };
-
-  const handleFilterByTeam = (e) => {
-    setFilterTeam(e.target.value);
-    setFilterPosition('');
-    setExpandedReviewIds([]);
-  };
-
-  const handleSortChange = (e) => {
-    setSortType(e.target.value);
-    setExpandedReviewIds([]);
-  };
-
-  const handleClearFilters = () => {
-    setFilterTeam('');
-    setFilterPosition('');
-    setSortType('ranking');
-    setExpandedReviewIds([]);
-  };
-
+  // Prepare filtered & sorted reviews
   const userReviews = reviews.filter((r) => r.user_id === parsedUserId);
   const teams = [...new Set(userReviews.map((r) => {
     const p = players.find((pl) => pl.id === r.player_id);
     return p?.team;
   }).filter(Boolean))];
   const positions = [...new Set(players.map((p) => p.position))];
-  const userReviewsWithData = userReviews.map((review) => {
-    const player = players.find((p) => p.id === review.player_id);
+  const enriched = userReviews.map((r) => {
+    const p = players.find((p) => p.id === r.player_id) || {};
     const rankObj = rankings.find(
-      (r) => r.user_id === parsedUserId && r.player_id === review.player_id
+      (x) => x.user_id === parsedUserId && x.player_id === r.player_id
     );
     return {
-      ...review,
-      playerName: player?.name || 'Unknown Player',
-      team: player?.team || '',
-      position: player?.position || '',
-      ranking: rankObj ? rankObj.rank : null,
-      ranking_id: rankObj?.id || null
+      ...r,
+      playerName: p.name,
+      team: p.team,
+      position: p.position,
+      ranking: rankObj?.rank ?? null
     };
   });
 
-  let filtered = [...userReviewsWithData];
+  let filtered = enriched;
   if (filterTeam) filtered = filtered.filter((r) => r.team === filterTeam);
   if (filterPosition) filtered = filtered.filter((r) => r.position === filterPosition);
 
   filtered.sort((a, b) => {
     if (sortType === 'team') return a.team.localeCompare(b.team);
     if (sortType === 'position') return a.position.localeCompare(b.position);
-    const aRank = a.ranking !== null ? a.ranking : Infinity;
-    const bRank = b.ranking !== null ? b.ranking : Infinity;
-    return aRank - bRank;
+    return (a.ranking ?? Infinity) - (b.ranking ?? Infinity);
   });
 
   const getItemSize = (index) => {
-    const review = filtered[index];
-    return expandedReviewIds.includes(review.id)
-      ? rowHeights[index] || 240
+    const baseHeight = expandedReviewIds.includes(filtered[index].id)
+      ? rowHeights[index] ?? defaultCollapsedHeight
       : defaultCollapsedHeight;
+    return baseHeight + ROW_GAP; // add spacing between rows
   };
 
   return (
     <div className="profile-container">
-      <div className="container"> {/* Wrap for centered max-width */}
+      <div className="container">
         <div className="profile-page">
           <div className="profile-header">
             <h2 className="profile-title">User Profile</h2>
@@ -248,20 +229,20 @@ function Profile() {
               positions={positions}
               sortType={sortType}
               filterTeam={filterTeam}
-              handleFilterByTeam={handleFilterByTeam}
-              handleFilterByPosition={handleFilterByPosition}
-              handleSortChange={handleSortChange}
-              handleClearFilters={handleClearFilters}
+              handleFilterByTeam={(team) => { setFilterTeam(team); setFilterPosition(''); setExpandedReviewIds([]); }}
+              handleFilterByPosition={(pos) => { setFilterPosition(pos); setFilterTeam(''); setExpandedReviewIds([]); }}
+              handleSortChange={(e) => { setSortType(e.target.value); setExpandedReviewIds([]); }}
+              handleClearFilters={() => { setFilterTeam(''); setFilterPosition(''); setSortType('ranking'); setExpandedReviewIds([]); }}
             />
 
             <div className="reviews-list">
               {filtered.length > 0 ? (
                 isMobile ? (
-                  filtered.map((review, index) => (
+                  filtered.map((review, idx) => (
                     <ReviewRow
                       key={review.id}
                       review={review}
-                      index={index}
+                      index={idx}
                       isExpanded={expandedReviewIds.includes(review.id)}
                       currentUser={currentUser}
                       parsedUserId={parsedUserId}
@@ -310,6 +291,7 @@ function Profile() {
           </div>
         </div>
       </div>
+
       {editingReview && (
         <EditReviewModal
           editingReview={editingReview}
