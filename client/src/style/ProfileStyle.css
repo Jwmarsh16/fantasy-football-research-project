@@ -1,7 +1,7 @@
 /* src/style/ProfileStyle.css */
 
+/* Full‐page animated background */
 .profile-container {
-  /* Full‐page animated background */
   background: var(--container-bg);
   background-size: 200% 200%;
   animation: bgShift 15s ease infinite;
@@ -20,14 +20,15 @@
   100% { background-position: 0% 50%; }
 }
 
+/* Ensure consistent max‐width across pages */
 .container {
-  /* Ensure consistent max‐width across pages */
   max-width: 960px;
   width: 100%;
   margin: 0 auto;
   padding: 0 var(--space-3);
 }
 
+/* Profile page styling */
 .profile-page {
   position: relative; /* for absolute‐positioned menu */
   background: var(--primary-bg-gradient);
@@ -87,7 +88,6 @@
 }
 
 .reviews-list {
-  /* Ensure scroll area or spacing */
   margin-top: var(--space-3);
 }
 
@@ -120,5 +120,97 @@
   .profile-title,
   .section-title {
     font-size: var(--fs-h3);
+  }
+}
+
+/* ===== New Styles Below ===== */
+
+/* Two-column layout: sidebar and main content for better structure */
+.profile-layout {
+  display: flex;
+  gap: var(--space-5);
+}
+
+/* Sidebar fixed width to house profile menu and user info */
+.profile-sidebar {
+  flex: 0 0 280px;
+}
+
+/* Main content area expands to fill remaining space */
+.profile-main {
+  flex: 1;
+}
+
+/* Tabs styling: container, buttons, active state */
+.profile-tabs {
+  display: flex;
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+  border-bottom: 2px solid var(--color-secondary);
+}
+
+.profile-tab-button {
+  background: transparent;
+  border: none;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 150ms ease, border-bottom 150ms ease;
+  border-bottom: 3px solid transparent;
+}
+
+/* Active tab: highlight with secondary color underline */
+.profile-tab-button.active {
+  color: var(--color-secondary);
+  border-bottom-color: var(--color-secondary);
+}
+
+.profile-tab-button:hover {
+  color: var(--color-accent);
+}
+
+/* Rankings section styling: container and list */
+.rankings-section {
+  background: var(--section-bg);
+  border: 2px solid var(--section-border);
+  border-radius: var(--space-3);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.rankings-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rankings-list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--section-border);
+}
+
+.rankings-list-item:last-child {
+  border-bottom: none;
+}
+
+.rankings-player {
+  font-weight: 500;
+}
+
+.rankings-value {
+  font-weight: 700;
+  color: var(--color-secondary);
+}
+
+/* Responsive: stack columns on narrower screens */
+@media (max-width: 768px) {
+  .profile-layout {
+    flex-direction: column;
+  }
+  .profile-sidebar {
+    flex: none;
   }
 }

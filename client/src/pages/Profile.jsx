@@ -1,7 +1,7 @@
 // src/pages/Profile.jsx
 import React, {
   useEffect,
-  useState,
+  useState,               // track activeTab
   useRef,
   useCallback
 } from 'react';
@@ -54,15 +54,14 @@ function Profile() {
   const [sortType, setSortType] = useState('ranking');
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPosition, setFilterPosition] = useState('');
+  const [activeTab, setActiveTab] = useState('myteam'); // start on My Team tab
 
   const parsedUserId = userId ? parseInt(userId, 10) : null;
   const listRef = useRef(null);
 
-  // Base collapsed height (px) and Gap between rows (px)
   const defaultCollapsedHeight = 150;
-  const ROW_GAP = 16; // match var(--space-4) in CSS
+  const ROW_GAP = 16; // match var(--space-4)
 
-  // Recalculate mobile breakpoint
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 480);
     window.addEventListener('resize', handleResize);
@@ -70,7 +69,6 @@ function Profile() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fetch data on mount
   useEffect(() => {
     if (!parsedUserId) {
       navigate('/login');
@@ -87,7 +85,6 @@ function Profile() {
     if (players.length === 0) fetchPlayers();
   }, [parsedUserId, userDetails, dispatch, navigate, players.length]);
 
-  // Force re-render on userDetails change
   useEffect(() => {
     setForceUpdate((prev) => prev + 1);
   }, [userDetails]);
@@ -148,21 +145,20 @@ function Profile() {
     });
   }, []);
 
-  // Reset virtualization layout when rows expand/collapse
   useEffect(() => {
     if (listRef.current) {
       listRef.current.resetAfterIndex(0, true);
     }
   }, [expandedReviewIds]);
 
-  // Prepare filtered & sorted reviews
+  // Prepare data for Reviews tab
   const userReviews = reviews.filter((r) => r.user_id === parsedUserId);
   const teams = [...new Set(userReviews.map((r) => {
     const p = players.find((pl) => pl.id === r.player_id);
     return p?.team;
   }).filter(Boolean))];
   const positions = [...new Set(players.map((p) => p.position))];
-  const enriched = userReviews.map((r) => {
+  const enrichedReviews = userReviews.map((r) => {
     const p = players.find((p) => p.id === r.player_id) || {};
     const rankObj = rankings.find(
       (x) => x.user_id === parsedUserId && x.player_id === r.player_id
@@ -175,120 +171,203 @@ function Profile() {
       ranking: rankObj?.rank ?? null
     };
   });
-
-  let filtered = enriched;
+  let filtered = enrichedReviews;
   if (filterTeam) filtered = filtered.filter((r) => r.team === filterTeam);
   if (filterPosition) filtered = filtered.filter((r) => r.position === filterPosition);
-
   filtered.sort((a, b) => {
     if (sortType === 'team') return a.team.localeCompare(b.team);
     if (sortType === 'position') return a.position.localeCompare(b.position);
     return (a.ranking ?? Infinity) - (b.ranking ?? Infinity);
   });
-
   const getItemSize = (index) => {
     const baseHeight = expandedReviewIds.includes(filtered[index].id)
       ? rowHeights[index] ?? defaultCollapsedHeight
       : defaultCollapsedHeight;
-    return baseHeight + ROW_GAP; // add spacing between rows
+    return baseHeight + ROW_GAP;
   };
 
   return (
     <div className="profile-container">
       <div className="container">
-        <div className="profile-page">
-          <div className="profile-header">
-            <h2 className="profile-title">User Profile</h2>
-          </div>
-
-          <ProfileMenu
-            currentUser={currentUser}
-            parsedUserId={parsedUserId}
-            navigate={navigate}
-            showMenu={showMenu}
-            setShowMenu={setShowMenu}
-            handleDeleteProfile={handleDeleteProfile}
-          />
-
-          <UserInfoCard
-            avatarUrl={avatarUrl}
-            forceUpdate={forceUpdate}
-            userDetails={userDetails}
-            currentUser={currentUser}
-            parsedUserId={parsedUserId}
-            dispatch={dispatch}
-            fetchUsers={fetchUsers}
-            setUserDetails={setUserDetails}
-          />
-
-          <div className="reviews-rankings-section">
-            <h3 className="section-title">Your Reviews and Rankings</h3>
-
-            <ReviewFilterSort
-              teams={teams}
-              positions={positions}
-              sortType={sortType}
-              filterTeam={filterTeam}
-              handleFilterByTeam={(team) => { setFilterTeam(team); setFilterPosition(''); setExpandedReviewIds([]); }}
-              handleFilterByPosition={(pos) => { setFilterPosition(pos); setFilterTeam(''); setExpandedReviewIds([]); }}
-              handleSortChange={(e) => { setSortType(e.target.value); setExpandedReviewIds([]); }}
-              handleClearFilters={() => { setFilterTeam(''); setFilterPosition(''); setSortType('ranking'); setExpandedReviewIds([]); }}
+        <div className="profile-page profile-layout">
+          {/* Sidebar */}
+          <aside className="profile-sidebar">
+            <ProfileMenu
+              currentUser={currentUser}
+              parsedUserId={parsedUserId}
+              navigate={navigate}
+              showMenu={showMenu}
+              setShowMenu={setShowMenu}
+              handleDeleteProfile={handleDeleteProfile}
             />
+            <UserInfoCard
+              avatarUrl={avatarUrl}
+              forceUpdate={forceUpdate}
+              userDetails={userDetails}
+              currentUser={currentUser}
+              parsedUserId={parsedUserId}
+              dispatch={dispatch}
+              fetchUsers={fetchUsers}
+              setUserDetails={setUserDetails}
+            />
+          </aside>
 
-            <div className="reviews-list">
-              {filtered.length > 0 ? (
-                isMobile ? (
-                  filtered.map((review, idx) => (
-                    <ReviewRow
-                      key={review.id}
-                      review={review}
-                      index={idx}
-                      isExpanded={expandedReviewIds.includes(review.id)}
-                      currentUser={currentUser}
-                      parsedUserId={parsedUserId}
-                      openMenuReviewId={openMenuReviewId}
-                      setOpenMenuReviewId={setOpenMenuReviewId}
-                      setEditingReview={setEditingReview}
-                      handleDeleteReviewAndRanking={handleDeleteReviewAndRanking}
-                      toggleReviewExpansion={toggleReviewExpansion}
-                      updateRowHeight={updateRowHeight}
-                    />
-                  ))
-                ) : (
-                  <List
-                    ref={listRef}
-                    height={600}
-                    itemCount={filtered.length}
-                    itemSize={getItemSize}
-                    width="100%"
-                    style={{ overflowX: 'hidden' }}
-                  >
-                    {({ index, style }) => (
-                      <ReviewRow
-                        key={filtered[index].id}
-                        review={filtered[index]}
-                        index={index}
-                        style={style}
-                        isExpanded={expandedReviewIds.includes(filtered[index].id)}
-                        currentUser={currentUser}
-                        parsedUserId={parsedUserId}
-                        openMenuReviewId={openMenuReviewId}
-                        setOpenMenuReviewId={setOpenMenuReviewId}
-                        setEditingReview={setEditingReview}
-                        handleDeleteReviewAndRanking={handleDeleteReviewAndRanking}
-                        toggleReviewExpansion={toggleReviewExpansion}
-                        updateRowHeight={updateRowHeight}
-                      />
-                    )}
-                  </List>
-                )
-              ) : (
-                <p className="no-reviews-rankings-message">
-                  No reviews or rankings available.
-                </p>
-              )}
+          {/* Main content */}
+          <main className="profile-main">
+            <div className="profile-header">
+              <h2 className="profile-title">User Profile</h2>
             </div>
-          </div>
+
+            {/* Tab navigation */}
+            <div className="profile-tabs">
+              <button
+                className={`profile-tab-button ${activeTab === 'myteam' ? 'active' : ''}`}
+                onClick={() => setActiveTab('myteam')}
+              >
+                My Team
+              </button>
+              <button
+                className={`profile-tab-button ${activeTab === 'reviews' ? 'active' : ''}`}
+                onClick={() => setActiveTab('reviews')}
+              >
+                Reviews
+              </button>
+              <button
+                className={`profile-tab-button ${activeTab === 'watchlist' ? 'active' : ''}`}
+                onClick={() => setActiveTab('watchlist')}
+              >
+                Watchlist
+              </button>
+              <button
+                className={`profile-tab-button ${activeTab === 'comparisons' ? 'active' : ''}`}
+                onClick={() => setActiveTab('comparisons')}
+              >
+                Player Comparisons
+              </button>
+              <button
+                className={`profile-tab-button ${activeTab === 'groups' ? 'active' : ''}`}
+                onClick={() => setActiveTab('groups')}
+              >
+                Groups &amp; Leagues
+              </button>
+              <button
+                className={`profile-tab-button ${activeTab === 'video' ? 'active' : ''}`}
+                onClick={() => setActiveTab('video')}
+              >
+                Video Hub
+              </button>
+            </div>
+
+            {/* Tab content */}
+            {activeTab === 'myteam' && (
+              <div className="myteam-section">
+                <h3 className="section-title">My Team</h3>
+                {/* TODO: Replace with MyTeam component */}
+                <p>Your roster overview goes here.</p>
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className="reviews-rankings-section">
+                <h3 className="section-title">Your Reviews</h3>
+                <ReviewFilterSort
+                  teams={teams}
+                  positions={positions}
+                  sortType={sortType}
+                  filterTeam={filterTeam}
+                  handleFilterByTeam={(team) => { setFilterTeam(team); setFilterPosition(''); setExpandedReviewIds([]); }}
+                  handleFilterByPosition={(pos) => { setFilterPosition(pos); setFilterTeam(''); setExpandedReviewIds([]); }}
+                  handleSortChange={(e) => { setSortType(e.target.value); setExpandedReviewIds([]); }}
+                  handleClearFilters={() => { setFilterTeam(''); setFilterPosition(''); setSortType('ranking'); setExpandedReviewIds([]); }}
+                />
+                <div className="reviews-list">
+                  {filtered.length > 0 ? (
+                    isMobile ? (
+                      filtered.map((review, idx) => (
+                        <ReviewRow
+                          key={review.id}
+                          review={review}
+                          index={idx}
+                          isExpanded={expandedReviewIds.includes(review.id)}
+                          currentUser={currentUser}
+                          parsedUserId={parsedUserId}
+                          openMenuReviewId={openMenuReviewId}
+                          setOpenMenuReviewId={setOpenMenuReviewId}
+                          setEditingReview={setEditingReview}
+                          handleDeleteReviewAndRanking={handleDeleteReviewAndRanking}
+                          toggleReviewExpansion={toggleReviewExpansion}
+                          updateRowHeight={updateRowHeight}
+                        />
+                      ))
+                    ) : (
+                      <List
+                        ref={listRef}
+                        height={600}
+                        itemCount={filtered.length}
+                        itemSize={getItemSize}
+                        width="100%"
+                        style={{ overflowX: 'hidden' }}
+                      >
+                        {({ index, style }) => (
+                          <ReviewRow
+                            key={filtered[index].id}
+                            review={filtered[index]}
+                            index={index}
+                            style={style}
+                            isExpanded={expandedReviewIds.includes(filtered[index].id)}
+                            currentUser={currentUser}
+                            parsedUserId={parsedUserId}
+                            openMenuReviewId={openMenuReviewId}
+                            setOpenMenuReviewId={setOpenMenuReviewId}
+                            setEditingReview={setEditingReview}
+                            handleDeleteReviewAndRanking={handleDeleteReviewAndRanking}
+                            toggleReviewExpansion={toggleReviewExpansion}
+                            updateRowHeight={updateRowHeight}
+                          />
+                        )}
+                      </List>
+                    )
+                  ) : (
+                    <p className="no-reviews-rankings-message">
+                      No reviews available.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'watchlist' && (
+              <div className="watchlist-section">
+                <h3 className="section-title">Watchlist</h3>
+                {/* TODO: Replace with Watchlist component */}
+                <p>Your tracked players go here.</p>
+              </div>
+            )}
+
+            {activeTab === 'comparisons' && (
+              <div className="comparisons-section">
+                <h3 className="section-title">Player Comparisons</h3>
+                {/* TODO: Replace with Comparisons component */}
+                <p>Comparison tool goes here.</p>
+              </div>
+            )}
+
+            {activeTab === 'groups' && (
+              <div className="groups-section">
+                <h3 className="section-title">Groups &amp; Leagues</h3>
+                {/* TODO: Replace with Groups & Leagues component */}
+                <p>Your group and league links go here.</p>
+              </div>
+            )}
+
+            {activeTab === 'video' && (
+              <div className="video-section">
+                <h3 className="section-title">Video Hub</h3>
+                {/* TODO: Replace with Video Hub component */}
+                <p>Embedded videos or bookmarks go here.</p>
+              </div>
+            )}
+          </main>
         </div>
       </div>
 
