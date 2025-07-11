@@ -1,20 +1,17 @@
 /* src/style/ProfileStyle.css */
 
-:root {
-  /* Component-specific tokens (kept here) */
-  --primary-bg-gradient: linear-gradient(135deg, #1abc9c, #2c3e50);
-  --container-bg: linear-gradient(135deg, #035e0b, #0984e3);
-  --section-bg: var(--color-bg);
-  --section-border: rgba(0, 0, 0, 0.1);
-}
-
-/* Full-page animated background */
 .profile-container {
+  /* Full‐page animated background */
   background: var(--container-bg);
   background-size: 200% 200%;
   animation: bgShift 15s ease infinite;
   padding: calc(var(--space-5) * 2.5) 0; /* 80px top/bottom */
   min-height: 100vh;
+
+  /* Center the profile page */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 @keyframes bgShift {
@@ -23,12 +20,20 @@
   100% { background-position: 0% 50%; }
 }
 
-/* Card wrapper (now inside .container) */
+.container {
+  /* Ensure consistent max‐width across pages */
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-3);
+}
+
 .profile-page {
+  position: relative; /* for absolute‐positioned menu */
   background: var(--primary-bg-gradient);
   border-top: 6px solid var(--color-secondary);
   color: var(--color-bg);
-  padding: var(--space-4) var(--space-5); /* 24px 32px */
+  padding: var(--space-4) var(--space-5);
   border-radius: var(--space-4);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   transition: transform 150ms ease-in-out, box-shadow 150ms ease-in-out;
@@ -55,6 +60,7 @@
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
+  margin: 0;
 }
 
 /* Reviews & Rankings section */
@@ -77,6 +83,12 @@
   letter-spacing: 0.5px;
   border-bottom: 2px solid var(--color-secondary);
   padding-bottom: var(--space-2);
+  margin: 0;
+}
+
+.reviews-list {
+  /* Ensure scroll area or spacing */
+  margin-top: var(--space-3);
 }
 
 .no-reviews-rankings-message {
@@ -105,9 +117,7 @@
     padding: var(--space-2) var(--space-3);
     margin: 0 var(--space-2);
   }
-  .profile-title {
-    font-size: var(--fs-h3);
-  }
+  .profile-title,
   .section-title {
     font-size: var(--fs-h3);
   }
