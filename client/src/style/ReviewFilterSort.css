@@ -1,0 +1,123 @@
+/* src/style/ReviewFilterSort.css */
+
+.review-filter-sort {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  background: var(--color-surface);
+  padding: var(--space-3);
+  border: 1px solid var(--section-border);
+  border-radius: var(--space-3);
+}
+
+.review-filter-sort__positions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+/* Enhanced pill-shaped position button for professional aesthetic */
+.review-filter-sort__position-button {
+  padding: var(--space-2) var(--space-3); /* pill shape padding */
+  background: var(--color-secondary);      /* primary accent background */
+  color: var(--color-bg);                  /* contrast text */
+  border: none;                            /* remove default border for cleaner look */
+  border-radius: var(--space-5);           /* more rounded corners */
+  font-size: var(--fs-small);              /* slightly smaller text */
+  font-weight: 500;                        /* medium weight for readability */
+  text-transform: uppercase;               /* consistent casing */
+  letter-spacing: 0.5px;                   /* subtle letter spacing */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* soft drop shadow for depth */
+  cursor: pointer;                         /* pointer cursor to indicate interactivity */
+  transition: 
+    background 200ms ease,                /* smooth background transition */
+    transform 200ms ease,                 /* smooth lift on hover */
+    box-shadow 200ms ease;                /* smooth shadow transition */
+}
+
+.review-filter-sort__position-button:hover,
+.review-filter-sort__position-button:focus {
+  background: var(--color-accent);         /* brighter accent on hover */
+  transform: translateY(-2px);             /* subtle lift effect */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* stronger shadow on hover */
+  outline: none;                           /* remove default focus outline */
+}
+
+.review-filter-sort__team {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.review-filter-sort__team-label {
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.review-filter-sort__team-dropdown {
+  padding: var(--space-2);
+  font-size: var(--fs-base);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--space-4);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.review-filter-sort__team-dropdown:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 var(--space-1) var(--color-accent);
+}
+
+.review-filter-sort__sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.review-filter-sort__sort label {
+  font-size: var(--fs-base);
+  color: var(--color-text);
+}
+
+.review-filter-sort__sort-select {
+  padding: var(--space-2);
+  font-size: var(--fs-base);
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--space-4);
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.review-filter-sort__sort-select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 var(--space-1) var(--color-accent);
+}
+
+.review-filter-sort__clear-button {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--fs-small);
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border: none;
+  border-radius: var(--space-4);
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.review-filter-sort__clear-button:hover {
+  background: var(--color-accent-dark);
+  transform: translateY(calc(-1 * var(--space-1)));
+}
+
+@media (max-width: 768px) {
+  .review-filter-sort {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .review-filter-sort__sort {
+    flex-wrap: wrap;
+  }
+}

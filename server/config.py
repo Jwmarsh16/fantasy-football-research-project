@@ -26,15 +26,15 @@ naming_convention = {
 metadata = MetaData(naming_convention=naming_convention)
 
 # Development
-#app = Flask(__name__)
+app = Flask(__name__)
 
 # Production
-app = Flask(
-    __name__,
-    static_url_path='',
-    static_folder='../client/dist',
-    template_folder='../client/dist'
-)
+#app = Flask(
+#    __name__,
+#    static_url_path='',
+#    static_folder='../client/dist',
+#    template_folder='../client/dist'
+#)
 
 # Secret keys & configuration
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
@@ -44,8 +44,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']  
 app.config['JWT_ACCESS_COOKIE_PATH'] = '/'  
-app.config['JWT_COOKIE_CSRF_PROTECT'] = True  # Enable CSRF protection for production (enable in production)
-app.config['JWT_COOKIE_SECURE'] = True  # Set to True in production (only send cookies over HTTPS) 
+app.config['JWT_COOKIE_CSRF_PROTECT'] = False  # Enable CSRF protection for production (enable in production)
+app.config['JWT_COOKIE_SECURE'] = False  # Set to True in production (only send cookies over HTTPS) 
 
 # AWS Configuration
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
@@ -76,7 +76,7 @@ bcrypt = Bcrypt(app=app)
 api = Api(app=app)
 
 # Production CORS configuration
-CORS(app, supports_credentials=True, origins=["https://fantasy-football-research-hub.onrender.com"])
+#CORS(app, supports_credentials=True, origins=["https://fantasy-football-research-hub.onrender.com"])
 
 # Development CORS configuration (uncomment for local development)
-#CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5173", "http://localhost:5173", "http://localhost:5555"])
+CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5173", "http://localhost:5173", "http://localhost:5555"])
