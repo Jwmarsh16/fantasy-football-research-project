@@ -1,3 +1,10 @@
+# /home/jwmarsh16/projects/fantasy-football-research-project/.gitignore
 .env
 __pycache__/
 *.pyc
+
+# Keep this project's local Python environment out of Git.
+.venv/
+
+# CHANGED: Keep the working database and SQLite sidecar files out of Git.
+/server/instance/ffrh-local.db*
