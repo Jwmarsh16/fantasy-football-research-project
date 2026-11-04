@@ -1,0 +1,4 @@
+// .vscode/settings.json
+{
+    "python-envs.defaultEnvManager": "ms-python.python:venv" // CHANGED: Match the existing .venv workflow.
+}

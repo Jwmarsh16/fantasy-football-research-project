@@ -41,11 +41,14 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')  
-app.config['JWT_TOKEN_LOCATION'] = ['cookies']  
-app.config['JWT_ACCESS_COOKIE_PATH'] = '/'  
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_ACCESS_COOKIE_PATH'] = '/'
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True  # Enable CSRF protection for production (enable in production)
-app.config['JWT_COOKIE_SECURE'] = True  # Set to True in production (only send cookies over HTTPS) 
+# CHANGED: Require HTTPS cookies unless local development explicitly sets false.
+app.config['JWT_COOKIE_SECURE'] = (
+    os.getenv('JWT_COOKIE_SECURE', 'true').strip().lower() != 'false'
+)
 
 # AWS Configuration
 AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
