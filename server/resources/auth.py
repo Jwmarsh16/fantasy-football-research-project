@@ -1,13 +1,18 @@
 # resources/auth.py
 from flask import request, jsonify
 from flask_restful import Resource
-from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required
+from flask_jwt_extended import (
+    create_access_token, get_jwt_identity, jwt_required, set_access_cookies, unset_jwt_cookies,
+)
 from models import User
 from utils.helpers import to_dict
 from utils.s3 import allowed_file, upload_to_s3
 from config import db
 import bcrypt
 import datetime
+
+SESSION_USER_FIELDS = ('id', 'username', 'email', 'profilePic')
+
 
 class RegisterResource(Resource):
     def post(self):
@@ -37,28 +42,45 @@ class RegisterResource(Resource):
 
 class LoginResource(Resource):
     def post(self):
-        data = request.get_json()
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict):
+            return {'message': 'Invalid credentials'}, 401
         email = data.get('email')
         password = data.get('password')
+        if not isinstance(email, str) or not isinstance(password, str):
+            return {'message': 'Invalid credentials'}, 401
         user = User.query.filter_by(email=email).first()
 
-        if not user or not user.check_password(password):
+        try:
+            valid_password = user is not None and user.check_password(password)
+        except ValueError:
+            # Older seed databases may contain non-bcrypt passwords.
+            valid_password = False
+        if not valid_password:
             return {'message': 'Invalid credentials'}, 401
 
         access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(hours=1))
         response_data = {
             'message': 'Login successful',
-            'user': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email,
-                'profilePic': user.profilePic
-            }
+            'user': to_dict(user, SESSION_USER_FIELDS),
         }
 
         response = jsonify(response_data)
         set_access_cookies(response, access_token)
         return response
+
+
+class SessionResource(Resource):
+    @jwt_required(optional=True)
+    def get(self):
+        user_id = get_jwt_identity()
+        user = db.session.get(User, user_id) if user_id is not None else None
+        response = jsonify(user=to_dict(user, SESSION_USER_FIELDS) if user else None)
+        response.cache_control.no_store = True
+        if user_id is not None and user is None:
+            unset_jwt_cookies(response)
+        return response
+
 
 class LogoutResource(Resource):
     @jwt_required()

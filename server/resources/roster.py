@@ -1,70 +1,96 @@
-# server/resources/roster.py
-
-from flask_restful import Resource
 from flask import request
-from models import Roster
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_restful import Resource
+from sqlalchemy.exc import IntegrityError
+
 from config import db
-from utils.helpers import to_dict
+from models import Player, Roster, User
+from utils.helpers import to_dict, valid_record_id
+
+
+def roster_data(entry):
+    data = to_dict(entry, ['id', 'slot', 'is_starter'])
+    player = entry.player
+    data['player'] = to_dict(player, ['id', 'name', 'position', 'team', 'stats', 'status'])
+    ranks = [ranking.rank for ranking in player.rankings]
+    data['player']['average_rank'] = sum(ranks) / len(ranks) if ranks else None
+    return data
+
+
+def roster_slot(value):
+    if type(value) is int and valid_record_id(value):
+        return str(value)
+    if isinstance(value, str) and 0 < len(value.strip()) <= 20:
+        return value.strip()
+    return None
+
 
 class RosterListResource(Resource):
     def get(self, user_id):
         entries = Roster.query.filter_by(user_id=user_id).all()
-        roster_data = []
-        for r in entries:
-            rd = to_dict(r, ['id', 'slot', 'is_starter'])
-            # include nested player info
-            player = r.player
-            pd = to_dict(player, [
-                'id', 'name', 'position', 'team', 'stats', 'status'
-            ])
-            # compute average rank if available
-            ranks = [rn.rank for rn in player.rankings]
-            pd['average_rank'] = sum(ranks) / len(ranks) if ranks else None
-            rd['player'] = pd
-            roster_data.append(rd)
-        # Sort starters first, then by slot
-        sorted_data = sorted(
-            roster_data,
-            key=lambda x: (not x['is_starter'], x['slot'])
-        )
-        return sorted_data, 200
+        # Sort starters first, then by slot.
+        entries.sort(key=lambda entry: (not entry.is_starter, entry.slot))
+        return [roster_data(entry) for entry in entries], 200
 
+    @jwt_required()
     def post(self, user_id):
-        data = request.get_json()
-        r = Roster(
-            user_id=user_id,
+        current_user_id = int(get_jwt_identity())
+        if current_user_id != user_id:
+            return {'error': 'Unauthorized action'}, 403
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict) or not valid_record_id(data.get('player_id')):
+            return {'error': 'A valid player_id is required'}, 400
+        slot = roster_slot(data.get('slot'))
+        is_starter = data.get('is_starter', True)
+        if slot is None or not isinstance(is_starter, bool):
+            return {'error': 'A valid slot and starter flag are required'}, 400
+        if db.session.get(User, current_user_id) is None:
+            return {'error': 'Account not found'}, 401
+        if db.session.get(Player, data['player_id']) is None:
+            return {'error': 'Player not found'}, 404
+
+        entry = Roster(
+            user_id=current_user_id,
             player_id=data['player_id'],
-            slot=data['slot'],
-            is_starter=data.get('is_starter', True)
+            slot=slot,
+            is_starter=is_starter,
         )
-        db.session.add(r)
-        db.session.commit()
-        rd = to_dict(r, ['id', 'slot', 'is_starter'])
-        pd = to_dict(r.player, ['id', 'name', 'position', 'team', 'stats', 'status'])
-        ranks = [rn.rank for rn in r.player.rankings]
-        pd['average_rank'] = sum(ranks) / len(ranks) if ranks else None
-        rd['player'] = pd
-        return rd, 201
+        db.session.add(entry)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'Roster entry could not be saved'}, 409
+        return roster_data(entry), 201
+
 
 class RosterResource(Resource):
+    @jwt_required()
     def put(self, id):
-        r = Roster.query.get(id)
-        if not r:
+        entry = db.session.get(Roster, id)
+        if entry is None:
             return {'error': 'Roster entry not found'}, 404
-        for field, value in request.get_json().items():
-            setattr(r, field, value)
+        if entry.user_id != int(get_jwt_identity()):
+            return {'error': 'Unauthorized action'}, 403
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict):
+            return {'error': 'A JSON object is required'}, 400
+        slot = roster_slot(data.get('slot', entry.slot))
+        is_starter = data.get('is_starter', entry.is_starter)
+        if slot is None or not isinstance(is_starter, bool):
+            return {'error': 'A valid slot and starter flag are required'}, 400
+        entry.slot = slot
+        entry.is_starter = is_starter
         db.session.commit()
-        rd = to_dict(r, ['id', 'slot', 'is_starter'])
-        pd = to_dict(r.player, ['id', 'name', 'position', 'team', 'stats', 'status'])
-        ranks = [rn.rank for rn in r.player.rankings]
-        pd['average_rank'] = sum(ranks) / len(ranks) if ranks else None
-        rd['player'] = pd
-        return rd, 200
+        return roster_data(entry), 200
 
+    @jwt_required()
     def delete(self, id):
-        r = Roster.query.get(id)
-        if not r:
+        entry = db.session.get(Roster, id)
+        if entry is None:
             return {'error': 'Roster entry not found'}, 404
-        db.session.delete(r)
+        if entry.user_id != int(get_jwt_identity()):
+            return {'error': 'Unauthorized action'}, 403
+        db.session.delete(entry)
         db.session.commit()
         return '', 204

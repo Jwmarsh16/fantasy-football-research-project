@@ -3,6 +3,20 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+export const restoreSession = createAsyncThunk(
+  'auth/restoreSession',
+  async () => {
+    const { data } = await axios.get('/api/auth/session', {
+      withCredentials: true,
+      timeout: 5000,
+    });
+    return data.user;
+  },
+  {
+    condition: (_, { getState }) => getState().auth.sessionStatus === 'idle',
+  },
+);
+
 // Async thunk to handle login
 export const loginUser = createAsyncThunk('auth/loginUser', async (credentials, { rejectWithValue }) => {
   try {
@@ -77,12 +91,24 @@ const authSlice = createSlice({
   initialState: {
     currentUser: null,
     status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+    sessionStatus: 'idle',
     error: null,
     isAuthenticated: false, // Track authentication status
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(restoreSession.pending, (state) => {
+        state.sessionStatus = 'checking';
+      })
+      .addCase(restoreSession.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
+        state.isAuthenticated = Boolean(action.payload);
+        state.sessionStatus = 'checked';
+      })
+      .addCase(restoreSession.rejected, (state) => {
+        state.sessionStatus = 'checked';
+      })
       // Login Cases
       .addCase(loginUser.pending, (state) => {
         state.status = 'loading';
@@ -96,22 +122,18 @@ const authSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
-        state.isAuthenticated = false;
       })
       // Register Cases
       .addCase(registerUser.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.status = 'succeeded';
-        state.currentUser = action.payload;
-        state.isAuthenticated = true; // Automatically authenticate after successful registration
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
-        state.isAuthenticated = false;
       })
       // Logout Cases
       .addCase(logoutUser.pending, (state) => {

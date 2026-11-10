@@ -1,13 +1,8 @@
 // src/components/user/ProfilePicUpdater.jsx
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  updateProfilePic,
-  setUserDetails,
-  fetchUsers
-} from "../../redux/slices/userSlice";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { updateProfilePic } from "../../redux/slices/userSlice";
 import ProfilePicEditor from "./ProfilePicEditor";
-import axios from "axios";
 
 const ProfilePicUpdater = ({ userId, onUpdate }) => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -15,7 +10,6 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  const userDetails = useSelector((state) => state.user.userDetails);
 
   // Handle file input change
   const handleFileChange = (e) => {
@@ -42,27 +36,11 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
 
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("profilePic", fileToUpload);
-      formData.append("userId", userId);
-      const response = await axios.put(
-        `/api/users/${userId}`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-
-      if (response.status === 200 && response.data.profilePic) {
-        setMessage("Profile picture updated successfully!");
-        const newProfilePic = response.data.profilePic;
-        dispatch(setUserDetails({
-          ...userDetails,
-          profilePic: newProfilePic
-        }));
-        dispatch(fetchUsers());
-        if (onUpdate) onUpdate({ profilePic: newProfilePic });
-        setEditorVisible(false);
-        setSelectedFile(null);
-      }
+      const updatedUser = await dispatch(updateProfilePic({ userId, file: fileToUpload })).unwrap();
+      setMessage("Profile picture updated successfully!");
+      onUpdate?.({ profilePic: updatedUser.profilePic });
+      setEditorVisible(false);
+      setSelectedFile(null);
     } catch (error) {
       console.error("Error updating profile picture:", error);
       setMessage("Error updating profile picture.");

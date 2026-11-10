@@ -1,5 +1,5 @@
 // src/pages/Profile.jsx
-import React, {
+import {
   useEffect,
   useState,               // track activeTab
   useRef,
@@ -14,11 +14,7 @@ import {
   setUserDetails,
   fetchUsers
 } from '../redux/slices/userSlice';
-import {
-  fetchRankings,
-  deleteRanking,
-  updateRanking
-} from '../redux/slices/rankingSlice';
+import { fetchRankings } from '../redux/slices/rankingSlice';
 import {
   fetchReviews,
   deleteReview,
@@ -42,6 +38,7 @@ function Profile() {
 
   const currentUser = useSelector((state) => state.auth.currentUser);
   const userDetails = useSelector((state) => state.user.userDetails);
+  const [profileError, setProfileError] = useState(false);
   const reviews = useSelector((state) => state.review.reviews);
   const rankings = useSelector((state) => state.ranking.rankings);
 
@@ -75,20 +72,21 @@ function Profile() {
   // fetch user data, reviews, rankings, roster, and players on mount/user change
   useEffect(() => {
     if (!parsedUserId) {
-      navigate('/login');
+      navigate(currentUser ? `/profile/${currentUser.id}` : '/login', { replace: true });
       return;
     }
     if (!userDetails || userDetails.id !== parsedUserId) {
+      setProfileError(false);
       dispatch(fetchUserById(parsedUserId))
         .unwrap()
         .then((res) => res && dispatch(setUserDetails(res)))
-        .catch((err) => console.error(err));
+        .catch(() => setProfileError(true));
     }
     dispatch(fetchRankings());
     dispatch(fetchReviews());
     dispatch(fetchRoster(parsedUserId)); // fetch roster on mount
     if (players.length === 0) fetchPlayers();
-  }, [parsedUserId, userDetails, dispatch, navigate, players.length]);
+  }, [parsedUserId, userDetails, dispatch, navigate, players.length, currentUser]);
 
   // re-fetch roster when switching back to My Team tab
   useEffect(() => {
@@ -111,13 +109,9 @@ function Profile() {
     }
   };
 
-  const handleDeleteReviewAndRanking = async (reviewId, playerId) => {
+  const handleDeleteReview = async (reviewId) => {
     try {
       await dispatch(deleteReview(reviewId)).unwrap();
-      const ranking = rankings.find(
-        (r) => r.user_id === parsedUserId && r.player_id === playerId
-      );
-      if (ranking) await dispatch(deleteRanking(ranking.id)).unwrap();
     } catch (err) {
       console.error(err);
     }
@@ -134,13 +128,6 @@ function Profile() {
       }
     }
   };
-
-  const avatarUrl =
-    userDetails.profilePic?.trim() === 'avatar'
-      ? `https://i.pravatar.cc/150?u=${userDetails.id}`
-      : userDetails.profilePic?.trim()
-      ? userDetails.profilePic
-      : 'https://placehold.co/600x400?text=Upload+Picture';
 
   const toggleReviewExpansion = (reviewId) => {
     setExpandedReviewIds((prev) =>
@@ -201,6 +188,17 @@ function Profile() {
       : defaultCollapsedHeight;
     return baseHeight + ROW_GAP;
   };
+
+  if (!parsedUserId || userDetails?.id !== parsedUserId) {
+    return profileError
+      ? <p className="error-message">Could not load this profile.</p>
+      : <p className="loading-message">Loading profile...</p>;
+  }
+
+  const avatarUrl =
+    userDetails.profilePic?.trim() === 'avatar'
+      ? `https://i.pravatar.cc/150?u=${userDetails.id}`
+      : userDetails.profilePic?.trim() || 'https://placehold.co/600x400?text=Upload+Picture';
 
   return (
     <div className="profile-container">
@@ -325,7 +323,7 @@ function Profile() {
                           openMenuReviewId={openMenuReviewId}
                           setOpenMenuReviewId={setOpenMenuReviewId}
                           setEditingReview={setEditingReview}
-                          handleDeleteReviewAndRanking={handleDeleteReviewAndRanking}
+                          handleDeleteReview={handleDeleteReview}
                           toggleReviewExpansion={toggleReviewExpansion}
                           updateRowHeight={updateRowHeight}
                         />
@@ -353,7 +351,7 @@ function Profile() {
                             openMenuReviewId={openMenuReviewId}
                             setOpenMenuReviewId={setOpenMenuReviewId}
                             setEditingReview={setEditingReview}
-                            handleDeleteReviewAndRanking={handleDeleteReviewAndRanking}
+                            handleDeleteReview={handleDeleteReview}
                             toggleReviewExpansion={toggleReviewExpansion}
                             updateRowHeight={updateRowHeight}
                           />
@@ -405,11 +403,8 @@ function Profile() {
           editingReview={editingReview}
           setEditingReview={setEditingReview}
           dispatch={dispatch}
-          parsedUserId={parsedUserId}
-          updateRanking={updateRanking}
           updateReview={updateReview}
           fetchReviews={fetchReviews}
-          fetchRankings={fetchRankings}
         />
       )}
     </div>

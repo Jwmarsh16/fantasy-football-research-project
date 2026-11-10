@@ -12,7 +12,7 @@ function ReviewRow({
   openMenuReviewId,
   setOpenMenuReviewId,
   setEditingReview,
-  handleDeleteReviewAndRanking,
+  handleDeleteReview,
   toggleReviewExpansion,
   updateRowHeight
 }) {
@@ -104,10 +104,7 @@ function ReviewRow({
                 <button
                   className="review-row__menu-item"
                   onClick={() => {
-                    handleDeleteReviewAndRanking(
-                      review.id,
-                      review.player_id
-                    );
+                    handleDeleteReview(review.id);
                     setOpenMenuReviewId(null);
                   }}
                 >

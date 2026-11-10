@@ -3,7 +3,6 @@
 
 .player-detail-page {
   padding: var(--space-5) var(--space-3);
-  padding-top: calc(var(--space-5) * 3); /* 96px from top */
   background: var(--color-bg);
   min-height: 100vh;
 }

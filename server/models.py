@@ -75,6 +75,9 @@ class Review(db.Model):
 
 class Ranking(db.Model):
     __tablename__ = 'rankings'
+    __table_args__ = (
+        db.Index('uq_rankings_user_id_player_id', 'user_id', 'player_id', unique=True),
+    )
     id = db.Column(db.Integer, primary_key=True)
     rank = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -86,8 +89,9 @@ class Ranking(db.Model):
 
     @validates('rank')
     def validate_rank(self, key, rank):
+        if type(rank) is not int:
+            raise ValueError("Rank must be a whole number")
         total_players = Player.query.count()
-        rank = int(rank)
         if rank < 1 or rank > total_players:
             raise ValueError(f"Rank must be between 1 and {total_players}")
         return rank

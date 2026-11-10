@@ -1,6 +1,8 @@
 // App.jsx - Updated to use React Router v6
-import React from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { restoreSession } from './redux/slices/authSlice';
 import NavBar from './components/layout/NavBar';
 import PlayerList from './pages/PlayerList';
 import PlayerDetail from './pages/PlayerDetail';
@@ -22,6 +24,17 @@ import Home from './pages/Home';
 //import DeleteAccount from './pages/settings/DeleteAccount';
 
 function App() {
+  const dispatch = useDispatch();
+  const sessionStatus = useSelector((state) => state.auth.sessionStatus);
+
+  useEffect(() => {
+    dispatch(restoreSession());
+  }, [dispatch]);
+
+  if (sessionStatus !== 'checked') {
+    return <p className="loading-message" role="status">Checking session…</p>;
+  }
+
   return (
     <Router>
       <NavBar />
