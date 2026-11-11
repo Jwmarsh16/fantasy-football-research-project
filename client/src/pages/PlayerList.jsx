@@ -1,5 +1,5 @@
 // src/pages/PlayerList.jsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';              // added useNavigate
 import { fetchPlayers } from '../redux/slices/playerSlice';
@@ -106,6 +106,9 @@ function PlayerList() {
   return (
     <div className="player-list-page container">
       <h2 className="player-list-title">Fantasy Football Player List</h2>
+      <p className="player-list-data-note">
+        <strong>Portfolio demo.</strong> Player profiles and stats use sample data.
+      </p>
 
       <div className="player-list-controls">
         <PositionFilter

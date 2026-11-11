@@ -9,6 +9,10 @@
   margin-bottom: var(--space-5);
 }
 
+.player-info-data-note {
+  margin-bottom: var(--space-3);
+}
+
 /* Header: avatar, metadata, and summary side-by-side */
 .info-header {
   display: flex;                                /* updated: use flex layout */

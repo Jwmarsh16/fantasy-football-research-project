@@ -1,15 +1,23 @@
 import { randomUUID } from 'node:crypto';
 import { expect, test } from '@playwright/test';
 
-test('a reviewer can browse, sign in, and save a rank that survives refresh', async ({ page }) => {
+test('a reviewer can browse as a guest, sign in, and save a rank that survives refresh', async ({ page }) => {
   const account = `reviewer-${randomUUID().slice(0, 8)}`;
   const email = `${account}@example.test`;
   const password = 'LocalTestPassword123!';
 
   // Keep the local smoke test independent of analytics and remote image/font hosts.
   await page.route('https://**', route => route.abort());
-  await page.goto('/players');
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Fantasy Football Research Hub' })).toBeVisible();
+  await expect(page.getByText('I built this full-stack portfolio project with React, Flask, and PostgreSQL.')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Log in', exact: true })).toHaveAttribute('href', '/login');
+  const browsePlayers = page.getByRole('link', { name: 'Browse Players', exact: true });
+  await expect(browsePlayers).toBeInViewport();
+  await browsePlayers.click();
+  await expect(page).toHaveURL(/\/players$/);
   await expect(page.getByRole('heading', { name: 'Fantasy Football Player List' })).toBeVisible();
+  await expect(page.getByText('Portfolio demo. Player profiles and stats use sample data.')).toBeVisible();
   const otherPosition = page.getByRole('link', { name: 'Christian McCaffrey', exact: true });
   await expect(otherPosition).toBeVisible();
   await page.getByRole('button', { name: 'QB', exact: true }).click();
@@ -64,6 +72,7 @@ test('a reviewer can browse, sign in, and save a rank that survives refresh', as
   await logout.click();
   await expect(logout).toBeHidden();
   await page.goto('/players/1');
+  await expect(page.getByText('Sample data', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Log in', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Save ranking' })).toHaveCount(0);
 });

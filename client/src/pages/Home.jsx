@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { fetchUserById, setUserDetails } from '../redux/slices/userSlice';
 import { fetchRankings } from '../redux/slices/rankingSlice';
 import { fetchPlayers } from '../redux/slices/playerSlice';
@@ -58,7 +57,6 @@ const mockNews = [
 
 function Home() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const user = useSelector((state) => state.auth.currentUser);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -82,7 +80,6 @@ function Home() {
     dispatch(fetchPlayers());
   }, [isAuthenticated, user, dispatch]);
 
-  const handleAuthButtonClick = () => navigate('/register');
   const toggleList = () => setShowOverall((prev) => !prev);
 
   const shuffledNews = shuffleArray(mockNews).slice(0, 3);
@@ -118,13 +115,7 @@ function Home() {
 
       <WelcomeSection />
 
-      {!isAuthenticated ? (
-        <div className="auth-center-wrapper">
-          <button className="auth-button" onClick={handleAuthButtonClick}>
-            Register
-          </button>
-        </div>
-      ) : (
+      {isAuthenticated && (
         <div className="home-content">
           <NewsSection articles={shuffledNews} />
           <RankingSidebar
