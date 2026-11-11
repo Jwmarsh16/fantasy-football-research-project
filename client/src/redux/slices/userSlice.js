@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 // Async thunk to fetch user data by ID
 export const fetchUserById = createAsyncThunk(
@@ -48,14 +49,13 @@ export const updateProfilePic = createAsyncThunk(
     try {
       const formData = new FormData();
       formData.append("profilePic", file);
-      formData.append("userId", userId);  // ✅ Ensure userId is included
 
       const response = await axios.put(
         `/api/users/${userId}`,  // ✅ Use a relative path (no `VITE_API_BASE_URL` needed)
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true, // ✅ Ensures authentication works
+          headers: { "X-CSRF-TOKEN": Cookies.get("csrf_access_token") },
+          withCredentials: true,
         }
       );
 

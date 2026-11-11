@@ -4,10 +4,51 @@
 
 Fantasy Football Research Hub (FFRH) is a full‑stack web application designed to empower fantasy football enthusiasts. It offers community‑driven player rankings, detailed reviews, and in‑depth player analysis to help users manage their fantasy teams and strategize effectively.
 
+## Local demo
+
+These commands were tested with Python 3.12 and Node.js 24. Use a Bash shell on Linux, macOS, or WSL. If you already have a `.env`, verify that `DATABASE_URI` points to a local SQLite file before migrating.
+
+```bash
+git clone https://github.com/Jwmarsh16/fantasy-football-research-project.git
+cd fantasy-football-research-project
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+npm ci --prefix client
+test -f .env || cp .env.example .env
+(cd server && python -m flask --app app db upgrade && python seed.py)
+honcho start -f Procfile.dev
+```
+
+Open [http://127.0.0.1:5173](http://127.0.0.1:5173). Vite forwards `/api` requests to Gunicorn on port 5555.
+
+1. Open **Players**, filter by position, and select a player.
+2. Use **Login** with `demo@example.test` and `FfrhLocalDemo123!`.
+3. Return to the player, save a rank, and reload to confirm the saved value and session.
+
+The seed command adds 35 players with sample statistics plus fixture reviews and rankings. It requires a migrated file-based SQLite database and `FFRH_LOCAL_DEMO=true`. It skips a database it has already seeded and refuses to seed a database containing other app data. The default database is `server/instance/ffrh-local.db`.
+
+### Verification
+
+Run these from the repository root with the virtual environment active.
+
+```bash
+npm run lint --prefix client
+npm run test --prefix client
+npm run build --prefix client
+(cd server && python -m unittest discover -s tests -v)
+```
+
+The browser test starts its own Flask server on port 5055 and creates a temporary SQLite database.
+
+```bash
+(cd client && npx playwright install chromium && npm run test:e2e)
+```
+
 ## Features
 
 - **Player Rankings:**  
-  Users can rank NFL players (e.g., on a scale of 1–10) and view community-driven rankings updated in real‑time.
+  Users can save or update one rank per player, with the option to post a separate review.
 
 - **User Reviews:**  
   Registered users can write reviews for NFL players, providing personal insights and opinions. Reviews are truncated by default (with a “Show Review” toggle) and are limited to 450 characters.
@@ -40,10 +81,10 @@ Fantasy Football Research Hub (FFRH) is a full‑stack web application designed 
   - Formik with Yup (including validation such as a 450‑character limit on reviews).
 
 - **API Communication:**  
-  - Axios (all API calls include `withCredentials` for secure, authenticated communication).
+  - Axios sends the CSRF header on authenticated writes.
 
 - **Routing:**  
-  - React Router (client‑side routing for pages such as Home, Player Details, Reviews, Rankings, Profile, Registration, and Login).
+  - React Router handles Home, Players, Player Details, Users, Profile, Registration, and Login.
 
 - **Styling:**  
   - Custom CSS is used to create a visually appealing design with vibrant cyan accents and responsive layouts.
@@ -54,7 +95,7 @@ Fantasy Football Research Hub (FFRH) is a full‑stack web application designed 
   - Flask with Flask‑RESTful to build a robust set of API endpoints.
 
 - **Database & ORM:**  
-  - PostgreSQL (hosted on Render) for data storage.  
+  - PostgreSQL on Render and SQLite for local development.
   - SQLAlchemy as the ORM to manage database models and relationships.
 
 - **Authentication & Security:**  
@@ -65,22 +106,16 @@ Fantasy Football Research Hub (FFRH) is a full‑stack web application designed 
 - **File Storage:**  
   - AWS S3 for storing user‑uploaded profile pictures (with pre‑signed URLs for secure access).
 
-### Deployment
+### Render deployment
 
-- **Frontend:**  
-  - Deployed on Render (Vite‑built React app).
+Render serves the built Vite app and Flask API from the same Gunicorn service.
 
-- **Backend:**  
-  - Flask API hosted on Render, configured for secure communication with the frontend (using proper CORS settings or shared domains).
-
-- **Database:**  
-  - PostgreSQL hosted on Render.
-
-- **Static File Hosting:**  
-  - User‑uploaded images stored on AWS S3.
-
-- **Environment Variables:**  
-  - Managed via a `.env` file (example keys include `DATABASE_URL`, `SECRET_KEY`, `AWS_ACCESS_KEY_ID`, and `AWS_SECRET_ACCESS_KEY`).
+- Build from the repository root with `python -m pip install -r requirements.txt && npm ci --prefix client && npm run build --prefix client`.
+- If the Render build still installs npm dependencies at the repository root, switch it to the two `--prefix client` commands above.
+- Run `(cd server && python -m flask --app app db upgrade)` against the configured PostgreSQL database before starting the new version. The ranking migration keeps the highest-ID row for each user and player and removes older duplicates.
+- Start with `gunicorn --chdir server app:app`, as defined in the production `Procfile`.
+- Configure `DATABASE_URI`, `FLASK_SECRET_KEY`, and `JWT_SECRET_KEY` in Render. Leave HTTPS-only cookies enabled there. The sample `.env.example` settings are for loopback development.
+- To enable profile photo uploads, configure `AWS_ACCESS_KEY`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, and `S3_REGION` for the service. Local demo setup requires no AWS credentials.
 
 ## Database Schema & Relationships
 
@@ -107,33 +142,25 @@ Fantasy Football Research Hub (FFRH) is a full‑stack web application designed 
 
 ### Ranking
 - **Fields:**  
-  - `id` (PK), `user_id` (FK to User), `player_id` (FK to Player), `rank` (Integer, typically between 1–10).
+  - `id` (PK), `user_id` (FK to User), `player_id` (FK to Player), `rank` (integer from 1 through the number of players).
 - **Relationships:**  
   - Represents a many-to-many relationship between **User** and **Player**.
 
-## API Endpoints
+## API endpoints
 
-### User Authentication
-- **POST /register:** Register a new user.
-- **POST /login:** Authenticate and return a JWT token.
-- **GET /profile:** Retrieve the authenticated user's profile.
+| Method and route | Purpose |
+| --- | --- |
+| `POST /api/auth/register` | Create an account. |
+| `POST /api/auth/login` | Sign in and set access and CSRF cookies. |
+| `GET /api/auth/session` | Restore the current session from the access cookie. |
+| `POST /api/auth/logout` | Clear authentication cookies. |
+| `GET /api/players`, `GET /api/players/:id` | Browse the player catalog and stats. |
+| `GET /api/rankings`, `GET /api/rankings/:id` | Read rankings. |
+| `POST /api/rankings` | Save or update the signed-in user's rank with `player_id` and `rank`. |
+| `GET /api/reviews`, `GET /api/reviews/:id` | Read reviews. |
+| `POST /api/reviews` | Write an optional review with `player_id` and `content`. |
 
-### Player Management
-- **GET /players:** Fetch all players and their statistics.
-- **GET /players/:id:** Fetch detailed information for a specific player.
-- **POST /players:** Create a new player.
-- **PUT /players/:id:** Update player details.
-- **DELETE /players/:id:** Delete a player.
-
-### Review System
-- **GET /reviews/:player_id:** Fetch all reviews for a specific player.
-- **POST /reviews:** Add a review (authentication required).
-- **DELETE /reviews/:id:** Delete a review (authentication required).
-
-### Ranking System
-- **GET /rankings/:player_id:** Fetch rankings for a specific player.
-- **POST /rankings:** Submit a ranking (authentication required).
-- **DELETE /rankings/:id:** Delete a ranking (authentication required).
+Ranking and review writes require the access cookie and matching CSRF header. Only the owner can edit or delete an entry.
 
 ## Frontend Routes (React Router)
 
@@ -141,72 +168,10 @@ Fantasy Football Research Hub (FFRH) is a full‑stack web application designed 
 - `/players` – List all players.
 - `/players/:id` – Detailed player page (includes reviews, rankings, and statistics).
 - `/add-review/:playerId` – Page to add a review.
-- `/ranking` – Page to rank players.
-- `/profile` – User profile page.
+- `/profile`, `/profile/:userId` – User profile pages.
+- `/users` – Browse users.
 - `/register` – Registration page.
 - `/login` – Login page.
-
-## Installation and Setup
-
-### Prerequisites
-
-- **Python 3.8+**
-- **Node.js** and **npm**
-- **PostgreSQL** (or SQLite for local development)
-
-### Backend Setup
-
-1. **Clone the repository:**
-   ```sh
-   git clone https://github.com/yourusername/fantasy-football-research-hub.git
-   cd fantasy-football-research-hub
-
-2. **Create and activate a virtual environment:**
-   python -m venv venv
-   source venv/bin/activate  # Windows: venv\Scripts\activate
-
-3. **Install backend dependencies:**
-   pip install -r requirements.txt
-
-4. **Set up the database:**
-   flask db upgrade
-
-5. **Run the backend server:**
-   flask run
-
-
-### Frontend Setup
-
-1. **Navigate to the frontend folder:**
-   cd client
-
-2. **Install dependencies:**
-   npm install
-
-3. **Run the frontend development server:**
-   npm run dev
-
-
-### Environment Variables
-
-1. **Create a .env file in the root directory with configurations such as:**
-   DATABASE_URL=postgresql://user:password@host/dbname
-   SECRET_KEY=your-secret-key
-   AWS_ACCESS_KEY_ID=your-aws-key
-   AWS_SECRET_ACCESS_KEY=your-aws-secret
-
-
-Usage
-After setting up and running both the frontend and backend, navigate to http://localhost:5173 (or your configured domain) to access the Fantasy Football Research Hub. You can register for an account, log in, browse players, write reviews, and submit rankings.
-
-Contributing
-Contributions are welcome!
-
-Feel free to open pull requests for bug fixes, new features, or improvements.
-Please ensure your changes are well-tested and align with the project’s coding style.
-Contact
-For questions or collaboration inquiries, please contact Jonathan Marshall at jwmarsh16@gmail.com.
-
 
 ## Future Improvements
 **Live Data Integration:**
@@ -226,43 +191,3 @@ Create an administrative interface for managing players, reviews, and rankings.
 
 **Additional UX Enhancements:**
 Further improvements to filtering, sorting, and dynamic content adjustments based on user feedback.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

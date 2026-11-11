@@ -101,6 +101,7 @@
 
 /* Detailed stats tables */
 .player-stats {
+  overflow-x: auto;
   margin-bottom: var(--space-4);
 }
 

@@ -1,13 +1,12 @@
 // src/components/player/ReviewRankingList.jsx
-import React from 'react';
 import '../../style/ReviewRankingList.css';
 
 const ReviewRankingList = ({ sortedReviews, getUsernameById }) => (
   <div className="reviews-rankings-display">
     <h3 className="section-title">Reviews and Rankings</h3>
     {sortedReviews && sortedReviews.length > 0 ? (
-      sortedReviews.map((item, index) => (
-        <div key={index} className="review-ranking-item">
+      sortedReviews.map(item => (
+        <div key={item.id} className="review-ranking-item">
           <div className="review-header">
             <p className="review-player">
               <span className="review-username">{getUsernameById(item.user_id)}</span>

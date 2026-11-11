@@ -1,0 +1,36 @@
+name: Verify
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: python -m pip install -r requirements.txt
+      - run: python -m unittest discover -s tests -v
+        working-directory: server
+      - run: npm ci
+        working-directory: client
+      - run: npm test
+        working-directory: client
+      - run: npx playwright install --with-deps chromium
+        working-directory: client
+      - run: npm run test:e2e
+        working-directory: client

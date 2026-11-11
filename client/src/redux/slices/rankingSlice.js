@@ -67,7 +67,13 @@ const rankingSlice = createSlice({
         state.rankings = state.rankings.filter((ranking) => ranking.id !== action.payload);
       })
       .addCase(addRanking.fulfilled, (state, action) => {
-        state.rankings.push(action.payload);
+        const saved = action.payload;
+        const index = state.rankings.findIndex(ranking => ranking.id === saved.id);
+        if (index === -1) {
+          state.rankings.push(saved);
+        } else {
+          state.rankings[index] = saved;
+        }
       })
       // Update reducer case for ranking updates.
       .addCase(updateRanking.fulfilled, (state, action) => {

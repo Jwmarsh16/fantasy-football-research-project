@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.3.0",
@@ -16,15 +18,18 @@
     "formik": "^2.4.6",
     "js-cookie": "^3.0.5",
     "react": "^18.3.1",
+    "react-avatar-editor": "13.0.2",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
     "react-redux": "^9.1.2",
     "react-router-dom": "^7.18.5",
+    "react-window": "1.8.11",
     "redux": "^5.0.1",
     "yup": "^1.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
+    "@playwright/test": "1.65.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^18.3.10",

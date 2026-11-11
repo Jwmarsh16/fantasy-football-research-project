@@ -1,5 +1,4 @@
 // src/components/profile/EditReviewModal.jsx
-import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import '../../style/EditReviewModal.css';
@@ -8,69 +7,38 @@ function EditReviewModal({
   editingReview,
   setEditingReview,
   dispatch,
-  parsedUserId,
-  updateRanking,
   updateReview,
-  fetchReviews,
-  fetchRankings
+  fetchReviews
 }) {
   // Guard: only render when there is a review to edit
   if (!editingReview) return null;
-
-  // Use `rank` property (not `ranking`) if available
-  const initialRank = editingReview.rank ?? '';
 
   return (
     <div className="modal-overlay">
       <Formik
         initialValues={{
-          rank: initialRank,                       // updated: use editingReview.rank
           content: editingReview.content,
         }}
         validationSchema={Yup.object({
-          rank: Yup.number().min(1).max(100).required('Required'),
-          content: Yup.string().max(450).required('Required'),
+          content: Yup.string().trim().max(450).required('Required'),
         })}
-        onSubmit={async (values, { setSubmitting }) => {
+        onSubmit={async ({ content }, { setStatus }) => {
+          setStatus(undefined);
           try {
-            if (editingReview.ranking_id) {
-              await dispatch(updateRanking({
-                id: editingReview.ranking_id,
-                player_id: editingReview.player_id,
-                user_id: parsedUserId,
-                rank: values.rank,
-              })).unwrap();
-            }
             await dispatch(updateReview({
               id: editingReview.id,
-              player_id: editingReview.player_id,
-              user_id: parsedUserId,
-              content: values.content,
+              content: content.trim(),
             })).unwrap();
             dispatch(fetchReviews());
-            dispatch(fetchRankings());
             setEditingReview(null);
-          } catch (error) {
-            console.error('Failed to update review and ranking:', error);
-          } finally {
-            setSubmitting(false);
+          } catch {
+            setStatus('Could not update your review. Please try again.');
           }
         }}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, status }) => (
           <Form className="edit-review-form">
             <h3>Edit Review for {editingReview.playerName}</h3>
-
-            <div className="form-group">
-              <label htmlFor="rank">Rank</label>
-              <Field
-                type="number"
-                id="rank"
-                name="rank"
-                className="input-field"
-              />
-              <ErrorMessage name="rank" component="div" className="error-message" />
-            </div>
 
             <div className="form-group">
               <label htmlFor="content">Review</label>
@@ -83,6 +51,7 @@ function EditReviewModal({
               <ErrorMessage name="content" component="div" className="error-message" />
             </div>
 
+            {status && <p className="error-message" role="alert">{status}</p>}
             <div className="form-actions">
               <button type="submit" disabled={isSubmitting} className="submit-button">
                 Update

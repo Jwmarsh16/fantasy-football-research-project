@@ -1,33 +1,63 @@
-# server/seed.py
-# Seed script: generate fake users, players, reviews, and rankings,
-# now with ESPN-style player metadata and realistic stats.
+"""Populate an empty, migrated local SQLite database with demo fixtures."""
+
+from datetime import date
+import os
+from random import Random
+from secrets import token_urlsafe
+
+from faker import Faker
+from sqlalchemy import inspect
 
 from config import app, db
-from faker import Faker
-from random import randint, sample, choice as rc, uniform
-from datetime import date
 from models import User, Player, Review, Ranking
 
-if __name__ == '__main__':
+DEMO_EMAIL = 'demo@example.test'
+DEMO_PASSWORD = 'FfrhLocalDemo123!'
+SAMPLE_SEASON = 2024
+
+
+def seed_demo():
     fake = Faker()
+    fake.seed_instance(SAMPLE_SEASON)
+    random = Random(SAMPLE_SEASON)
+    randint, sample, rc, uniform = random.randint, random.sample, random.choice, random.uniform
+
     with app.app_context():
-        print("Starting seed...")
-        db.drop_all()
-        db.create_all()
+        url = db.engine.url
+        if (os.getenv('FFRH_LOCAL_DEMO', '').lower() != 'true'
+                or url.get_backend_name() != 'sqlite'
+                or url.database in (None, '', ':memory:')):
+            raise SystemExit('Demo seeding requires FFRH_LOCAL_DEMO=true and a file-based SQLite database.')
+
+        table_names = set(inspect(db.engine).get_table_names())
+        if not {'alembic_version', *db.metadata.tables} <= table_names:
+            raise SystemExit('Run python -m flask --app app db upgrade before seeding.')
+
+        if User.query.filter_by(email=DEMO_EMAIL, isFake=True).first():
+            print('Demo data already exists.')
+            return
+
+        if any(db.session.execute(table.select().limit(1)).first() is not None
+               for table in db.metadata.sorted_tables):
+            raise SystemExit('Demo seeding requires an empty database. Choose a new local SQLite file.')
+
+        demo_user = User(username='Local Demo', email=DEMO_EMAIL, isFake=True)
+        demo_user.set_password(DEMO_PASSWORD)
+        db.session.add(demo_user)
 
         def create_users():
             users = []
-            for _ in range(10):
+            for index in range(1, 11):
                 user = User(
-                    username=fake.user_name()[:20],
-                    email=fake.email()[:50],
-                    password=fake.password()[:20],
+                    username=fake.unique.user_name()[:20],
+                    email=f'community-demo-{index}@example.test',
                     isFake=True,         # flag seeded accounts as fake
                     profilePic="avatar"  # use placeholder avatar
                 )
+                user.set_password(token_urlsafe(32))
                 users.append(user)
                 db.session.add(user)
-            db.session.commit()
+            db.session.flush()
             return users
 
         # Core NFL player list
@@ -71,14 +101,13 @@ if __name__ == '__main__':
 
         def create_players():
             players = []
-            current_year = date.today().year
             for info in nfl_players:
                 # Generate metadata
-                birthdate = fake.date_of_birth(minimum_age=22, maximum_age=35)
+                birthdate = fake.date_between_dates(date(1989, 1, 1), date(2002, 12, 31))
                 height = rc(["6'5\"", "6'3\"", "6'1\"", "5'11\"", "5'9\""])
                 weight = f"{randint(180, 260)} lbs"
                 college = rc(["Alabama", "Ohio State", "LSU", "Clemson", "Georgia"])
-                draft_year = randint(2008, current_year)
+                draft_year = randint(2008, SAMPLE_SEASON)
                 draft_round = randint(1, 7)
                 draft_pick = randint(1, 32)
                 draft_info = f"{draft_year} Rd {draft_round}, Pk {draft_pick} ({info['team']})"
@@ -89,7 +118,7 @@ if __name__ == '__main__':
 
                 # Passing stats
                 passing_stats = {
-                    "season": current_year,
+                    "season": SAMPLE_SEASON,
                     "team": info["team"],
                     "gp": randint(10, 17),
                     "cmp": randint(200, 400),
@@ -107,7 +136,7 @@ if __name__ == '__main__':
 
                 # Rushing stats
                 rushing_stats = {
-                    "season": current_year,
+                    "season": SAMPLE_SEASON,
                     "team": info["team"],
                     "gp": randint(10, 17),
                     "car": randint(0, 300),
@@ -121,7 +150,7 @@ if __name__ == '__main__':
 
                 # Receiving stats
                 receiving_stats = {
-                    "season": current_year,
+                    "season": SAMPLE_SEASON,
                     "team": info["team"],
                     "gp": randint(10, 17),
                     "rec": randint(0, 150),
@@ -169,7 +198,7 @@ if __name__ == '__main__':
                 players.append(player)
                 db.session.add(player)
 
-            db.session.commit()
+            db.session.flush()
             return players
 
         def create_reviews(seed_users, players):
@@ -180,7 +209,6 @@ if __name__ == '__main__':
                     player_id=rc(players).id
                 )
                 db.session.add(review)
-            db.session.commit()
 
         def create_rankings(seed_users, players):
             for user in seed_users:
@@ -193,11 +221,15 @@ if __name__ == '__main__':
                         player_id=pid
                     )
                     db.session.add(ranking)
-            db.session.commit()
 
         # Run all creation functions
         seeded_users = create_users()
         players = create_players()
         create_reviews(seeded_users, players)
         create_rankings(seeded_users, players)
+        db.session.commit()
         print("Seeding complete!")
+
+
+if __name__ == '__main__':
+    seed_demo()

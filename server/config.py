@@ -6,8 +6,10 @@ from sqlalchemy import MetaData
 from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 from flask_restful import Api
+from flask_jwt_extended.exceptions import JWTExtendedException
 from flask_cors import CORS
 from dotenv import load_dotenv
+from jwt.exceptions import PyJWTError
 import os
 import boto3
 
@@ -72,11 +74,20 @@ class PictureConfig:
 # Load PictureConfig into app config
 app.config.from_object(PictureConfig)
 
+
+class JWTApi(Api):
+    def error_router(self, original_handler, error):
+        # Let Flask-JWT-Extended handle auth and CSRF failures on REST resources.
+        if isinstance(error, (JWTExtendedException, PyJWTError)):
+            return original_handler(error)
+        return super().error_router(original_handler, error)
+
+
 # Database & utilities setup
 db = SQLAlchemy(app=app, metadata=metadata)
 migrate = Migrate(app=app, db=db)
 bcrypt = Bcrypt(app=app)
-api = Api(app=app)
+api = JWTApi(app=app)
 
 # Production CORS configuration
 CORS(app, supports_credentials=True, origins=["https://fantasy-football-research-hub.onrender.com"])

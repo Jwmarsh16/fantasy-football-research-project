@@ -1,55 +1,56 @@
-// AddReview.jsx - Updated to use Formik, Yup, Axios, and Redux for adding reviews
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { addReview } from '../../redux/slices/reviewSlice';
-import { useParams } from 'react-router-dom';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
 import * as Yup from 'yup';
+import { addReview } from '../../redux/slices/reviewSlice';
+
+const validationSchema = Yup.object({
+  reviewText: Yup.string()
+    .trim()
+    .min(10, 'Review must be at least 10 characters long')
+    .max(450, 'Review cannot exceed 450 characters')
+    .required('Review text is required'),
+});
 
 function AddReview() {
   const dispatch = useDispatch();
   const { playerId } = useParams();
+  const currentUser = useSelector(state => state.auth.currentUser);
 
-  const initialValues = {
-    reviewText: '',
-  };
-
-  const validationSchema = Yup.object({
-    reviewText: Yup.string()
-      .required('Review text is required')
-      .min(10, 'Review must be at least 10 characters long'),
-  });
-
-  const handleSubmit = (values, { resetForm }) => {
-    const newReview = {
-      playerId: parseInt(playerId),
-      content: values.reviewText,
-    };
-    dispatch(addReview(newReview));
-    resetForm();
-  };
+  if (!currentUser) {
+    return <p><Link to="/login">Log in</Link> to post a review.</p>;
+  }
 
   return (
     <div>
       <h2>Add Review</h2>
       <Formik
-        initialValues={initialValues}
+        initialValues={{ reviewText: '' }}
         validationSchema={validationSchema}
-        onSubmit={handleSubmit}
+        onSubmit={async ({ reviewText }, { resetForm, setStatus }) => {
+          setStatus(undefined);
+          try {
+            await dispatch(addReview({
+              player_id: Number(playerId),
+              content: reviewText.trim(),
+            })).unwrap();
+            resetForm();
+            setStatus({ success: 'Review posted.' });
+          } catch {
+            setStatus({ error: 'Could not post your review. Please try again.' });
+          }
+        }}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, status }) => (
           <Form>
             <div>
-              <Field
-                as="textarea"
-                name="reviewText"
-                placeholder="Write your review here..."
-              />
+              <label htmlFor="reviewText">Review</label>
+              <Field as="textarea" id="reviewText" name="reviewText" />
               <ErrorMessage name="reviewText" component="div" className="error" />
             </div>
-            <button type="submit" disabled={isSubmitting}>
-              Submit Review
-            </button>
+            {status?.success && <p role="status">{status.success}</p>}
+            {status?.error && <p role="alert">{status.error}</p>}
+            <button type="submit" disabled={isSubmitting}>Submit Review</button>
           </Form>
         )}
       </Formik>

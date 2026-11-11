@@ -1,6 +1,7 @@
 // src/redux/slices/teamSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 // Async thunk to fetch the roster for a given user
 export const fetchRoster = createAsyncThunk(
@@ -24,6 +25,9 @@ export const addToRoster = createAsyncThunk(
         player_id: playerId,      // send player ID
         slot,                     // send roster slot
         is_starter: isStarter     // send starter flag
+      }, {
+        withCredentials: true,
+        headers: { 'X-CSRF-TOKEN': Cookies.get('csrf_access_token') },
       });
       return res.data;
     } catch (err) {
@@ -37,7 +41,10 @@ export const removeFromRoster = createAsyncThunk(
   'team/removeFromRoster',
   async (entryId, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/roster/${entryId}`);  // call DELETE endpoint
+      await axios.delete(`/api/roster/${entryId}`, {
+        withCredentials: true,
+        headers: { 'X-CSRF-TOKEN': Cookies.get('csrf_access_token') },
+      });
       return entryId;                                 // return the deleted ID
     } catch (err) {
       return rejectWithValue(err.response?.data || 'Failed to remove from roster');

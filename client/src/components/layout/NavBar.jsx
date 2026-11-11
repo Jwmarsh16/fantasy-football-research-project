@@ -1,5 +1,5 @@
 // src/components/layout/NavBar.jsx
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router-dom';    /* Switched to NavLink */
 import { logoutUser } from '../../redux/slices/authSlice';
@@ -11,13 +11,10 @@ function NavBar() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.currentUser);
 
-  useEffect(() => {
-    console.log('Current user:', user);
-  }, [user]);
-
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
+      setMenuOpen(false);
       navigate('/'); // Redirect to home after logging out
     } catch (error) {
       console.error('Logout failed:', error);
@@ -38,13 +35,15 @@ function NavBar() {
           className="hamburger"
           onClick={toggleMenu}
           aria-label="Toggle navigation"
+          aria-expanded={menuOpen}
+          aria-controls="primary-navigation"
         >
           <span className="hamburger-bar"></span>
           <span className="hamburger-bar"></span>
           <span className="hamburger-bar"></span>
         </button>
 
-        <ul className={`navbar-links ${menuOpen ? 'open' : ''}`}>
+        <ul id="primary-navigation" className={`navbar-links ${menuOpen ? 'open' : ''}`}>
           <li>
             <NavLink
               to="/"

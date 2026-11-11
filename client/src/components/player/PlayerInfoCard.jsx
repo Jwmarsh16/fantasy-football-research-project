@@ -1,5 +1,4 @@
 // src/components/player/PlayerInfoCard.jsx
-import React from 'react';
 import '../../style/PlayerInfoCard.css';
 import { teamColors } from '../../constants/teamColors'; // moved teamColors to shared module
 
@@ -22,8 +21,6 @@ const PlayerInfoCard = ({ player, getPlayerHeadshot, formatStatKey }) => {
   const formattedBirthdate = birthdate
     ? new Date(birthdate).toLocaleDateString('en-US')
     : null;
-
-  const currentYear = new Date().getFullYear();
 
   // Determine summary category by position
   const pos = position.toUpperCase();
@@ -92,7 +89,7 @@ const PlayerInfoCard = ({ player, getPlayerHeadshot, formatStatKey }) => {
             className="summary-stats-card"
             style={{ '--summary-color': primaryColor }} // dynamic team color
           >
-            <div className="summary-header">{currentYear} Regular Season Stats</div>
+            <div className="summary-header">{summaryStats.season && `${summaryStats.season} `}Regular Season Stats</div>
             <div className="summary-body">
               {summaryEntries.map(([key, value]) => (
                 <div key={key} className="summary-item">
