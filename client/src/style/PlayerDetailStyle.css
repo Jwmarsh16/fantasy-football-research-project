@@ -104,12 +104,43 @@
   font-size: var(--fs-small);
 }
 
-.player-detail-page .toggle-reviews-section {
-  text-align: center;
+.community-reviews {
+  padding: var(--space-4);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 
-.player-detail-container .error-message {
-  margin-top: var(--space-2);
+.community-reviews-header,
+.community-reviews-error {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+
+.community-reviews-header {
+  justify-content: space-between;
+}
+
+.community-reviews-header h2 {
+  margin: 0;
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+}
+
+.community-reviews-status,
+.community-reviews-error {
+  margin: var(--space-3) 0 0;
+}
+
+.community-reviews-status {
+  color: var(--color-muted);
+}
+
+.community-reviews-error p {
+  margin: 0;
 }
 
 @media (max-width: 600px) {
@@ -117,9 +148,13 @@
     padding-inline: var(--space-3);
   }
 
+  .player-detail-header,
+  .community-reviews {
+    padding: var(--space-3);
+  }
+
   .player-detail-header {
     grid-template-columns: 1fr;
-    padding: var(--space-3);
   }
 
   .player-detail-avatar {

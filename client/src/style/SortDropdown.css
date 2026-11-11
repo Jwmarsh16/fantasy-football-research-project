@@ -1,18 +1,16 @@
-.sort-options {
-    margin: 20px 0;
-    text-align: center;
-  }
-  
-  .sort-options label {
-    font-weight: bold;
-    color: #2980b9;
-    margin-right: 10px;
-  }
-  
-  .sort-options select {
-    padding: 8px 12px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-  }
-  
+.community-review-sort {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.community-review-sort label {
+  font-weight: 600;
+}
+
+.community-review-sort select {
+  width: auto;
+  max-width: 100%;
+}

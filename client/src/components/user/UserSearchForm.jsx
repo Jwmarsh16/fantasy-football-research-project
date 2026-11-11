@@ -1,14 +1,13 @@
-import React from 'react';
-
 function UserSearchForm({ searchUsername, setSearchUsername }) {
   return (
-    <form className="search-form" onSubmit={(e) => e.preventDefault()}>
+    <form className="user-list-search" role="search" onSubmit={(event) => event.preventDefault()}>
+      <label htmlFor="user-list-username">Search by username</label>
       <input
-        type="text"
-        className="search-input"
-        placeholder="Search by username"
+        id="user-list-username"
+        type="search"
+        className="ffrh-field"
         value={searchUsername}
-        onChange={(e) => setSearchUsername(e.target.value)}
+        onChange={(event) => setSearchUsername(event.target.value)}
       />
     </form>
   );

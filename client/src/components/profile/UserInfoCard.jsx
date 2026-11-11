@@ -1,32 +1,16 @@
 // components/profile/UserInfoCard.jsx
-import { useState } from 'react';
 import '../../style/UserInfoCard.css';
 import ProfilePicUpdater from '../user/ProfilePicUpdater';
+import UserAvatar from '../user/UserAvatar';
 
 function UserInfoCard({ avatarUrl, forceUpdate, userDetails, currentUser, parsedUserId, dispatch, fetchUsers, setUserDetails }) {
-  const [failedAvatar, setFailedAvatar] = useState(null);
   const { username, email } = userDetails;
   const emailText = String(email ?? '');
   const domainStart = emailText.lastIndexOf('@');
-  const avatarKey = `${forceUpdate}:${avatarUrl}`;
-  const initials = String(username ?? '').trim().split(/\s+/).slice(0, 2)
-    .map(word => word[0]).join('').toUpperCase();
 
   return (
     <>
-      <div className="user-avatar-section">
-        {avatarUrl && failedAvatar !== avatarKey ? (
-          <img
-            src={avatarUrl}
-            alt=""
-            className="user-avatar-img"
-            key={avatarKey}
-            onError={() => setFailedAvatar(avatarKey)}
-          />
-        ) : (
-          <span aria-hidden="true">{initials}</span>
-        )}
-      </div>
+      <UserAvatar key={forceUpdate} username={username} src={avatarUrl} />
       <div className="user-info-section">
         <p className="user-info-name">{username}</p>
         {emailText && (

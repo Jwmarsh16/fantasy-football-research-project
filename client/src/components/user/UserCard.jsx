@@ -1,27 +1,22 @@
-// src/components/user/UserCard.jsx
-import React from 'react';
 import { Link } from 'react-router-dom';
+import UserAvatar from './UserAvatar';
 
 function UserCard({ user }) {
-  const avatarUrl =
-    user.profilePic && user.profilePic.trim() !== '' && user.profilePic !== 'avatar'
-      ? user.profilePic
-      : user.isFake && user.profilePic === 'avatar'
-      ? `https://i.pravatar.cc/150?u=${user.id}`
-      : 'https://placehold.co/600x400?text=Upload+Picture';
+  const photo = user.profilePic?.trim();
+  const avatarUrl = photo === 'avatar'
+    ? user.isFake && `https://i.pravatar.cc/150?u=${user.id}`
+    : photo;
 
   return (
     <div className="user-card">
-      {/* RENAMED: user-avatar → user-card__avatar for modularity */}
-      <div className="user-card__avatar">
-        <img src={avatarUrl} alt={`${user.username}'s Avatar`} />
-      </div>
-      {/* RENAMED: user-info → user-card__info to prevent global conflicts */}
+      <UserAvatar username={user.username} src={avatarUrl} className="user-card__avatar" />
       <div className="user-card__info">
-        {/* OPTIONAL BEM: adjust if you’d like to rename user-username */}
         <span className="user-card__username">{user.username}</span>
-        {/* RENAMED: view-profile-link → user-card__link for consistency */}
-        <Link to={`/profile/${user.id}`} className="user-card__link">
+        <Link
+          to={`/profile/${user.id}`}
+          className="ffrh-button ffrh-button--secondary"
+          aria-label={`View profile for ${user.username}`}
+        >
           View Profile
         </Link>
       </div>

@@ -1,17 +1,16 @@
-// src/components/player/SortDropdown.jsx
-import React from 'react';
 import '../../style/SortDropdown.css';
 
 const SortDropdown = ({ sortOrder, setSortOrder }) => (
-  <div className="sort-options">
-    <label htmlFor="sortOrder">Sort by Ranking: </label>
+  <div className="community-review-sort">
+    <label htmlFor="community-review-sort">Sort by rank</label>
     <select
-      id="sortOrder"
+      id="community-review-sort"
+      className="ffrh-field"
       value={sortOrder}
-      onChange={(e) => setSortOrder(e.target.value)}
+      onChange={event => setSortOrder(event.target.value)}
     >
-      <option value="asc">Best to Worst</option>
-      <option value="desc">Worst to Best</option>
+      <option value="asc">Best to worst</option>
+      <option value="desc">Worst to best</option>
     </select>
   </div>
 );

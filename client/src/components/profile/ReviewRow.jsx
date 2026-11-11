@@ -1,14 +1,10 @@
-// src/components/profile/ReviewRow.jsx
-import React, { useRef, useLayoutEffect } from 'react';
+import { useId, useLayoutEffect, useRef } from 'react';
 import '../../style/ReviewRow.css';
 
 function ReviewRow({
   review,
-  index,
-  style,
   isExpanded,
-  currentUser,
-  parsedUserId,
+  ownsProfile,
   openMenuReviewId,
   setOpenMenuReviewId,
   setEditingReview,
@@ -16,83 +12,48 @@ function ReviewRow({
   toggleReviewExpansion,
   updateRowHeight
 }) {
-  const headerRef = useRef(null);
-  const contentRef = useRef(null);
-  const buttonRef = useRef(null);
-  const collapsedMeasured = useRef(false);
-  const expandedMeasured = useRef(false);
+  const rowRef = useRef(null);
+  const contentId = useId();
+  const isMenuOpen = openMenuReviewId === review.id;
+  const playerDetails = [review.position, review.team].filter(Boolean).join(' · ');
 
   useLayoutEffect(() => {
-    // Measure collapsed height once
-    if (!isExpanded && !collapsedMeasured.current) {
-      if (headerRef.current && buttonRef.current) {
-        const headerH = headerRef.current.getBoundingClientRect().height;
-        const buttonH = buttonRef.current.getBoundingClientRect().height;
-        const styles = getComputedStyle(buttonRef.current.parentElement);
-        const margin =
-          parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
-        const collapsedTotal = headerH + buttonH + margin;
-        updateRowHeight(index, collapsedTotal);
-        collapsedMeasured.current = true;
-      }
-    }
+    if (!updateRowHeight) return;
 
-    // Measure expanded height once
-    if (isExpanded && !expandedMeasured.current) {
-      if (
-        headerRef.current &&
-        contentRef.current &&
-        buttonRef.current
-      ) {
-        const headerH = headerRef.current.getBoundingClientRect().height;
-        const contentH = contentRef.current.scrollHeight;
-        const buttonH = buttonRef.current.getBoundingClientRect().height;
-        const styles = getComputedStyle(contentRef.current);
-        const margin =
-          parseFloat(styles.marginTop) + parseFloat(styles.marginBottom);
-        const total = headerH + contentH + buttonH + margin;
-        updateRowHeight(index, total);
-        expandedMeasured.current = true;
-      }
-    }
-  }, [isExpanded, index, updateRowHeight]);
-
-  // ensure we never spread undefined
-  const wrapperStyle = { ...(style || {}), overflow: 'visible' };
+    const row = rowRef.current;
+    // The virtual list needs each card's actual height after text wraps or expands.
+    const measure = () => updateRowHeight(review.id, row.getBoundingClientRect().height);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(row);
+    return () => observer.disconnect();
+  }, [review.id, updateRowHeight]);
 
   return (
-    <div
-      className={`review-row${isExpanded ? ' expanded' : ''}`}
-      style={wrapperStyle}
-    >
-      <div className="review-row__header" ref={headerRef}>
+    <article className="review-row" ref={rowRef}>
+      <header className="review-row__header">
         <div className="review-row__player-info">
-          <p className="review-row__player-name">
-            {review.playerName}
-          </p>
-          <p className="review-row__details">
-            {review.position} | {review.team}
-          </p>
+          <h3 className="review-row__player-name">{review.playerName}</h3>
+          {playerDetails && <p className="review-row__details">{playerDetails}</p>}
         </div>
         <p className="review-row__ranking">
-          Ranking:&nbsp;
-          {review.ranking !== null ? review.ranking : 'N/A'}
+          {review.ranking === null ? 'Unranked' : `Rank #${review.ranking}`}
         </p>
-        {currentUser?.id === parsedUserId && (
+        {ownsProfile && (
           <div className="review-row__menu-container">
             <button
+              type="button"
               className="review-row__menu-button"
-              onClick={() =>
-                setOpenMenuReviewId(
-                  openMenuReviewId === review.id ? null : review.id
-                )
-              }
+              aria-label={`Review options for ${review.playerName}`}
+              aria-expanded={isMenuOpen}
+              onClick={() => setOpenMenuReviewId(isMenuOpen ? null : review.id)}
             >
               ⋮
             </button>
-            {openMenuReviewId === review.id && (
+            {isMenuOpen && (
               <div className="review-row__menu">
                 <button
+                  type="button"
                   className="review-row__menu-item"
                   onClick={() => {
                     setEditingReview(review);
@@ -102,6 +63,7 @@ function ReviewRow({
                   Edit
                 </button>
                 <button
+                  type="button"
                   className="review-row__menu-item"
                   onClick={() => {
                     handleDeleteReview(review.id);
@@ -114,40 +76,19 @@ function ReviewRow({
             )}
           </div>
         )}
-      </div>
+      </header>
 
-      <div className="review-row__body">
-        {isExpanded ? (
-          <div
-            className="review-row__content"
-            ref={contentRef}
-          >
-            <p>{review.content}</p>
-            <button
-              ref={buttonRef}
-              onClick={() =>
-                toggleReviewExpansion(review.id)
-              }
-              className="review-row__toggle-button"
-            >
-              Hide Review
-            </button>
-          </div>
-        ) : (
-          <div className="review-row__content collapsed">
-            <button
-              ref={buttonRef}
-              onClick={() =>
-                toggleReviewExpansion(review.id)
-              }
-              className="review-row__toggle-button"
-            >
-              Show Review
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+      <p id={contentId} className="review-row__content" hidden={!isExpanded}>{review.content}</p>
+      <button
+        type="button"
+        aria-expanded={isExpanded}
+        aria-controls={contentId}
+        className="ffrh-button ffrh-button--secondary review-row__toggle-button"
+        onClick={() => toggleReviewExpansion(review.id)}
+      >
+        {isExpanded ? 'Hide Review' : 'Show Review'}
+      </button>
+    </article>
   );
 }
 

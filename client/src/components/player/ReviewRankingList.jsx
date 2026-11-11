@@ -1,25 +1,23 @@
-// src/components/player/ReviewRankingList.jsx
 import '../../style/ReviewRankingList.css';
 
-const ReviewRankingList = ({ sortedReviews, getUsernameById }) => (
-  <div className="reviews-rankings-display">
-    <h3 className="section-title">Reviews and Rankings</h3>
-    {sortedReviews && sortedReviews.length > 0 ? (
-      sortedReviews.map(item => (
-        <div key={item.id} className="review-ranking-item">
-          <div className="review-header">
-            <p className="review-player">
-              <span className="review-username">{getUsernameById(item.user_id)}</span>
-              <span className="review-ranking"> - Rank: {item.rank !== null ? item.rank : 'N/A'}</span>
-            </p>
-          </div>
-          <p className="review-content">{item.content}</p>
-        </div>
-      ))
-    ) : (
-      <p className="no-reviews-message">No reviews or rankings available.</p>
-    )}
-  </div>
-);
+function ReviewRankingList({ sortedReviews, getUsernameById }) {
+  if (!sortedReviews.length) {
+    return <p className="community-reviews-status">No reviews yet for this player.</p>;
+  }
+
+  return (
+    <ul className="community-review-list" role="list">
+      {sortedReviews.map(review => (
+        <li key={review.id} className="community-review">
+          <header className="community-review-meta">
+            <strong>{getUsernameById(review.user_id)}</strong>
+            {review.rank !== null && <span className="community-review-rank">Rank #{review.rank}</span>}
+          </header>
+          <p className="community-review-content">{review.content}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export default ReviewRankingList;

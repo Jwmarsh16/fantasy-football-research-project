@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { fetchPlayers } from '../redux/slices/playerSlice';
 import { fetchRankings } from '../redux/slices/rankingSlice';
 import { getComparisonStats } from '../utils/playerComparison';
@@ -13,6 +13,8 @@ const formatAverage = player => player.average_rank === null ? 'N/A' : player.av
 
 function PlayerComparison() {
   const dispatch = useDispatch();
+  // Keep the catalog's filters when updating the comparison URL.
+  const { state } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { players, status: playerStatus } = useSelector(state => state.player);
   const { rankings, status: rankingStatus } = useSelector(state => state.ranking);
@@ -51,15 +53,17 @@ function PlayerComparison() {
     const selection = { position };
     if (firstId) selection.first = firstId;
     if (secondId) selection.second = secondId;
-    setSearchParams(selection, { replace: true });
+    setSearchParams(selection, { replace: true, state });
   }
 
   return (
     <main className="player-comparison-page container">
       <header className="comparison-header">
-        <Link className="comparison-back" to="/players">Back to players</Link>
+        <Link className="comparison-back" to={{ pathname: '/players', search: state?.catalogSearch ?? '' }}>
+          Back to players
+        </Link>
         <h1>Compare Players</h1>
-        <p className="comparison-intro">Compare sample stats and community rankings for two players at the same position.</p>
+        <p className="comparison-intro">Choose a position, then select two players to compare sample stats and community rankings.</p>
       </header>
 
       {loading ? (
@@ -78,7 +82,7 @@ function PlayerComparison() {
             <select
               className="ffrh-field"
               value={position}
-              onChange={event => setSearchParams({ position: event.target.value }, { replace: true })}
+              onChange={event => setSearchParams({ position: event.target.value }, { replace: true, state })}
             >
               <option value="">Choose a position</option>
               {positions.map(option => <option key={option} value={option}>{option}</option>)}
@@ -122,8 +126,8 @@ function PlayerComparison() {
               <thead>
                 <tr>
                   <th scope="col">Metric</th>
-                  <th scope="col"><Link to={`/players/${first.id}`}>{first.name}</Link></th>
-                  <th scope="col"><Link to={`/players/${second.id}`}>{second.name}</Link></th>
+                  <th scope="col"><Link to={`/players/${first.id}`} state={state}>{first.name}</Link></th>
+                  <th scope="col"><Link to={`/players/${second.id}`} state={state}>{second.name}</Link></th>
                 </tr>
               </thead>
               <tbody>
