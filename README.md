@@ -1,8 +1,16 @@
 # Fantasy Football Research Hub
 
+**[Live Demo](https://fantasy-football-research-hub.onrender.com)** · [45-second walkthrough](#demo-walkthrough)
+
 ## Overview
 
-Fantasy Football Research Hub (FFRH) is a full‑stack web application designed to empower fantasy football enthusiasts. It offers community‑driven player rankings, detailed reviews, and in‑depth player analysis to help users manage their fantasy teams and strategize effectively.
+Fantasy Football Research Hub (FFRH) is a full-stack portfolio project for browsing sample player stats, comparing community rankings, and saving personal rankings and reviews.
+
+## Demo walkthrough
+
+Browse the player catalog as a guest, open a player, and sign in to return to their profile. Save a ranking and reload the page to see the saved rank again. The recording uses a local database with sample data.
+
+![Walkthrough of guest browsing, signing in, saving a player ranking, and seeing it after a reload](docs/ffrh-demo.gif)
 
 ## Local demo
 
@@ -22,9 +30,9 @@ honcho start -f Procfile.dev
 
 Open [http://127.0.0.1:5173](http://127.0.0.1:5173). Vite forwards `/api` requests to Gunicorn on port 5555.
 
-1. Open **Players**, filter by position, and select a player.
-2. Use **Login** with `demo@example.test` and `FfrhLocalDemo123!`.
-3. Return to the player, save a rank, and reload to confirm the saved value and session.
+1. Select **Browse Players**, filter by position, and open a player profile.
+2. Select **Log in** on the player profile and use `demo@example.test` with `FfrhLocalDemo123!`.
+3. The app returns you to the player profile. Save a rank and reload to confirm the saved value and session.
 
 The seed command adds 35 players with sample statistics plus fixture reviews and rankings. It requires a migrated file-based SQLite database and `FFRH_LOCAL_DEMO=true`. It skips a database it has already seeded and refuses to seed a database containing other app data. The default database is `server/instance/ffrh-local.db`.
 

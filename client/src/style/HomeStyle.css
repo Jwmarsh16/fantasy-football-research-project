@@ -6,7 +6,6 @@
     --primary-bg-size: 400% 400%;
     --gradient-animation-duration: 10s;
     
-    --sidebar-bg: #f0f9ff; /* Keep if sidebar might reuse it globally */
     --news-bg: #fff8e7;    /* Keep if news might reuse it globally */
     --welcome-bg: rgba(255, 255, 255, 0.2); /* Keep if multiple sections reuse it */
     --welcome-box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
@@ -43,11 +42,22 @@
      =============================== */
   .home-content {
     display: flex;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 30px;
     width: 100%;
     max-width: 1200px;
     margin-top: 20px;
+  }
+
+  .home-content--guest {
+    max-width: 760px;
+  }
+
+  .home-content > .news-section {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
   }
   
   .main-content {
@@ -60,6 +70,7 @@
   @media screen and (max-width: 768px) {
     .home-content {
       flex-direction: column;
+      align-items: stretch;
       gap: 20px;
     }
   }

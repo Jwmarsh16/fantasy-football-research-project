@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserById, setUserDetails } from '../redux/slices/userSlice';
-import { fetchRankings } from '../redux/slices/rankingSlice';
-import { fetchPlayers } from '../redux/slices/playerSlice';
-import { shuffleArray, getTopRankedPlayers } from '../utils/homeUtils';
+import { shuffleArray } from '../utils/homeUtils';
 
 import UserCard from '../components/home/HomeUserCard';
 import NewsSection from '../components/home/NewsSection';
@@ -62,11 +60,6 @@ function Home() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const userDetails = useSelector((state) => state.user.userDetails);
   const userLoadingStatus = useSelector((state) => state.user.status);
-  const rankings = useSelector((state) => state.ranking.rankings);
-  const players = useSelector((state) => state.player.players);
-
-  const [showOverall, setShowOverall] = useState(true);
-
   useEffect(() => {
     if (isAuthenticated && user?.id) {
       dispatch(fetchUserById(user.id))
@@ -76,11 +69,7 @@ function Home() {
         })
         .catch(console.error);
     }
-    dispatch(fetchRankings());
-    dispatch(fetchPlayers());
   }, [isAuthenticated, user, dispatch]);
-
-  const toggleList = () => setShowOverall((prev) => !prev);
 
   const shuffledNews = shuffleArray(mockNews).slice(0, 3);
 
@@ -94,12 +83,6 @@ function Home() {
     loggedInUser?.profilePic?.trim()
       ? loggedInUser.profilePic
       : "https://placehold.co/600x400?text=Upload+Picture";
-
-  const topPlayers = getTopRankedPlayers(
-    rankings,
-    players,
-    showOverall ? null : loggedInUser?.id
-  );
 
   return (
     <div className="home-page">
@@ -115,16 +98,10 @@ function Home() {
 
       <WelcomeSection />
 
-      {isAuthenticated && (
-        <div className="home-content">
-          <NewsSection articles={shuffledNews} />
-          <RankingSidebar
-            players={topPlayers}
-            showOverall={showOverall}
-            toggleList={toggleList}
-          />
-        </div>
-      )}
+      <div className={isAuthenticated ? 'home-content' : 'home-content home-content--guest'}>
+        <RankingSidebar />
+        {isAuthenticated && <NewsSection articles={shuffledNews} />}
+      </div>
     </div>
   );
 }
