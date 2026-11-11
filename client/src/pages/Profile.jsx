@@ -197,18 +197,17 @@ function Profile() {
   const avatarUrl =
     userDetails.profilePic?.trim() === 'avatar'
       ? `https://i.pravatar.cc/150?u=${userDetails.id}`
-      : userDetails.profilePic?.trim() || 'https://placehold.co/600x400?text=Upload+Picture';
+      : userDetails.profilePic?.trim();
 
   return (
     <div className="profile-container">
       <div className="container">
         <div className="profile-page profile-layout">
           {/* Sidebar */}
-          <aside className="profile-sidebar">
+          <aside className={ownsProfile ? 'profile-sidebar profile-sidebar--owner' : 'profile-sidebar'}>
             <ProfileMenu
               currentUser={currentUser}
               parsedUserId={parsedUserId}
-              navigate={navigate}
               showMenu={showMenu}
               setShowMenu={setShowMenu}
               handleDeleteProfile={handleDeleteProfile}
@@ -228,7 +227,7 @@ function Profile() {
           {/* Main content */}
           <main className="profile-main">
             <div className="profile-header">
-              <h2 className="profile-title">User Profile</h2>
+              <h1 className="profile-title">Profile</h1>
             </div>
 
             {/* Tab navigation */}

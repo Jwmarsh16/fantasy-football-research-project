@@ -1,64 +1,141 @@
-/* src/style/PlayerDetailStyle.css */
-/* Refactored to use design tokens and container */
-
 .player-detail-page {
-  padding: var(--space-5) var(--space-3);
+  max-width: 1120px;
+  padding-block: var(--space-4) var(--space-5);
   background: var(--color-bg);
-  min-height: 100vh;
 }
 
 .player-detail-container {
-  background-color: var(--color-bg);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.player-detail-back {
+  justify-self: start;
+  color: var(--color-primary);
+}
+
+.player-detail-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3) var(--space-4);
+  align-items: center;
   padding: var(--space-4);
-  border-radius: var(--space-2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
+  border-radius: var(--radius-large);
+  border-inline-start: 4px solid var(--player-accent);
+  box-shadow: var(--shadow-sm);
 }
 
-.toggle-reviews-section {
+.player-detail-identity,
+.player-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.player-detail-identity h1 {
+  margin: 0;
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: clamp(var(--fs-h3), 4vw, var(--fs-h1));
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.player-detail-identity p {
+  margin: var(--space-1) 0 0;
+  color: var(--color-muted);
+}
+
+.player-detail-avatar {
+  position: relative;
+  display: grid;
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  color: var(--color-primary);
+  background: var(--color-bg);
+  font-weight: 700;
+}
+
+.player-detail-avatar img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-detail-avatar img[hidden] {
+  display: none;
+}
+
+.player-detail-community {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--fs-small);
+  text-align: right;
+}
+
+.player-detail-community strong {
+  color: var(--color-primary);
+  font-size: var(--fs-h4);
+  font-variant-numeric: tabular-nums;
+}
+
+.player-detail-actions,
+.player-detail-data-note {
+  grid-column: 1 / -1;
+}
+
+.player-detail-actions {
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.player-detail-data-note {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--fs-small);
+}
+
+.player-detail-page .toggle-reviews-section {
   text-align: center;
-  margin-top: var(--space-4);
 }
 
-.toggle-button {
-  background-color: var(--color-primary);
-  color: var(--color-bg);
-  border: none;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--space-2);
-  font-size: var(--fs-base);
-  cursor: pointer;
-  transition: background-color 150ms ease-in-out;
+.player-detail-container .error-message {
+  margin-top: var(--space-2);
 }
 
-.toggle-button:hover {
-  background-color: var(--color-secondary);
-}
+@media (max-width: 600px) {
+  .player-detail-page {
+    padding-inline: var(--space-3);
+  }
 
-/* Loading & error messages */
-.loading-message,
-.error-message {
-  text-align: center;
-  font-size: var(--fs-base);
-  color: var(--color-accent);
-  margin-top: var(--space-4);
-}
-
-@media (max-width: 768px) {
-  .player-detail-container {
+  .player-detail-header {
+    grid-template-columns: 1fr;
     padding: var(--space-3);
   }
-  .toggle-button {
-    padding: var(--space-2) var(--space-3);
-    font-size: var(--fs-base);
-  }
-}
 
-@media (max-width: 480px) {
-  .player-detail-container {
-    padding: var(--space-2);
+  .player-detail-avatar {
+    flex-basis: 56px;
+    width: 56px;
+    height: 56px;
   }
-  .toggle-button {
-    padding: var(--space-2) var(--space-3);
-    font-size: 0.875rem;
+
+  .player-detail-community {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--space-2);
+    text-align: left;
+  }
+
+  .player-detail-actions .ffrh-button {
+    padding-inline: 12px;
   }
 }

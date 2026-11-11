@@ -1,5 +1,5 @@
 // src/components/user/ProfilePicUpdater.jsx
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateProfilePic } from "../../redux/slices/userSlice";
 import ProfilePicEditor from "./ProfilePicEditor";
@@ -9,6 +9,7 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
   const [editorVisible, setEditorVisible] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const fileInput = useRef(null);
   const dispatch = useDispatch();
 
   // Handle file input change
@@ -61,19 +62,19 @@ const ProfilePicUpdater = ({ userId, onUpdate }) => {
         <>
           {/* Hidden file input */}
           <input
-            id="profile-pic-upload"
+            ref={fileInput}
+            hidden
             type="file"
             accept="image/*"
             onChange={handleFileChange}
           />
-          {/* Professional text button */}
-          <label
-            htmlFor="profile-pic-upload"
-            className="file-upload-button"
-            aria-label="Upload Profile Photo"
+          <button
+            type="button"
+            className="ffrh-button ffrh-button--secondary file-upload-button"
+            onClick={() => fileInput.current?.click()}
           >
-            Upload Photo {/* Replaced emoji with clear, professional text */}
-          </label>
+            Upload Photo
+          </button>
         </>
       )}
       {editorVisible && selectedFile && (

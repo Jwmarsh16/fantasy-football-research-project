@@ -1,9 +1,22 @@
 // components/profile/ProfileMenu.jsx
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import '../../style/ProfileMenu.css';
 
-function ProfileMenu({ currentUser, parsedUserId, navigate, showMenu, setShowMenu, handleDeleteProfile }) {
-  const menuRef = useRef();
+const settingsLinks = [
+  ['/profile/edit', 'Edit Profile'],
+  ['/profile/account', 'Account Settings'],
+  ['/profile/privacy', 'Privacy Settings'],
+  ['/profile/security', 'Security Settings'],
+  ['/profile/notifications', 'Notification Settings'],
+  ['/profile/language', 'Language & Accessibility Options'],
+  ['/profile/content', 'Content & Ad Preferences'],
+  ['/profile/data', 'Data & Privacy Tools'],
+];
+
+function ProfileMenu({ currentUser, parsedUserId, showMenu, setShowMenu, handleDeleteProfile }) {
+  const menuRef = useRef(null);
+  const toggleRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -17,30 +30,38 @@ function ProfileMenu({ currentUser, parsedUserId, navigate, showMenu, setShowMen
 
   const toggleMenu = () => setShowMenu((prev) => !prev);
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Escape' && showMenu) {
+      setShowMenu(false);
+      toggleRef.current?.focus();
+    }
+  };
+
   if (!currentUser || parsedUserId !== currentUser.id) return null;
 
   return (
-    <div className="profile-menu-container" ref={menuRef}>
-      <button className={`profile-menu-toggle ${showMenu ? 'open' : ''}`} onClick={toggleMenu}>
-        <span className="bar"></span>
-        <span className="bar"></span>
-        <span className="bar"></span>
+    <div className="profile-menu-container" ref={menuRef} onKeyDown={handleKeyDown}>
+      <button
+        ref={toggleRef}
+        type="button"
+        className="profile-menu-toggle"
+        onClick={toggleMenu}
+        aria-label="Profile options"
+        aria-controls="profile-options"
+        aria-expanded={showMenu}
+      >
+        <span aria-hidden="true">⋯</span>
       </button>
-      {showMenu && (
-        <div className="profile-menu">
-          <ul>
-            <li onClick={() => navigate('/profile/edit')}>Edit Profile</li>
-            <li onClick={() => navigate('/profile/account')}>Account Settings</li>
-            <li onClick={() => navigate('/profile/privacy')}>Privacy Settings</li>
-            <li onClick={() => navigate('/profile/security')}>Security Settings</li>
-            <li onClick={() => navigate('/profile/notifications')}>Notification Settings</li>
-            <li onClick={() => navigate('/profile/language')}>Language & Accessibility Options</li>
-            <li onClick={() => navigate('/profile/content')}>Content & Ad Preferences</li>
-            <li onClick={() => navigate('/profile/data')}>Data & Privacy Tools</li>
-            <li onClick={handleDeleteProfile}>Delete Profile</li>
-          </ul>
-        </div>
-      )}
+      <ul className="profile-menu" id="profile-options" hidden={!showMenu}>
+        {settingsLinks.map(([path, label]) => (
+          <li key={path}><Link to={path} onClick={() => setShowMenu(false)}>{label}</Link></li>
+        ))}
+        <li>
+          <button className="ffrh-button ffrh-button--danger" type="button" onClick={handleDeleteProfile}>
+            Delete Profile
+          </button>
+        </li>
+      </ul>
     </div>
   );
 }

@@ -1,192 +1,94 @@
-/* src/style/ProfileStyle.css */
-
-/* Full‐page animated background */
 .profile-container {
-  background: var(--container-bg);
-  background-size: 200% 200%;
-  animation: bgShift 15s ease infinite;
-  padding: calc(var(--space-5) * 2.5) 0; /* 80px top/bottom */
-  min-height: 100vh;
-
-  /* Center the profile page */
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  padding: var(--space-4) 0 var(--space-5);
 }
 
-@keyframes bgShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Ensure consistent max‐width across pages */
-.container {
-  max-width: 960px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 0 var(--space-3);
-}
-
-/* Profile page styling */
-.profile-page {
-  position: relative; /* for absolute‐positioned menu */
-  background: var(--primary-bg-gradient);
-  border-top: 6px solid var(--color-secondary);
-  color: var(--color-bg);
-  padding: var(--space-4) var(--space-5);
-  border-radius: var(--space-4);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  transition: transform 150ms ease-in-out, box-shadow 150ms ease-in-out;
-}
-
-.profile-page:hover {
-  transform: scale(1.01);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-}
-
-.profile-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px solid var(--color-secondary);
-  padding-bottom: var(--space-3);
-  margin-bottom: var(--space-4);
-}
-
-.profile-title {
-  font-family: var(--font-heading);
-  font-size: var(--fs-h2);
-  color: var(--color-secondary);
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 0;
-}
-
-/* Reviews & Rankings section */
-.reviews-rankings-section {
-  background: var(--section-bg);
-  border: 2px solid var(--section-border);
-  border-radius: var(--space-3);
-  padding: var(--space-4);
-  margin-bottom: var(--space-4);
-  color: var(--color-text);
-}
-
-.section-title {
-  font-family: var(--font-heading);
-  font-size: var(--fs-h3);
-  color: var(--color-primary);
-  text-align: center;
-  margin-bottom: var(--space-3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 2px solid var(--color-secondary);
-  padding-bottom: var(--space-2);
-  margin: 0;
-}
-
-.reviews-list {
-  margin-top: var(--space-3);
-}
-
-.no-reviews-rankings-message {
-  text-align: center;
-  font-size: var(--fs-base);
-  color: var(--color-accent);
-  margin-top: var(--space-4);
-}
-
-/* Responsive tweaks */
-@media (max-width: 768px) {
-  .profile-page {
-    padding: var(--space-3) var(--space-4);
-    margin: 0 var(--space-3);
-  }
-  .profile-title {
-    font-size: var(--fs-h3);
-  }
-  .section-title {
-    font-size: var(--fs-base);
-  }
-}
-
-@media (max-width: 480px) {
-  .profile-page {
-    padding: var(--space-2) var(--space-3);
-    margin: 0 var(--space-2);
-  }
-  .profile-title,
-  .section-title {
-    font-size: var(--fs-h3);
-  }
-}
-
-/* ===== New Styles Below ===== */
-
-/* Two-column layout: sidebar and main content for better structure */
 .profile-layout {
   display: flex;
-  gap: var(--space-5);
+  align-items: flex-start;
+  gap: var(--space-4);
 }
 
-/* Sidebar fixed width to house profile menu and user info */
 .profile-sidebar {
-  flex: 0 0 280px;
+  position: relative;
+  flex: 0 0 272px;
+  min-width: 0;
 }
 
-/* Main content area expands to fill remaining space */
 .profile-main {
   flex: 1;
   min-width: 0;
 }
 
-/* Tabs styling: container, buttons, active state */
+.profile-title,
+.profile-main .section-title {
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  line-height: 1.25;
+}
+
+.profile-title {
+  font-size: clamp(var(--fs-h3), 5vw, var(--fs-h2));
+}
+
+.profile-main .section-title {
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-h3);
+}
+
 .profile-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
-  margin: var(--space-4) 0;
-  border-bottom: 2px solid var(--color-secondary);
+  gap: var(--space-2);
+  margin: var(--space-2) 0 var(--space-3);
+  border-bottom: 1px solid var(--color-muted);
 }
 
 .profile-tab-button {
+  min-height: 44px;
+  padding: var(--space-2);
+  border: 0;
+  border-bottom: 3px solid transparent;
   background: transparent;
-  border: none;
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--fs-base);
+  color: var(--color-text);
+  font: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: color 150ms ease, border-bottom 150ms ease;
-  border-bottom: 3px solid transparent;
 }
 
-/* Active tab: highlight with secondary color underline */
-.profile-tab-button.active {
-  color: var(--color-secondary);
-  border-bottom-color: var(--color-secondary);
+.profile-tab-button:is(.active, :hover) {
+  border-bottom-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
-.profile-tab-button:hover {
-  color: var(--color-accent);
+.profile-tab-button:focus-visible,
+.rankings-table a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
+.reviews-rankings-section,
 .rankings-section {
-  background: var(--color-surface);
+  padding: var(--space-4);
   border-radius: var(--radius-large);
+  background: var(--color-surface);
   box-shadow: var(--shadow-sm);
   color: var(--color-text);
-  padding: var(--space-4);
 }
 
+.reviews-list,
+.no-reviews-rankings-message,
 .rankings-section p {
-  margin: var(--space-3) 0;
+  margin-top: var(--space-3);
+}
+
+.no-reviews-rankings-message,
+.rankings-note,
+.rankings-player-info {
+  color: var(--color-muted);
 }
 
 .rankings-note,
 .rankings-player-info {
-  color: var(--color-muted);
   font-size: var(--fs-small);
 }
 
@@ -197,6 +99,7 @@
 
 .rankings-table {
   width: 100%;
+  margin-top: var(--space-2);
   table-layout: fixed;
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
@@ -221,22 +124,47 @@
   text-underline-offset: 3px;
 }
 
-/* Responsive: stack columns on narrower screens */
 @media (max-width: 768px) {
   .profile-layout {
     flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
   }
+
   .profile-sidebar {
     flex: none;
   }
 }
 
 @media (max-width: 480px) {
+  .profile-container {
+    padding-top: var(--space-3);
+  }
+
   .profile-tabs {
     gap: var(--space-1);
   }
 
+  .reviews-rankings-section,
   .rankings-section {
     padding: var(--space-3);
+  }
+
+  .rankings-table th,
+  .rankings-table td {
+    padding: var(--space-1) 6px;
+  }
+
+  .rankings-table thead th {
+    font-size: var(--fs-small);
+    line-height: 1.35;
+  }
+
+  .rankings-table thead th:first-child {
+    width: 43%;
+  }
+
+  .rankings-table thead th:nth-child(2) {
+    width: 18%;
   }
 }

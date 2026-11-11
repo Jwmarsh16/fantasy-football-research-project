@@ -1,90 +1,50 @@
-/* src/style/NewsSection.css */
-/* Professional/business styling for news section */
-
 .news-section {
-  margin-top: var(--space-5);
   padding: var(--space-4);
-  background: var(--color-bg);               /* Light-gray container */
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-sm);
 }
 
 .news-title {
-  font-family: var(--font-heading);
-  font-size: var(--fs-h2);
-  font-weight: bold;
+  margin: 0;
   color: var(--color-primary);
-  margin-bottom: var(--space-4);
-  letter-spacing: var(--letter-spacing);
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
 }
 
-/* List reset */
 .news-list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: var(--space-3) 0 0;
 }
 
-/* Individual news item */
 .news-item {
-  background: var(--color-surface);          /* White card */
-  padding: var(--space-3);
-  margin-bottom: var(--space-4);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--color-border);
 }
 
-/* Meta line: category & date */
+.news-item:last-child {
+  padding-bottom: 0;
+}
+
 .news-article-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-1) var(--space-3);
   margin-bottom: var(--space-2);
-  font-family: var(--font-body);
   font-size: var(--fs-small);
   color: var(--color-muted);
 }
 
-.news-article-category strong {
-  color: var(--color-secondary);
-  font-weight: 600;
-  margin-right: var(--space-1);
-}
-
-.news-article-date {
-  font-style: italic;
-}
-
-/* Article title */
 .news-article-title {
+  margin: 0 0 var(--space-2);
   font-family: var(--font-heading);
-  font-size: var(--fs-h3);
-  color: var(--color-text);
-  margin: 0 0 var(--space-2) 0;
-}
-
-/* Article content */
-.news-article-content {
-  font-family: var(--font-body);
-  font-size: var(--fs-base);
-  color: var(--color-text);
-  margin: 0;
-  line-height: var(--line-height);
-}
-
-/* Hover effects via utility classes, no extra CSS needed */
-
-/* Responsive */
-@media (max-width: 768px) {
-  .news-title {
-    font-size: var(--fs-h3);
-  }
-  .news-article-title {
-    font-size: var(--fs-h4);
-  }
+  font-size: var(--fs-h4);
 }
 
 @media (max-width: 480px) {
-  .news-title {
-    font-size: var(--fs-h4);
-  }
-  .news-article-content {
-    font-size: 0.875rem;
+  .news-section {
+    padding: var(--space-3);
   }
 }
