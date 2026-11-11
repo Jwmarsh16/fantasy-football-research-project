@@ -1,43 +1,83 @@
-.sidebar {
-    flex: 1;
-    min-width: 250px;
-    background: var(--sidebar-bg);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    text-align: center;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .sidebar:hover {
-    transform: scale(1.05);
-  }
-  
-  .sidebar-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 15px;
-  }
-  
-  .ranking-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 15px;
-  }
-  
-  .ranking-item {
-    padding: 12px;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, #ffffff, #f3f3f3);
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    font-size: 16px;
-    color: #333;
-    transition: transform 0.2s ease-in-out;
-  }
-  
-  .ranking-item:hover {
-    transform: translateY(-5px);
-  }
-  
+.ranking-sidebar {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text);
+  text-align: left;
+}
+
+.ranking-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.ranking-title {
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+  margin: 0;
+}
+
+.ranking-note,
+.ranking-meta {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--fs-small);
+}
+
+.ranking-state {
+  margin: var(--space-3) 0 0;
+}
+
+.ranking-list {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-top: 1px solid #dbe2e8;
+}
+
+.ranking-player-link {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+
+.ranking-score {
+  flex-shrink: 0;
+  text-align: right;
+  font-size: var(--fs-small);
+  font-variant-numeric: tabular-nums;
+}
+
+.ranking-toggle {
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-base);
+  color: var(--color-primary);
+  font-size: var(--fs-small);
+}
+
+.ranking-toggle:hover {
+  background: var(--color-bg);
+}
+
+.ranking-player-link:focus-visible,
+.ranking-toggle:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 3px;
+}

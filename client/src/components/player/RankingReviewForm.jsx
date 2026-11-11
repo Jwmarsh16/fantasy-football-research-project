@@ -1,5 +1,5 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import '../../style/RankingReviewForm.css';
 
@@ -8,11 +8,13 @@ const reviewSchema = Yup.object({
 });
 
 function RankingReviewForm({ maxRank, rankReady, signedIn, savedRank, onSaveRank, onRemoveRank, onPostReview }) {
+  const { id } = useParams();
+
   if (!signedIn) {
     return (
       <div className="ranking-review-form">
         <h2 className="form-title">Rank and review this player</h2>
-        <p><Link to="/login">Log in</Link> to save a ranking or post a review.</p>
+        <p><Link to="/login" state={{ playerId: Number(id) }}>Log in</Link> to save a ranking or post a review.</p>
       </div>
     );
   }

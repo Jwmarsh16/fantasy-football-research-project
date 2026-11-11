@@ -1,7 +1,6 @@
 // src/components/auth/LoginForm.jsx
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../redux/slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -11,6 +10,7 @@ import '../../style/LoginForm.css';
 function LoginForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { state } = useLocation();
   const authStatus = useSelector((state) => state.auth.status);
   const authError = useSelector((state) => state.auth.error);
 
@@ -30,7 +30,9 @@ function LoginForm() {
       .then((response) => {
         console.log('User successfully logged in:', response);
         if (response && response.id) {
-          navigate('/'); // Redirect to home
+          const playerId = state?.playerId;
+          const destination = Number.isSafeInteger(playerId) && playerId > 0 ? `/players/${playerId}` : '/';
+          navigate(destination);
         }
       })
       .catch((error) => {

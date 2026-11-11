@@ -1,5 +1,5 @@
 // src/pages/PlayerList.jsx
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';              // added useNavigate
 import { fetchPlayers } from '../redux/slices/playerSlice';
@@ -8,6 +8,7 @@ import { fetchRoster, addToRoster } from '../redux/slices/teamSlice'; // importe
 import PositionFilter from '../components/player/PositionFilter';
 import TeamDropdown from '../components/player/TeamDropdown';
 import SortControls from '../components/player/SortControls';
+import { compareCommunityRank, summarizePlayerRankings } from '../utils/rankingUtils';
 import '../style/PlayerListStyle.css';
 
 const getPlayerHeadshot = (playerName) => {
@@ -25,7 +26,6 @@ function PlayerList() {
   const status = useSelector((state) => state.player.status);
   const currentUser = useSelector((state) => state.auth.currentUser); // logged-in user
 
-  const [sortedPlayers, setSortedPlayers] = useState([]);
   const [sortType, setSortType] = useState('');
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPosition, setFilterPosition] = useState('');
@@ -45,34 +45,20 @@ function PlayerList() {
     }
   }, [currentUser, dispatch]);
 
-  // compute sortedPlayers on data changes
-  useEffect(() => {
-    const playersWithRankings = players.map((player) => {
-      const prs = rankings.filter((r) => r.player_id === player.id);
-      const avg = prs.length
-        ? prs.reduce((sum, r) => sum + r.rank, 0) / prs.length
-        : null;
-      return { ...player, average_rank: avg };
-    });
-
-    let filtered = [...playersWithRankings];
+  const sortedPlayers = useMemo(() => {
+    let filtered = summarizePlayerRankings(players, rankings);
     if (filterTeam) filtered = filtered.filter(p => p.team === filterTeam);
     if (filterPosition) filtered = filtered.filter(p => p.position === filterPosition);
 
-    let sorted = [...filtered];
     if (sortType === 'team') {
-      sorted.sort((a, b) => a.team.localeCompare(b.team));
+      return filtered.sort((a, b) => a.team.localeCompare(b.team));
     } else if (sortType === 'position') {
-      sorted.sort((a, b) => a.position.localeCompare(b.position));
+      return filtered.sort((a, b) => a.position.localeCompare(b.position));
     } else if (sortType === 'ranking') {
-      sorted.sort((a, b) => {
-        const aRank = a.average_rank ?? Infinity;
-        const bRank = b.average_rank ?? Infinity;
-        return aRank - bRank;
-      });
+      return filtered.sort(compareCommunityRank);
     }
 
-    setSortedPlayers(sorted);
+    return filtered;
   }, [players, rankings, sortType, filterTeam, filterPosition]);
 
   // handler to add player to roster
