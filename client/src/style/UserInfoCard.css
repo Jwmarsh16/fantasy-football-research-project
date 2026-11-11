@@ -9,24 +9,6 @@
   box-shadow: var(--shadow-sm);
 }
 
-.user-avatar-section {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  overflow: hidden;
-  border-radius: 50%;
-  background: var(--color-primary);
-  color: var(--color-surface);
-  font-weight: 700;
-}
-
-.user-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .user-info-section {
   grid-column: 2 / -1;
   overflow-wrap: anywhere;

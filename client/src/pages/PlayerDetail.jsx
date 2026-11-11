@@ -20,12 +20,6 @@ const getPlayerHeadshot = (playerName) => {
   return `/images/players/${formattedName}.png`;
 };
 
-const formatStatKey = (key) =>
-  key
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-
 function PlayerDetail() {
   const { id } = useParams();
   const { state } = useLocation();
@@ -38,13 +32,13 @@ function PlayerDetail() {
   const rankings = useSelector(state => state.ranking.rankings);
   const rankingsStatus = useSelector(state => state.ranking.status);
   const reviews = useSelector(state => state.review.reviews);
+  const reviewsStatus = useSelector(state => state.review.status);
   const users = useSelector(state => state.user.users);
   const currentUser = useSelector(state => state.auth.currentUser);
   const playerReady = player?.id === playerId;
 
   const [sortOrder, setSortOrder] = useState('asc');
   const [showReviews, setShowReviews] = useState(false);
-  const [reviewsError, setReviewsError] = useState(null);
 
   useEffect(() => {
     dispatch(fetchPlayer(playerId));
@@ -79,18 +73,10 @@ function PlayerDetail() {
     await dispatch(addReview({ content, player_id: playerId })).unwrap();
   };
 
-  const handleToggleReviews = async () => {
-    if (showReviews) {
-      setShowReviews(false);
-      return;
-    }
-
-    setReviewsError(null);
-    try {
-      await dispatch(fetchReviews()).unwrap();
-      setShowReviews(true);
-    } catch {
-      setReviewsError('Could not load reviews. Please try again.');
+  const handleToggleReviews = () => {
+    setShowReviews(!showReviews);
+    if (!showReviews && reviewsStatus !== 'loading') {
+      dispatch(fetchReviews());
     }
   };
 
@@ -111,9 +97,9 @@ function PlayerDetail() {
     .filter(review => review.player_id === playerId)
     .map(review => ({ ...review, rank: playerRanks.get(review.user_id)?.rank ?? null }))
     .sort((a, b) => {
-      const aRank = a.rank ?? Infinity;
-      const bRank = b.rank ?? Infinity;
-      return sortOrder === 'asc' ? aRank - bRank : bRank - aRank;
+      if (a.rank === null) return b.rank === null ? 0 : 1;
+      if (b.rank === null) return -1;
+      return sortOrder === 'asc' ? a.rank - b.rank : b.rank - a.rank;
     });
 
   return (
@@ -149,7 +135,11 @@ function PlayerDetail() {
               <Link to="/login" state={{ playerId }} className="ffrh-button">Rank Player</Link>
             )}
             {canCompare && (
-              <Link to={`/players/compare?${compareSearch}`} className="ffrh-button ffrh-button--secondary">
+              <Link
+                to={`/players/compare?${compareSearch}`}
+                state={{ catalogSearch: state?.catalogSearch }}
+                className="ffrh-button ffrh-button--secondary"
+              >
                 Compare this player
               </Link>
             )}
@@ -168,31 +158,52 @@ function PlayerDetail() {
           onRemoveRank={() => handleRemoveRank(savedRanking.id)}
         />
 
-        <PlayerInfoCard player={player} formatStatKey={formatStatKey} />
+        <PlayerInfoCard player={player} />
 
         {currentUser && <PlayerReviewForm key={`review-${playerId}`} onPostReview={handlePostReview} />}
 
-        <div className="toggle-reviews-section">
-          <button
-            type="button"
-            className="ffrh-button ffrh-button--secondary"
-            aria-expanded={showReviews}
-            onClick={handleToggleReviews}
-          >
-            {showReviews ? 'Hide Reviews and Rankings' : 'Show Reviews and Rankings'}
-          </button>
-          {reviewsError && <p className="error-message" role="alert">{reviewsError}</p>}
-        </div>
-
-        {showReviews && (
-          <>
-            <SortDropdown sortOrder={sortOrder} setSortOrder={setSortOrder} />
-            <ReviewRankingList
-              sortedReviews={sortedReviews}
-              getUsernameById={uid => users.find(user => user.id === uid)?.username ?? 'Unknown'}
-            />
-          </>
-        )}
+        <section className="community-reviews" aria-labelledby="community-reviews-title">
+          <header className="community-reviews-header">
+            <h2 id="community-reviews-title">Community Reviews</h2>
+            <button
+              type="button"
+              className="ffrh-button ffrh-button--secondary"
+              aria-expanded={showReviews}
+              aria-controls="community-reviews-content"
+              onClick={handleToggleReviews}
+            >
+              {showReviews ? 'Hide reviews' : 'Show reviews'}
+            </button>
+          </header>
+          <div id="community-reviews-content" hidden={!showReviews}>
+            {showReviews && reviewsStatus === 'loading' && (
+              <p className="community-reviews-status" role="status">Loading reviews…</p>
+            )}
+            {showReviews && reviewsStatus === 'failed' && (
+              <div className="community-reviews-error">
+                <p className="error-message" role="alert">Could not load reviews. Please try again.</p>
+                <button
+                  type="button"
+                  className="ffrh-button ffrh-button--secondary"
+                  onClick={() => dispatch(fetchReviews())}
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+            {showReviews && reviewsStatus === 'succeeded' && (
+              <>
+                {sortedReviews.length > 1 && sortedReviews.some(review => review.rank !== null) && (
+                  <SortDropdown sortOrder={sortOrder} setSortOrder={setSortOrder} />
+                )}
+                <ReviewRankingList
+                  sortedReviews={sortedReviews}
+                  getUsernameById={uid => users.find(user => user.id === uid)?.username ?? 'Unknown user'}
+                />
+              </>
+            )}
+          </div>
+        </section>
       </div>
     </main>
   );

@@ -46,6 +46,9 @@ test('guests can combine catalog filters and compare two players after refresh',
   expect(actionBounds.x).toBeGreaterThanOrEqual(0);
   expect(actionBounds.x + actionBounds.width).toBeLessThanOrEqual(page.viewportSize().width);
 
+  await team.selectOption('Buffalo Bills');
+  await page.getByRole('button', { name: 'QB', exact: true }).click();
+  await search.fill('allen');
   await page.getByRole('link', { name: 'Compare Players', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Compare Players' })).toBeVisible();
   await page.getByRole('combobox', { name: 'Position', exact: true }).selectOption('QB');
@@ -66,6 +69,11 @@ test('guests can combine catalog filters and compare two players after refresh',
   await page.getByRole('combobox', { name: 'Position', exact: true }).selectOption('WR');
   await expect(comparison).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Logout', exact: true })).toHaveCount(0);
+
+  await page.getByRole('link', { name: 'Back to players', exact: true }).click();
+  await expect(search).toHaveValue('allen');
+  await expect(team).toHaveValue('Buffalo Bills');
+  await expect(page.getByRole('button', { name: 'QB', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('a reviewer can browse as a guest, sign in, and save a rank that survives refresh', async ({ page }) => {
@@ -167,6 +175,11 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
   await page.unroute('**/api/reviews');
   await page.getByRole('button', { name: 'Post review' }).click();
   await expect(page.getByText('Review posted.', { exact: true })).toBeVisible();
+  const communityReviews = page.getByRole('region', { name: 'Community Reviews' });
+  await communityReviews.getByRole('button', { name: 'Show reviews', exact: true }).click();
+  const postedReview = communityReviews.getByRole('listitem').filter({ has: page.getByText(account, { exact: true }) });
+  await expect(postedReview).toContainText('A review can be submitted independently.');
+  await expect(postedReview).toContainText('Rank #6');
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Show Your Top 5', exact: true }).click();
@@ -194,6 +207,20 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
   await expect(paddedRank).toBeVisible();
   const rankBounds = await paddedRank.boundingBox();
   expect(rankBounds.x + rankBounds.width).toBeLessThanOrEqual(page.viewportSize().width);
+
+  await page.getByRole('button', { name: 'Reviews', exact: true }).click();
+  const profileReviews = page.getByRole('region', { name: 'Your Reviews' });
+  const reviewTeam = profileReviews.getByRole('combobox', { name: 'Filter by team' });
+  const defense = profileReviews.getByRole('button', { name: 'DEF', exact: true });
+  await reviewTeam.selectOption('Kansas City Chiefs');
+  const defenseBounds = await defense.boundingBox();
+  expect(defenseBounds.x + defenseBounds.width).toBeLessThanOrEqual(page.viewportSize().width);
+  await defense.click();
+  await expect(defense).toHaveAttribute('aria-pressed', 'true');
+  await expect(reviewTeam).toHaveValue('Kansas City Chiefs');
+  await expect(profileReviews.getByText('No reviews match these filters.')).toBeVisible();
+  await defense.click();
+  await expect(profileReviews.getByRole('heading', { name: 'Patrick Mahomes', exact: true })).toBeVisible();
 
   await openPrimaryNavigation(page);
   await logout.click();

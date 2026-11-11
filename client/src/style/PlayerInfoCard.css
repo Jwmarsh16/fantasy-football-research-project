@@ -14,7 +14,6 @@
 }
 
 .player-info-card h2 {
-  margin-bottom: var(--space-3);
   font-size: var(--fs-h3);
 }
 
@@ -28,8 +27,13 @@
   gap: var(--space-4);
 }
 
+.player-info-overview > :only-child {
+  grid-column: 1 / -1;
+}
+
 .player-summary-stats,
-.player-bio {
+.player-bio,
+.player-stat-grid {
   display: grid;
   gap: var(--space-2);
   margin: 0;
@@ -40,7 +44,8 @@
 }
 
 .player-summary-stats div,
-.player-bio div {
+.player-bio div,
+.player-stat-grid div {
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-base);
   background: var(--color-bg);
@@ -55,54 +60,59 @@
 }
 
 .player-summary-stats dt,
-.player-bio dt {
+.player-bio dt,
+.player-stat-grid dt {
   color: var(--color-muted);
   font-size: var(--fs-small);
 }
 
 .player-summary-stats dd,
-.player-bio dd {
+.player-bio dd,
+.player-stat-grid dd {
   margin: 0;
 }
 
-.player-summary-stats dd {
-  font-size: var(--fs-h4);
+.player-summary-stats dd,
+.player-stat-grid dd {
+  color: var(--color-primary);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
-.player-stats {
+.player-summary-stats dd {
+  font-size: var(--fs-h4);
+}
+
+.player-stats-context {
+  margin: 0 0 var(--space-2);
+  color: var(--color-muted);
+  font-size: var(--fs-small);
+}
+
+.player-info-card > .player-stats-context {
+  margin-bottom: var(--space-3);
+}
+
+.player-stat-groups {
+  display: grid;
+  gap: var(--space-4);
   margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
 }
 
-.player-stat-scroll {
-  overflow-x: auto;
-  border: 1px solid var(--color-bg);
-  border-radius: var(--radius-base);
+.player-stat-groups > p {
+  margin-bottom: 0;
 }
 
-.player-stat-scroll:focus-visible {
-  outline: 2px solid var(--color-secondary);
-  outline-offset: 2px;
+.player-stat-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
-.player-info-card .stats-table {
-  width: 100%;
-  border-collapse: collapse;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.player-info-card .stats-table th,
-.player-info-card .stats-table td {
-  padding: var(--space-2) var(--space-3);
-  text-align: right;
-}
-
-.player-info-card .stats-table th {
-  background-color: var(--color-primary);
-  color: var(--color-surface);
-  font-weight: 600;
+@media (max-width: 900px) {
+  .player-stat-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 600px) {
@@ -112,5 +122,18 @@
 
   .player-info-overview {
     grid-template-columns: 1fr;
+  }
+
+  .player-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .player-stat-grid div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    column-gap: var(--space-1);
+    padding-inline: var(--space-2);
   }
 }

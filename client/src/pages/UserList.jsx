@@ -1,5 +1,4 @@
-// src/pages/UserList.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../redux/slices/userSlice';
 import '../style/UserListStyle.css';
@@ -32,11 +31,11 @@ function UserList() {
   if (status === 'failed') return <div className="error-message">Error loading users.</div>;
 
   return (
-    <div className="user-list-page container">
-      <h1 className="page-title">User List</h1>
+    <main className="user-list-page container">
+      <h1 className="user-list-title">Users</h1>
       <UserSearchForm searchUsername={searchUsername} setSearchUsername={setSearchUsername} />
       <UserCardGrid users={filteredUsers} />
-    </div>
+    </main>
   );
 }
 

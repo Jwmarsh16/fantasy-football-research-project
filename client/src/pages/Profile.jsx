@@ -1,6 +1,7 @@
 // src/pages/Profile.jsx
 import {
   useEffect,
+  useLayoutEffect,
   useState,
   useRef,
   useCallback
@@ -32,6 +33,14 @@ import EditReviewModal from '../components/profile/EditReviewModal';
 import MyTeam from '../components/profile/MyTeam'; // added MyTeam component
 import MyRankings from '../components/profile/MyRankings';
 
+const DEFAULT_REVIEW_HEIGHT = 144;
+const REVIEW_ROW_GAP = 8; // var(--space-2)
+const VIRTUAL_LIST_HEIGHT = 600;
+
+function VirtualReviewRow({ data, index, style }) {
+  return <div style={style}>{data.renderReview(data.reviews[index], data.updateRowHeight)}</div>;
+}
+
 function Profile() {
   const { userId } = useParams();
   const dispatch = useDispatch();
@@ -41,9 +50,9 @@ function Profile() {
   const currentUser = useSelector((state) => state.auth.currentUser);
   const userDetails = useSelector((state) => state.user.userDetails);
   const [profileError, setProfileError] = useState(false);
-  const reviews = useSelector((state) => state.review.reviews);
+  const { reviews, status: reviewsStatus } = useSelector((state) => state.review);
   const rankings = useSelector((state) => state.ranking.rankings);
-  const players = useSelector((state) => state.player.players);
+  const { players, status: playersStatus } = useSelector((state) => state.player);
 
   const [forceUpdate, setForceUpdate] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
@@ -62,9 +71,6 @@ function Profile() {
     ? requestedTab
     : 'myteam';
   const listRef = useRef(null);
-
-  const defaultCollapsedHeight = 150;
-  const ROW_GAP = 16; // match var(--space-4)
 
   // handle window resize for mobile layout
   useEffect(() => {
@@ -136,29 +142,20 @@ function Profile() {
     );
   };
 
-  const updateRowHeight = useCallback((index, height) => {
+  const updateRowHeight = useCallback((reviewId, height) => {
     setRowHeights((prev) => {
-      const current = prev[index];
+      const current = prev[reviewId];
       if (current !== undefined && Math.abs(current - height) < 1) return prev;
-      return { ...prev, [index]: height };
+      return { ...prev, [reviewId]: height };
     });
   }, []);
 
-  useEffect(() => {
-    if (listRef.current) {
-      listRef.current.resetAfterIndex(0, true);
-    }
-  }, [expandedReviewIds]);
+  useLayoutEffect(() => {
+    listRef.current?.resetAfterIndex(0);
+  }, [reviews, players, rankings, filterTeam, filterPosition, sortType, rowHeights]);
 
   // Prepare data for Reviews tab
   const userReviews = reviews.filter((r) => r.user_id === parsedUserId);
-  const teams = [
-    ...new Set(
-      userReviews
-        .map((r) => players.find((pl) => pl.id === r.player_id)?.team)
-        .filter(Boolean)
-    ),
-  ];
   const positions = [...new Set(players.map((p) => p.position))];
   const enrichedReviews = userReviews.map((r) => {
     const p = players.find((p) => p.id === r.player_id) || {};
@@ -167,26 +164,46 @@ function Profile() {
     );
     return {
       ...r,
-      playerName: p.name,
-      team: p.team,
-      position: p.position,
+      playerName: p.name ?? 'Unknown player',
+      team: p.team ?? '',
+      position: p.position ?? '',
       ranking: rankObj?.rank ?? null,
     };
   });
-  let filtered = enrichedReviews;
-  if (filterTeam) filtered = filtered.filter((r) => r.team === filterTeam);
-  if (filterPosition) filtered = filtered.filter((r) => r.position === filterPosition);
+  const teams = [...new Set([filterTeam, ...enrichedReviews.map((r) => r.team)].filter(Boolean))].sort();
+  const filtered = enrichedReviews.filter((review) => (
+    (!filterTeam || review.team === filterTeam)
+    && (!filterPosition || review.position === filterPosition)
+  ));
   filtered.sort((a, b) => {
     if (sortType === 'team') return a.team.localeCompare(b.team);
     if (sortType === 'position') return a.position.localeCompare(b.position);
     return (a.ranking ?? Infinity) - (b.ranking ?? Infinity);
   });
-  const getItemSize = (index) => {
-    const baseHeight = expandedReviewIds.includes(filtered[index].id)
-      ? rowHeights[index] ?? defaultCollapsedHeight
-      : defaultCollapsedHeight;
-    return baseHeight + ROW_GAP;
-  };
+
+  const renderReview = (review, measureHeight) => (
+    <ReviewRow
+      key={review.id}
+      review={review}
+      isExpanded={expandedReviewIds.includes(review.id)}
+      ownsProfile={ownsProfile}
+      openMenuReviewId={openMenuReviewId}
+      setOpenMenuReviewId={setOpenMenuReviewId}
+      setEditingReview={setEditingReview}
+      handleDeleteReview={handleDeleteReview}
+      toggleReviewExpansion={toggleReviewExpansion}
+      updateRowHeight={measureHeight}
+    />
+  );
+
+  const useVirtualList = !isMobile && filtered.length > Math.floor(VIRTUAL_LIST_HEIGHT / DEFAULT_REVIEW_HEIGHT);
+  const reviewsFailed = reviewsStatus === 'failed' || playersStatus === 'failed';
+  const reviewsLoading = [reviewsStatus, playersStatus].some((status) => status === 'idle' || status === 'loading');
+  let reviewsMessage = `${filtered.length} of ${enrichedReviews.length} reviews`;
+  if (reviewsFailed) reviewsMessage = 'Could not load reviews.';
+  else if (reviewsLoading) reviewsMessage = 'Loading reviews…';
+  else if (!enrichedReviews.length) reviewsMessage = 'No reviews yet.';
+  else if (!filtered.length) reviewsMessage = 'No reviews match these filters.';
 
   if (!parsedUserId || userDetails?.id !== parsedUserId) {
     return profileError
@@ -273,26 +290,24 @@ function Profile() {
             {activeTab === 'rankings' && <MyRankings />}
 
             {activeTab === 'reviews' && (
-              <div className="reviews-rankings-section">
-                <h3 className="section-title">Your Reviews</h3>
+              <section className="profile-reviews" aria-labelledby="profile-reviews-title">
+                <h2 id="profile-reviews-title" className="section-title">
+                  {ownsProfile ? 'Your Reviews' : `Reviews by ${userDetails.username}`}
+                </h2>
                 <ReviewFilterSort
                   teams={teams}
                   positions={positions}
                   sortType={sortType}
                   filterTeam={filterTeam}
-                  handleFilterByTeam={(team) => {
-                    setFilterTeam(team);
-                    setFilterPosition('');
-                    setExpandedReviewIds([]);
+                  filterPosition={filterPosition}
+                  handleFilterByTeam={(event) => {
+                    setFilterTeam(event.target.value);
                   }}
-                  handleFilterByPosition={(pos) => {
-                    setFilterPosition(pos);
-                    setFilterTeam('');
-                    setExpandedReviewIds([]);
+                  handleFilterByPosition={(position) => {
+                    setFilterPosition((current) => current === position ? '' : position);
                   }}
-                  handleSortChange={(e) => {
-                    setSortType(e.target.value);
-                    setExpandedReviewIds([]);
+                  handleSortChange={(event) => {
+                    setSortType(event.target.value);
                   }}
                   handleClearFilters={() => {
                     setFilterTeam('');
@@ -301,62 +316,27 @@ function Profile() {
                     setExpandedReviewIds([]);
                   }}
                 />
-                <div className="reviews-list">
-                  {filtered.length > 0 ? (
-                    isMobile ? (
-                      filtered.map((review, idx) => (
-                        <ReviewRow
-                          key={review.id}
-                          review={review}
-                          index={idx}
-                          isExpanded={expandedReviewIds.includes(review.id)}
-                          currentUser={currentUser}
-                          parsedUserId={parsedUserId}
-                          openMenuReviewId={openMenuReviewId}
-                          setOpenMenuReviewId={setOpenMenuReviewId}
-                          setEditingReview={setEditingReview}
-                          handleDeleteReview={handleDeleteReview}
-                          toggleReviewExpansion={toggleReviewExpansion}
-                          updateRowHeight={updateRowHeight}
-                        />
-                      ))
-                    ) : (
+                <p className="profile-reviews-status" role={reviewsFailed ? 'alert' : 'status'}>{reviewsMessage}</p>
+                {filtered.length > 0 && (
+                  <div className="profile-reviews-list">
+                    {useVirtualList ? (
                       <List
                         ref={listRef}
-                        height={600}
+                        height={VIRTUAL_LIST_HEIGHT}
                         itemCount={filtered.length}
-                        itemSize={getItemSize}
+                        itemData={{ reviews: filtered, renderReview, updateRowHeight }}
+                        itemKey={(index, data) => data.reviews[index].id}
+                        itemSize={(index) => (rowHeights[filtered[index].id] ?? DEFAULT_REVIEW_HEIGHT) + REVIEW_ROW_GAP}
                         width="100%"
-                        style={{ overflowX: 'hidden' }}
                       >
-                        {({ index, style }) => (
-                          <ReviewRow
-                            key={filtered[index].id}
-                            review={filtered[index]}
-                            index={index}
-                            style={style}
-                            isExpanded={expandedReviewIds.includes(
-                              filtered[index].id
-                            )}
-                            currentUser={currentUser}
-                            parsedUserId={parsedUserId}
-                            openMenuReviewId={openMenuReviewId}
-                            setOpenMenuReviewId={setOpenMenuReviewId}
-                            setEditingReview={setEditingReview}
-                            handleDeleteReview={handleDeleteReview}
-                            toggleReviewExpansion={toggleReviewExpansion}
-                            updateRowHeight={updateRowHeight}
-                          />
-                        )}
+                        {VirtualReviewRow}
                       </List>
-                    )
-                  ) : (
-                    <p className="no-reviews-rankings-message">
-                      No reviews available.
-                    </p>
-                  )}
-                </div>
-              </div>
+                    ) : (
+                      filtered.map((review) => renderReview(review))
+                    )}
+                  </div>
+                )}
+              </section>
             )}
 
           </main>
