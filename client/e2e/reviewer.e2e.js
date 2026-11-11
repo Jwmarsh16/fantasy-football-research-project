@@ -19,6 +19,11 @@ test('guests can combine catalog filters and compare two players after refresh',
   await team.selectOption({ label: 'Buffalo Bills' });
   await page.getByRole('button', { name: 'QB', exact: true }).click();
   await search.fill('  dIgGs  ');
+  await expect(page).toHaveURL(url => (
+    url.searchParams.get('team') === 'Buffalo Bills'
+    && url.searchParams.get('position') === 'QB'
+    && url.searchParams.get('q')?.trim() === 'dIgGs'
+  ));
   await expect(page.getByText('No players match your filters.')).toBeVisible();
 
   await page.getByRole('button', { name: 'WR', exact: true }).click();

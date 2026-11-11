@@ -1,5 +1,5 @@
 // src/pages/PlayerList.jsx
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useNavigationType, useSearchParams } from 'react-router-dom';
 import { fetchPlayers } from '../redux/slices/playerSlice';
@@ -9,6 +9,8 @@ import TeamDropdown from '../components/player/TeamDropdown';
 import SortControls from '../components/player/SortControls';
 import { compareCommunityRank, summarizePlayerRankings } from '../utils/rankingUtils';
 import '../style/PlayerListStyle.css';
+
+const catalogSortOptions = ['team', 'position', 'ranking'];
 
 const getPlayerHeadshot = (playerName) => {
   const formattedName = playerName.toLowerCase().replace(/ /g, "_");
@@ -29,8 +31,8 @@ function PlayerList() {
   const navigate = useNavigate();
   const navigationType = useNavigationType();
   const [searchParams, setSearchParams] = useSearchParams();
-  const queryFromUrl = searchParams.get('q') ?? '';
-  const [searchQuery, setSearchQuery] = useState(queryFromUrl);
+  const [filterParams, setFilterParams] = useState(searchParams);
+  const latestFilters = useRef(searchParams);
 
   const players = useSelector((state) => state.player.players);
   const rankings = useSelector((state) => state.ranking.rankings);
@@ -41,19 +43,22 @@ function PlayerList() {
 
   const teams = [...new Set(players.map(player => player.team))].sort();
   const positions = [...new Set(players.map(player => player.position))];
-  const requestedSort = searchParams.get('sort');
-  const requestedTeam = searchParams.get('team');
-  const requestedPosition = searchParams.get('position');
-  const sortType = ['team', 'position', 'ranking'].includes(requestedSort) ? requestedSort : '';
+  const searchQuery = filterParams.get('q') ?? '';
+  const requestedSort = filterParams.get('sort');
+  const requestedTeam = filterParams.get('team');
+  const requestedPosition = filterParams.get('position');
+  const sortType = catalogSortOptions.includes(requestedSort) ? requestedSort : '';
   const filterTeam = teams.includes(requestedTeam) ? requestedTeam : '';
   const filterPosition = positions.includes(requestedPosition) ? requestedPosition : '';
-  const catalogParams = withFilters(searchParams, { q: searchQuery });
-  const catalogSearch = catalogParams.size ? `?${catalogParams}` : '';
+  const catalogSearch = filterParams.size ? `?${filterParams}` : '';
 
   useEffect(() => {
-    // Keep typing immediate while the router replaces the catalog URL.
-    if (navigationType !== 'REPLACE') setSearchQuery(queryFromUrl);
-  }, [navigationType, queryFromUrl]);
+    // Back and forward restore the URL's filters. Our own replaces can finish after a newer edit.
+    if (navigationType !== 'REPLACE') {
+      latestFilters.current = searchParams;
+      setFilterParams(searchParams);
+    }
+  }, [navigationType, searchParams]);
 
   // initial fetch of players and rankings
   useEffect(() => {
@@ -90,14 +95,20 @@ function PlayerList() {
   }, [players, rankings, sortType, filterTeam, filterPosition, searchQuery]);
 
   const updateFilters = (changes) => {
-    // Keep one catalog history entry so Back from a player restores its filters.
-    setSearchParams(withFilters(searchParams, { q: searchQuery, ...changes }), { replace: true });
+    // Merge edits immediately while the router updates the single catalog history entry.
+    const next = withFilters(latestFilters.current, changes);
+    latestFilters.current = next;
+    setFilterParams(next);
+    setSearchParams(next, { replace: true });
   };
 
-  const handleFilterPosition = (position) => updateFilters({
-    position: filterPosition === position ? '' : position,
-    sort: sortType || 'ranking',
-  });
+  const handleFilterPosition = (position) => {
+    const currentSort = latestFilters.current.get('sort');
+    updateFilters({
+      position: latestFilters.current.get('position') === position ? '' : position,
+      sort: catalogSortOptions.includes(currentSort) ? currentSort : 'ranking',
+    });
+  };
 
   const handleAddToTeam = async (playerId) => {
     if (!currentUser) {
@@ -141,11 +152,7 @@ function PlayerList() {
             className="ffrh-field"
             type="search"
             value={searchQuery}
-            onChange={(event) => {
-              const value = event.target.value;
-              setSearchQuery(value);
-              updateFilters({ q: value });
-            }}
+            onChange={(event) => updateFilters({ q: event.target.value })}
           />
         </label>
         <TeamDropdown
@@ -177,11 +184,8 @@ function PlayerList() {
         <button
           type="button"
           className="ffrh-button ffrh-button--secondary"
-          disabled={!['q', 'team', 'position', 'sort'].some(key => searchParams.has(key))}
-          onClick={() => {
-            setSearchQuery('');
-            updateFilters({ q: '', team: '', position: '', sort: '' });
-          }}
+          disabled={!['q', 'team', 'position', 'sort'].some(key => filterParams.has(key))}
+          onClick={() => updateFilters({ q: '', team: '', position: '', sort: '' })}
         >
           Clear Filters
         </button>
