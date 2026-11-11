@@ -4,13 +4,15 @@
 
 ## Overview
 
-Fantasy Football Research Hub (FFRH) is a full-stack portfolio project for browsing sample player stats, comparing community rankings, and saving personal rankings and reviews.
+Fantasy Football Research Hub (FFRH) is a full-stack portfolio project for researching players with sample stats and building a personal ranking board.
 
 ## Demo walkthrough
 
 Browse the player catalog as a guest, open a player, and sign in to return to their profile. Save a ranking and reload the page to see the saved rank again. The recording uses a local database with sample data.
 
 ![Walkthrough of guest browsing, signing in, saving a player ranking, and seeing it after a reload](docs/ffrh-demo.gif)
+
+Open **Browse Players** to search by name and combine position and team filters. Select **Compare Players** to view two players at the same position side by side. Sign in to save a rank, then open **My Rankings** on your profile to see it alongside the community average.
 
 ## Local demo
 
@@ -30,9 +32,9 @@ honcho start -f Procfile.dev
 
 Open [http://127.0.0.1:5173](http://127.0.0.1:5173). Vite forwards `/api` requests to Gunicorn on port 5555.
 
-1. Select **Browse Players**, filter by position, and open a player profile.
+1. Select **Browse Players**, search or filter the catalog, and open a player profile. Use **Compare Players** to compare two players at the same position.
 2. Select **Log in** on the player profile and use `demo@example.test` with `FfrhLocalDemo123!`.
-3. The app returns you to the player profile. Save a rank and reload to confirm the saved value and session.
+3. The app returns you to the player profile. Save a rank, open **My Rankings** on your profile, and reload to confirm it appears there.
 
 The seed command adds 35 players with sample statistics plus fixture reviews and rankings. It requires a migrated file-based SQLite database and `FFRH_LOCAL_DEMO=true`. It skips a database it has already seeded and refuses to seed a database containing other app data. The default database is `server/instance/ffrh-local.db`.
 
@@ -56,13 +58,13 @@ The browser test starts its own Flask server on port 5055 and creates a temporar
 ## Features
 
 - **Player Rankings:**  
-  Users can save or update one rank per player, with the option to post a separate review.
+  Users can save or update one rank per player, with the option to post a separate review. **My Rankings** lists every saved rank alongside the community average and links to the player profile for edits.
 
 - **User Reviews:**  
   Registered users can write reviews for NFL players, providing personal insights and opinions. Reviews are truncated by default (with a “Show Review” toggle) and are limited to 450 characters.
 
 - **Player Statistics & Analysis:**  
-  Detailed statistics (stored in JSON format) are available for each player, allowing for extensive analysis.
+  Detailed sample statistics are available for each player. Guests can compare two players at the same position with their stats, community averages, and vote counts side by side.
 
 - **Community Insights:**  
   View aggregated rankings and reviews to compare opinions and performance insights among users.
@@ -71,6 +73,7 @@ The browser test starts its own Flask server on port 5055 and creates a temporar
   A clean, vibrant, and responsive UI with separate optimizations for desktop (using react‑window for efficient rendering) and mobile devices (using a standard scrollable list).
 
 - **Enhanced User Experience:**  
+  - Player name search, team and position filters, and catalog sorting.
   - Filtering and sorting controls for reviews by team, position, or ranking.  
   - Modal dialogs for editing reviews to keep the interface focused.  
   - A 3‑dot action menu for each review (with Edit and Delete options) styled consistently with the profile menu.
@@ -174,6 +177,7 @@ Ranking and review writes require the access cookie and matching CSRF header. On
 
 - `/` – Homepage.
 - `/players` – List all players.
+- `/players/compare` – Compare two players at the same position.
 - `/players/:id` – Detailed player page (includes reviews, rankings, and statistics).
 - `/add-review/:playerId` – Page to add a review.
 - `/profile`, `/profile/:userId` – User profile pages.
@@ -182,6 +186,10 @@ Ranking and review writes require the access cookie and matching CSRF header. On
 - `/login` – Login page.
 
 ## Future Improvements
+**Watchlist and Groups**
+
+Track players and organize research with fantasy groups and leagues.
+
 **Live Data Integration:**
 Real-time player stats and injury updates via external APIs (e.g., Sleeper, SportsRadar).
 

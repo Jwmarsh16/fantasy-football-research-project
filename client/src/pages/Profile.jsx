@@ -1,13 +1,12 @@
 // src/pages/Profile.jsx
 import {
   useEffect,
-  useState,               // track activeTab
+  useState,
   useRef,
   useCallback
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { VariableSizeList as List } from 'react-window';
 import {
   fetchUserById,
@@ -15,6 +14,7 @@ import {
   fetchUsers
 } from '../redux/slices/userSlice';
 import { fetchRankings } from '../redux/slices/rankingSlice';
+import { fetchPlayers } from '../redux/slices/playerSlice';
 import {
   fetchReviews,
   deleteReview,
@@ -30,19 +30,21 @@ import ReviewFilterSort from '../components/profile/ReviewFilterSort';
 import ReviewRow from '../components/profile/ReviewRow';
 import EditReviewModal from '../components/profile/EditReviewModal';
 import MyTeam from '../components/profile/MyTeam'; // added MyTeam component
+import MyRankings from '../components/profile/MyRankings';
 
 function Profile() {
   const { userId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const currentUser = useSelector((state) => state.auth.currentUser);
   const userDetails = useSelector((state) => state.user.userDetails);
   const [profileError, setProfileError] = useState(false);
   const reviews = useSelector((state) => state.review.reviews);
   const rankings = useSelector((state) => state.ranking.rankings);
+  const players = useSelector((state) => state.player.players);
 
-  const [players, setPlayers] = useState([]);
   const [forceUpdate, setForceUpdate] = useState(0);
   const [showMenu, setShowMenu] = useState(false);
   const [openMenuReviewId, setOpenMenuReviewId] = useState(null);
@@ -53,9 +55,12 @@ function Profile() {
   const [sortType, setSortType] = useState('ranking');
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPosition, setFilterPosition] = useState('');
-  const [activeTab, setActiveTab] = useState('myteam'); // start on My Team tab
-
   const parsedUserId = userId ? parseInt(userId, 10) : null;
+  const ownsProfile = currentUser?.id === parsedUserId;
+  const requestedTab = searchParams.get('tab');
+  const activeTab = requestedTab === 'reviews' || (requestedTab === 'rankings' && ownsProfile)
+    ? requestedTab
+    : 'myteam';
   const listRef = useRef(null);
 
   const defaultCollapsedHeight = 150;
@@ -69,7 +74,7 @@ function Profile() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // fetch user data, reviews, rankings, roster, and players on mount/user change
+  // fetch user data, reviews, rankings, and roster on mount/user change
   useEffect(() => {
     if (!parsedUserId) {
       navigate(currentUser ? `/profile/${currentUser.id}` : '/login', { replace: true });
@@ -85,8 +90,11 @@ function Profile() {
     dispatch(fetchRankings());
     dispatch(fetchReviews());
     dispatch(fetchRoster(parsedUserId)); // fetch roster on mount
-    if (players.length === 0) fetchPlayers();
-  }, [parsedUserId, userDetails, dispatch, navigate, players.length, currentUser]);
+  }, [parsedUserId, userDetails, dispatch, navigate, currentUser]);
+
+  useEffect(() => {
+    if (parsedUserId) dispatch(fetchPlayers());
+  }, [dispatch, parsedUserId]);
 
   // re-fetch roster when switching back to My Team tab
   useEffect(() => {
@@ -99,15 +107,6 @@ function Profile() {
   useEffect(() => {
     setForceUpdate((prev) => prev + 1);
   }, [userDetails]);
-
-  const fetchPlayers = async () => {
-    try {
-      const res = await axios.get('/api/players');
-      setPlayers(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleDeleteReview = async (reviewId) => {
     try {
@@ -235,40 +234,30 @@ function Profile() {
             {/* Tab navigation */}
             <div className="profile-tabs">
               <button
+                type="button"
                 className={`profile-tab-button ${activeTab === 'myteam' ? 'active' : ''}`}
-                onClick={() => setActiveTab('myteam')}
+                aria-pressed={activeTab === 'myteam'}
+                onClick={() => setSearchParams({}, { replace: true })}
               >
                 My Team
               </button>
+              {ownsProfile && (
+                <button
+                  type="button"
+                  className={`profile-tab-button ${activeTab === 'rankings' ? 'active' : ''}`}
+                  aria-pressed={activeTab === 'rankings'}
+                  onClick={() => setSearchParams({ tab: 'rankings' }, { replace: true })}
+                >
+                  My Rankings
+                </button>
+              )}
               <button
+                type="button"
                 className={`profile-tab-button ${activeTab === 'reviews' ? 'active' : ''}`}
-                onClick={() => setActiveTab('reviews')}
+                aria-pressed={activeTab === 'reviews'}
+                onClick={() => setSearchParams({ tab: 'reviews' }, { replace: true })}
               >
                 Reviews
-              </button>
-              <button
-                className={`profile-tab-button ${activeTab === 'watchlist' ? 'active' : ''}`}
-                onClick={() => setActiveTab('watchlist')}
-              >
-                Watchlist
-              </button>
-              <button
-                className={`profile-tab-button ${activeTab === 'comparisons' ? 'active' : ''}`}
-                onClick={() => setActiveTab('comparisons')}
-              >
-                Player Comparisons
-              </button>
-              <button
-                className={`profile-tab-button ${activeTab === 'groups' ? 'active' : ''}`}
-                onClick={() => setActiveTab('groups')}
-              >
-                Groups &amp; Leagues
-              </button>
-              <button
-                className={`profile-tab-button ${activeTab === 'video' ? 'active' : ''}`}
-                onClick={() => setActiveTab('video')}
-              >
-                Video Hub
               </button>
             </div>
 
@@ -279,6 +268,8 @@ function Profile() {
                 <MyTeam userId={parsedUserId} />
               </div>
             )}
+
+            {activeTab === 'rankings' && <MyRankings />}
 
             {activeTab === 'reviews' && (
               <div className="reviews-rankings-section">
@@ -367,33 +358,6 @@ function Profile() {
               </div>
             )}
 
-            {activeTab === 'watchlist' && (
-              <div className="watchlist-section">
-                <h3 className="section-title">Watchlist</h3>
-                <p>Your tracked players go here.</p>
-              </div>
-            )}  
-
-            {activeTab === 'comparisons' && (
-              <div className="comparisons-section">
-                <h3 className="section-title">Player Comparisons</h3>
-                <p>Comparison tool goes here.</p>
-              </div>
-            )}
-
-            {activeTab === 'groups' && (
-              <div className="groups-section">
-                <h3 className="section-title">Groups &amp; Leagues</h3>
-                <p>Your group and league links go here.</p>
-              </div>
-            )}
-
-            {activeTab === 'video' && (
-              <div className="video-section">
-                <h3 className="section-title">Video Hub</h3>
-                <p>Embedded videos or bookmarks go here.</p>
-              </div>
-            )}
           </main>
         </div>
       </div>

@@ -74,6 +74,11 @@ function RankingSidebar() {
           ))}
         </ol>
       )}
+      {showingPersonal && (
+        <p className="ranking-state">
+          <Link to={`/profile/${userId}?tab=rankings`} className="ranking-player-link">My Rankings</Link>
+        </p>
+      )}
     </section>
   );
 }

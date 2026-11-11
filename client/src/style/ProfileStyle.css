@@ -139,11 +139,13 @@
 /* Main content area expands to fill remaining space */
 .profile-main {
   flex: 1;
+  min-width: 0;
 }
 
 /* Tabs styling: container, buttons, active state */
 .profile-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-4);
   margin: var(--space-4) 0;
   border-bottom: 2px solid var(--color-secondary);
@@ -170,39 +172,53 @@
   color: var(--color-accent);
 }
 
-/* Rankings section styling: container and list */
 .rankings-section {
-  background: var(--section-bg);
-  border: 2px solid var(--section-border);
-  border-radius: var(--space-3);
+  background: var(--color-surface);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text);
   padding: var(--space-4);
-  margin-bottom: var(--space-4);
 }
 
-.rankings-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.rankings-section p {
+  margin: var(--space-3) 0;
 }
 
-.rankings-list-item {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--section-border);
+.rankings-note,
+.rankings-player-info {
+  color: var(--color-muted);
+  font-size: var(--fs-small);
 }
 
-.rankings-list-item:last-child {
-  border-bottom: none;
+.rankings-player-info {
+  display: block;
+  font-weight: 400;
 }
 
-.rankings-player {
-  font-weight: 500;
+.rankings-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
 }
 
-.rankings-value {
-  font-weight: 700;
-  color: var(--color-secondary);
+.rankings-table th,
+.rankings-table td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-bg);
+  overflow-wrap: anywhere;
+  text-align: right;
+  vertical-align: top;
+}
+
+.rankings-table th:first-child {
+  width: 46%;
+  text-align: left;
+}
+
+.rankings-table a {
+  color: var(--color-primary);
+  text-underline-offset: 3px;
 }
 
 /* Responsive: stack columns on narrower screens */
@@ -212,5 +228,15 @@
   }
   .profile-sidebar {
     flex: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-tabs {
+    gap: var(--space-1);
+  }
+
+  .rankings-section {
+    padding: var(--space-3);
   }
 }

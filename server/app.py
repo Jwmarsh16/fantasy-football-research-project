@@ -21,6 +21,7 @@ from resources.roster import RosterListResource, RosterResource  # added roster 
 # Serve the React routes without masking missing API endpoints or static files.
 @app.route('/')
 @app.route('/players', strict_slashes=False)
+@app.route('/players/compare', strict_slashes=False)
 @app.route('/players/<int:player_id>', strict_slashes=False)
 @app.route('/add-review/<int:player_id>', strict_slashes=False)
 @app.route('/profile', strict_slashes=False)

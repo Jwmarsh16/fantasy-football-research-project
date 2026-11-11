@@ -29,11 +29,14 @@ export function getCommunityTopRankedPlayers(players, rankings) {
     .slice(0, 5);
 }
 
-export function getPersonalTopRankedPlayers(players, rankings, userId) {
+export function getPersonalRankedPlayers(players, rankings, userId) {
   const playersById = new Map(players.map(player => [player.id, player]));
   return rankings
     .filter(vote => vote.user_id === userId && playersById.has(vote.player_id))
     .sort((a, b) => a.rank - b.rank || a.player_id - b.player_id)
-    .slice(0, 5)
     .map(vote => ({ ...playersById.get(vote.player_id), personal_rank: vote.rank }));
+}
+
+export function getPersonalTopRankedPlayers(players, rankings, userId) {
+  return getPersonalRankedPlayers(players, rankings, userId).slice(0, 5);
 }

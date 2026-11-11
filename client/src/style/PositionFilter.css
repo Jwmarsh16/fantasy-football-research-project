@@ -35,6 +35,12 @@
   transform: scale(1.1);
 }
 
+.position-filter-circle[aria-pressed='true'] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-surface);
+}
+
 .position-filter-circle:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   compareCommunityRank,
   getCommunityTopRankedPlayers,
+  getPersonalRankedPlayers,
   getPersonalTopRankedPlayers,
   summarizePlayerRankings,
 } from './rankingUtils';
@@ -51,5 +52,16 @@ describe('player rankings', () => {
       { id: 2, personal_rank: 3 },
       { id: 1, personal_rank: 7 },
     ]);
+  });
+
+  it('shows all saved players on the board and five in the home preview', () => {
+    const ownedPlayers = [1, 2, 3, 4, 5, 6];
+    const players = [...ownedPlayers, 7].map(id => ({ id }));
+    const rankings = ownedPlayers.map(id => ({ player_id: id, user_id: 1, rank: 7 - id }));
+    rankings.push({ player_id: 7, user_id: 2, rank: 1 });
+    const sortedPlayers = [6, 5, 4, 3, 2, 1].map(id => ({ id, personal_rank: 7 - id }));
+
+    expect(getPersonalRankedPlayers(players, rankings, 1)).toEqual(sortedPlayers);
+    expect(getPersonalTopRankedPlayers(players, rankings, 1)).toEqual(sortedPlayers.slice(0, 5));
   });
 });
