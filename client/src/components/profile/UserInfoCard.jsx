@@ -6,12 +6,14 @@ import ProfilePicUpdater from '../user/ProfilePicUpdater';
 function UserInfoCard({ avatarUrl, forceUpdate, userDetails, currentUser, parsedUserId, dispatch, fetchUsers, setUserDetails }) {
   const [failedAvatar, setFailedAvatar] = useState(null);
   const { username, email } = userDetails;
+  const emailText = String(email ?? '');
+  const domainStart = emailText.lastIndexOf('@');
   const avatarKey = `${forceUpdate}:${avatarUrl}`;
   const initials = String(username ?? '').trim().split(/\s+/).slice(0, 2)
     .map(word => word[0]).join('').toUpperCase();
 
   return (
-    <div className="user-info">
+    <>
       <div className="user-avatar-section">
         {avatarUrl && failedAvatar !== avatarKey ? (
           <img
@@ -27,7 +29,13 @@ function UserInfoCard({ avatarUrl, forceUpdate, userDetails, currentUser, parsed
       </div>
       <div className="user-info-section">
         <p className="user-info-name">{username}</p>
-        {email && <p className="user-info-email">{email}</p>}
+        {emailText && (
+          <p className="user-info-email">
+            {domainStart > 0 ? (
+              <>{emailText.slice(0, domainStart)}<wbr />{emailText.slice(domainStart)}</>
+            ) : emailText}
+          </p>
+        )}
       </div>
       {currentUser && parsedUserId === currentUser.id && (
         <ProfilePicUpdater
@@ -39,7 +47,7 @@ function UserInfoCard({ avatarUrl, forceUpdate, userDetails, currentUser, parsed
           }}
         />
       )}
-    </div>
+    </>
   );
 }
 
