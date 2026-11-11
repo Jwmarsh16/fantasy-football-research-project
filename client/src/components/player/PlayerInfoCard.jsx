@@ -50,6 +50,9 @@ const PlayerInfoCard = ({ player, getPlayerHeadshot, formatStatKey }) => {
 
   return (
     <div className="player-info-card">
+      <p className="player-info-data-note">
+        <strong>Sample data</strong>. Player details and stats are for this demo.
+      </p>
       {/* Header: avatar, metadata, and summary aligned horizontally */}
       <div className="info-header">
         <div className="avatar-section">
