@@ -5,11 +5,11 @@ import { Link, useNavigate } from 'react-router-dom';              // added useN
 import { fetchPlayers } from '../redux/slices/playerSlice';
 import { fetchRankings } from '../redux/slices/rankingSlice';
 import { fetchRoster, addToRoster } from '../redux/slices/teamSlice'; // imported fetchRoster & addToRoster
-import PositionFilter from '../components/player/PositionFilter';
 import TeamDropdown from '../components/player/TeamDropdown';
 import SortControls from '../components/player/SortControls';
 import { compareCommunityRank, summarizePlayerRankings } from '../utils/rankingUtils';
 import '../style/PlayerListStyle.css';
+import '../style/PositionFilter.css';
 
 const getPlayerHeadshot = (playerName) => {
   const formattedName = playerName.toLowerCase().replace(/ /g, "_");
@@ -29,6 +29,7 @@ function PlayerList() {
   const [sortType, setSortType] = useState('');
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPosition, setFilterPosition] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // initial fetch of players and rankings
   useEffect(() => {
@@ -46,9 +47,12 @@ function PlayerList() {
   }, [currentUser, dispatch]);
 
   const sortedPlayers = useMemo(() => {
-    let filtered = summarizePlayerRankings(players, rankings);
-    if (filterTeam) filtered = filtered.filter(p => p.team === filterTeam);
-    if (filterPosition) filtered = filtered.filter(p => p.position === filterPosition);
+    const query = searchQuery.trim().toLowerCase();
+    const filtered = summarizePlayerRankings(players, rankings).filter(player => (
+      (!filterTeam || player.team === filterTeam)
+      && (!filterPosition || player.position === filterPosition)
+      && (!query || player.name.toLowerCase().includes(query))
+    ));
 
     if (sortType === 'team') {
       return filtered.sort((a, b) => a.team.localeCompare(b.team));
@@ -59,7 +63,19 @@ function PlayerList() {
     }
 
     return filtered;
-  }, [players, rankings, sortType, filterTeam, filterPosition]);
+  }, [players, rankings, sortType, filterTeam, filterPosition, searchQuery]);
+
+  const handleFilterPosition = (position) => {
+    setFilterPosition(current => current === position ? '' : position);
+    if (!sortType) setSortType('ranking');
+  };
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setFilterTeam('');
+    setFilterPosition('');
+    setSortType('');
+  };
 
   // handler to add player to roster
   const handleAddToTeam = async (playerId) => {
@@ -86,31 +102,53 @@ function PlayerList() {
   const teams = [...new Set(players.map((p) => p.team))];
   const positions = [...new Set(players.map((p) => p.position))];
 
-  if (status === 'loading') return <div className="loading-message">Loading...</div>;
+  if (status === 'idle' || status === 'loading') return <div className="loading-message">Loading...</div>;
   if (status === 'failed') return <div className="error-message">Error loading players.</div>;
 
   return (
     <div className="player-list-page container">
-      <h2 className="player-list-title">Fantasy Football Player List</h2>
-      <p className="player-list-data-note">
-        <strong>Portfolio demo.</strong> Player profiles and stats use sample data.
-      </p>
+      <div className="player-list-header">
+        <div>
+          <h2 className="player-list-title">Fantasy Football Player List</h2>
+          <p className="player-list-data-note">
+            <strong>Portfolio demo.</strong> Player profiles and stats use sample data.
+          </p>
+        </div>
+        <Link className="player-list-compare-link" to="/players/compare">Compare Players</Link>
+      </div>
 
       <div className="player-list-controls">
-        <PositionFilter
-          positions={positions}
-          onFilter={(pos) => { setFilterPosition(pos); setFilterTeam(''); setSortType('ranking'); }}
-        />
+        <label className="player-list-search">
+          Search by player name
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+        </label>
         <TeamDropdown
           teams={teams}
           selectedTeam={filterTeam}
-          onChange={(e) => { setFilterTeam(e.target.value); setFilterPosition(''); }}
+          onChange={(e) => setFilterTeam(e.target.value)}
         />
         <SortControls
           sortType={sortType}
           onSortChange={(e) => setSortType(e.target.value)}
-          onClearFilters={() => { setFilterTeam(''); setFilterPosition(''); setSortType(''); }}
+          onClearFilters={clearFilters}
         />
+        <div className="position-filter-container" role="group" aria-label="Filter by position">
+          {positions.map(position => (
+            <button
+              type="button"
+              key={position}
+              className="position-filter-circle"
+              aria-pressed={position === filterPosition}
+              onClick={() => handleFilterPosition(position)}
+            >
+              {position}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="player-table-container">
@@ -122,10 +160,19 @@ function PlayerList() {
               <th>Team</th>
               <th>Position</th>
               <th>Avg Rank</th>
-              <th>Action</th>                        {/* new column header */}
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
+            {sortedPlayers.length === 0 && (
+              <tr>
+                <td colSpan={6}>
+                  <p className="player-list-empty" role="status">
+                    {players.length ? 'No players match your filters.' : 'No players available.'}
+                  </p>
+                </td>
+              </tr>
+            )}
             {sortedPlayers.map((player) => (
               <tr key={player.id}>
                 <td>

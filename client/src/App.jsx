@@ -6,6 +6,7 @@ import { restoreSession } from './redux/slices/authSlice';
 import NavBar from './components/layout/NavBar';
 import PlayerList from './pages/PlayerList';
 import PlayerDetail from './pages/PlayerDetail';
+import PlayerComparison from './pages/PlayerComparison';
 import AddReview from './components/player/AddReview';
 import Profile from './pages/Profile';
 import UserList from './pages/UserList'; 
@@ -39,6 +40,7 @@ function App() {
     <Router>
       <NavBar />
       <Routes>
+        <Route path="/players/compare" element={<PlayerComparison />} />
         <Route path="/players/:id" element={<PlayerDetail />} />
         <Route path="/players" element={<PlayerList />} />
         <Route path="/add-review/:playerId" element={<AddReview />} />

@@ -1,6 +1,47 @@
 import { randomUUID } from 'node:crypto';
 import { expect, test } from '@playwright/test';
 
+test('guests can combine catalog filters and compare two players after refresh', async ({ page }) => {
+  await page.route('https://**', route => route.abort());
+  await page.goto('/players');
+
+  const search = page.getByRole('searchbox', { name: 'Search by player name' });
+  const team = page.getByRole('combobox', { name: 'Filter by Team:' });
+  await team.selectOption({ label: 'Buffalo Bills' });
+  await page.getByRole('button', { name: 'QB', exact: true }).click();
+  await search.fill('  dIgGs  ');
+  await expect(page.getByText('No players match your filters.')).toBeVisible();
+
+  await page.getByRole('button', { name: 'WR', exact: true }).click();
+  await expect(team).toHaveValue('Buffalo Bills');
+  await expect(page.getByRole('link', { name: 'Stefon Diggs', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Josh Allen', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Clear Filters' }).click();
+  await expect(search).toHaveValue('');
+  await expect(page.getByRole('link', { name: 'Josh Allen', exact: true })).toBeVisible();
+
+  await page.getByRole('link', { name: 'Compare Players', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Compare Players' })).toBeVisible();
+  await page.getByRole('combobox', { name: 'Position', exact: true }).selectOption('QB');
+  await page.getByRole('combobox', { name: 'First player', exact: true }).selectOption({ label: 'Patrick Mahomes' });
+  const secondPlayer = page.getByRole('combobox', { name: 'Second player', exact: true });
+  await expect(secondPlayer.getByRole('option', { name: 'Patrick Mahomes', exact: true })).toHaveCount(0);
+  await expect(secondPlayer.getByRole('option', { name: 'Stefon Diggs', exact: true })).toHaveCount(0);
+  await secondPlayer.selectOption({ label: 'Josh Allen' });
+
+  const comparison = page.getByRole('table', { name: 'Player comparison' });
+  await expect(comparison.getByText('Patrick Mahomes', { exact: true })).toBeVisible();
+  await expect(comparison.getByText('Josh Allen', { exact: true })).toBeVisible();
+  for (const metric of ['Community average rank', 'Votes', 'Passing yards']) {
+    await expect(comparison.getByRole('rowheader', { name: metric, exact: true })).toBeVisible();
+  }
+  expect((await page.reload()).status()).toBe(200);
+  await expect(comparison.getByText('Josh Allen', { exact: true })).toBeVisible();
+  await page.getByRole('combobox', { name: 'Position', exact: true }).selectOption('WR');
+  await expect(comparison).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Logout', exact: true })).toHaveCount(0);
+});
+
 test('a reviewer can browse as a guest, sign in, and save a rank that survives refresh', async ({ page }) => {
   const account = `reviewer-${randomUUID().slice(0, 8)}`;
   const email = `${account}@example.test`;
@@ -69,6 +110,22 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
   await saveRanking.click();
   await expect(page.getByText('Your saved rank is 6.', { exact: true })).toBeVisible();
 
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Show Your Top 5', exact: true }).click();
+  const personalRankings = page.getByRole('region', { name: 'Your Top 5' });
+  await personalRankings.getByRole('link', { name: 'My Rankings', exact: true }).click();
+  const rankingsBoard = page.getByRole('region', { name: 'My Rankings' });
+  const rankedPlayer = rankingsBoard.getByRole('link', { name: 'Patrick Mahomes', exact: true });
+  await expect(rankedPlayer).toBeVisible();
+  const boardUrl = page.url();
+  expect((await page.reload()).status()).toBe(200);
+  await expect(rankedPlayer).toBeVisible();
+  await expect(rankingsBoard.getByRole('row', { name: /Patrick Mahomes/ })
+    .getByRole('cell', { name: '6', exact: true })).toBeVisible();
+  await expect(rankingsBoard.getByRole('columnheader', { name: 'Community average' })).toBeVisible();
+  await rankedPlayer.click();
+  await expect(rankField).toHaveValue('6');
+
   await page.route('**/api/reviews', route => route.fulfill({ status: 500 }));
   const review = page.getByLabel('Review (optional)');
   await review.fill('A review can be submitted independently.');
@@ -82,11 +139,12 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Show Your Top 5', exact: true }).click();
-  const personalRankings = page.getByRole('region', { name: 'Your Top 5' });
   await expect(personalRankings.getByRole('link', { name: 'Patrick Mahomes' })).toBeVisible();
 
   await logout.click();
   await expect(logout).toBeHidden();
+  await page.goto(boardUrl);
+  await expect(rankingsBoard).toHaveCount(0);
   await page.goto('/players/1');
   await expect(page.getByText('Sample data', { exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Log in', exact: true })).toBeVisible();
