@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { registerUser } from '../redux/slices/authSlice';
 import RegisterForm from '../components/auth/RegisterForm';
-import '../style/RegisterStyle.css'; // Added new page stylesheet
+import '../style/FormPage.css';
 
 function Register() {
   const dispatch = useDispatch();
@@ -24,12 +24,11 @@ function Register() {
   };
 
   return (
-    <div className="register-page container"> {/* Wrapped in container */}
-      <h2 className="page-title">Register</h2>
+    <main className="form-page">
+      <h1 className="form-page-title">Register</h1>
       <RegisterForm onSubmit={handleRegister} />
-      {authStatus === 'loading' && <p className="status-message">Registering...</p>}
-      {authStatus === 'failed' && <p className="error-message">Error: {authError}</p>}
-    </div>
+      {authStatus === 'failed' && <p className="form-panel-error" role="alert">{authError}</p>}
+    </main>
   );
 }
 

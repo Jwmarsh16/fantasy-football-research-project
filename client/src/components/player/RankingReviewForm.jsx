@@ -1,4 +1,5 @@
 import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import '../../style/RankingReviewForm.css';
@@ -7,15 +8,16 @@ const reviewSchema = Yup.object({
   content: Yup.string().trim().max(450, 'Review cannot exceed 450 characters').required('Required'),
 });
 
-function RankingReviewForm({ maxRank, rankReady, signedIn, savedRank, onSaveRank, onRemoveRank, onPostReview }) {
+function RankingReviewForm({ maxRank, rankReady, savedRank, onSaveRank, onRemoveRank }) {
   const { id } = useParams();
+  const userId = useSelector(state => state.auth.currentUser?.id);
 
-  if (!signedIn) {
+  if (!userId) {
     return (
-      <div className="ranking-review-form">
-        <h2 className="form-title">Rank and review this player</h2>
+      <section className="ranking-review-form" id="rank-player" aria-labelledby="rank-player-title" tabIndex={-1}>
+        <h2 id="rank-player-title">Rank this player</h2>
         <p><Link to="/login" state={{ playerId: Number(id) }}>Log in</Link> to save a ranking or post a review.</p>
-      </div>
+      </section>
     );
   }
 
@@ -28,11 +30,14 @@ function RankingReviewForm({ maxRank, rankReady, signedIn, savedRank, onSaveRank
   });
 
   return (
-    <div className="ranking-review-form">
-      <h2 className="form-title">Rank and review this player</h2>
-      <p role="status">
-        {savedRank != null ? `Your saved rank is ${savedRank}.` : 'Save your own rank for this player.'}
-      </p>
+    <section className="ranking-review-form" id="rank-player" aria-labelledby="rank-player-title" tabIndex={-1}>
+      <h2 id="rank-player-title">Rank this player</h2>
+      <div className="ranking-form-status">
+        <p role="status">
+          {savedRank != null ? `Your saved rank is ${savedRank}.` : 'Save your own rank for this player.'}
+        </p>
+        {savedRank != null && <Link to={`/profile/${userId}?tab=rankings`}>View My Rankings</Link>}
+      </div>
       <Formik
         initialValues={{ rank: savedRank ?? '' }}
         enableReinitialize
@@ -47,21 +52,29 @@ function RankingReviewForm({ maxRank, rankReady, signedIn, savedRank, onSaveRank
         }}
       >
         {({ isSubmitting, status, setSubmitting, setStatus }) => (
-          <Form aria-label="Player ranking">
-            <div className="form-group">
+          <Form aria-label="Player ranking" className="player-rank-form">
+            <div className="player-form-field">
               <label htmlFor="rank">Rank</label>
-              <Field type="number" id="rank" name="rank" className="input-field" disabled={!rankReady} />
-              <ErrorMessage name="rank" component="div" className="error-message" />
+              <Field
+                type="number"
+                id="rank"
+                name="rank"
+                className="ffrh-field"
+                disabled={!rankReady}
+                aria-describedby={rankReady ? 'rank-range' : undefined}
+              />
+              {rankReady && <p className="player-form-hint" id="rank-range">Enter a whole number from 1 to {maxRank}.</p>}
+              <ErrorMessage name="rank" component="div" className="player-form-error" />
             </div>
-            {status && <p className="error-message" role="alert">{status}</p>}
+            {status && <p className="player-form-error" role="alert">{status}</p>}
             <div className="ranking-form-actions">
-              <button type="submit" className="submit-button" disabled={isSubmitting || !rankReady}>
+              <button type="submit" className="ffrh-button" disabled={isSubmitting || !rankReady}>
                 Save ranking
               </button>
               {savedRank != null && (
                 <button
                   type="button"
-                  className="submit-button"
+                  className="ffrh-button ffrh-button--danger"
                   disabled={isSubmitting || !rankReady}
                   onClick={async () => {
                     setStatus(undefined);
@@ -82,7 +95,14 @@ function RankingReviewForm({ maxRank, rankReady, signedIn, savedRank, onSaveRank
           </Form>
         )}
       </Formik>
+    </section>
+  );
+}
 
+export function PlayerReviewForm({ onPostReview }) {
+  return (
+    <section className="ranking-review-form" aria-labelledby="player-review-title">
+      <h2 id="player-review-title">Write a review</h2>
       <Formik
         initialValues={{ content: '' }}
         validationSchema={reviewSchema}
@@ -98,21 +118,21 @@ function RankingReviewForm({ maxRank, rankReady, signedIn, savedRank, onSaveRank
         }}
       >
         {({ isSubmitting, status }) => (
-          <Form aria-label="Optional player review" className="optional-player-review">
-            <div className="form-group">
+          <Form aria-label="Optional player review">
+            <div className="player-form-field">
               <label htmlFor="content">Review (optional)</label>
-              <Field as="textarea" id="content" name="content" className="input-field" />
-              <ErrorMessage name="content" component="div" className="error-message" />
+              <Field as="textarea" id="content" name="content" className="ffrh-field" rows={3} />
+              <ErrorMessage name="content" component="div" className="player-form-error" />
             </div>
-            {status?.success && <p className="success-message" role="status">{status.success}</p>}
-            {status?.error && <p className="error-message" role="alert">{status.error}</p>}
-            <button type="submit" className="submit-button" disabled={isSubmitting}>
+            {status?.success && <p role="status">{status.success}</p>}
+            {status?.error && <p className="player-form-error" role="alert">{status.error}</p>}
+            <button type="submit" className="ffrh-button ffrh-button--secondary" disabled={isSubmitting}>
               Post review
             </button>
           </Form>
         )}
       </Formik>
-    </div>
+    </section>
   );
 }
 

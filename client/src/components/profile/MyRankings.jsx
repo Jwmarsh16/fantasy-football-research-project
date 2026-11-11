@@ -15,7 +15,7 @@ function MyRankings() {
     content = (
       <div>
         <p role="alert">Could not load your rankings.</p>
-        <button type="button" onClick={() => {
+        <button type="button" className="ffrh-button ffrh-button--secondary" onClick={() => {
           dispatch(fetchPlayers());
           dispatch(fetchRankings());
         }}>

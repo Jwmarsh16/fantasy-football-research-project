@@ -79,30 +79,25 @@ function Home() {
       ? userDetails
       : user;
 
-  const avatarUrl =
-    loggedInUser?.profilePic?.trim()
-      ? loggedInUser.profilePic
-      : "https://placehold.co/600x400?text=Upload+Picture";
-
   return (
-    <div className="home-page">
+    <main className={isAuthenticated ? 'home-page' : 'home-page home-page--guest'}>
+      <WelcomeSection />
+
       {userLoadingStatus === 'loading' ? (
         <p className="loading-message">Loading user information...</p>
       ) : isAuthenticated && loggedInUser ? (
         <UserCard
-          avatarUrl={avatarUrl}
+          avatarUrl={loggedInUser.profilePic?.trim()}
           username={loggedInUser?.username}
           email={loggedInUser?.email}
         />
       ) : null}
 
-      <WelcomeSection />
-
-      <div className={isAuthenticated ? 'home-content' : 'home-content home-content--guest'}>
+      <div className="home-content">
         <RankingSidebar />
         {isAuthenticated && <NewsSection articles={shuffledNews} />}
       </div>
-    </div>
+    </main>
   );
 }
 

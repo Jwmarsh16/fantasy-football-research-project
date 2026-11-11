@@ -5,8 +5,6 @@ import { loginUser } from '../../redux/slices/authSlice';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 
-import '../../style/LoginForm.css';
-
 function LoginForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,7 +26,6 @@ function LoginForm() {
     dispatch(loginUser(values))
       .unwrap()
       .then((response) => {
-        console.log('User successfully logged in:', response);
         if (response && response.id) {
           const playerId = state?.playerId;
           const destination = Number.isSafeInteger(playerId) && playerId > 0 ? `/players/${playerId}` : '/';
@@ -45,24 +42,29 @@ function LoginForm() {
 
   return (
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-      {({ isSubmitting }) => (
-        <Form className="login-form">
-          <div className="form-group">
-            <Field type="email" name="email" placeholder="Email" className="form-control" />
-            <ErrorMessage name="email" component="div" className="error-message" />
+      {({ isSubmitting, touched, errors }) => (
+        <Form className="form-panel">
+          <div className="form-panel-field">
+            <label htmlFor="login-email">Email</label>
+            <Field id="login-email" type="email" name="email" autoComplete="email" className="ffrh-field"
+              aria-invalid={Boolean(touched.email && errors.email)}
+              aria-describedby={touched.email && errors.email ? 'login-email-error' : undefined} />
+            <ErrorMessage id="login-email-error" name="email" component="p" className="form-panel-error" />
           </div>
 
-          <div className="form-group">
-            <Field type="password" name="password" placeholder="Password" className="form-control" />
-            <ErrorMessage name="password" component="div" className="error-message" />
+          <div className="form-panel-field">
+            <label htmlFor="login-password">Password</label>
+            <Field id="login-password" type="password" name="password" autoComplete="current-password" className="ffrh-field"
+              aria-invalid={Boolean(touched.password && errors.password)}
+              aria-describedby={touched.password && errors.password ? 'login-password-error' : undefined} />
+            <ErrorMessage id="login-password-error" name="password" component="p" className="form-panel-error" />
           </div>
 
-          <button type="submit" disabled={isSubmitting} className="login-button">
+          <button type="submit" disabled={isSubmitting} className="ffrh-button">
             {isSubmitting ? 'Logging in...' : 'Login'}
           </button>
 
-          {authStatus === 'loading' && <p>Logging in...</p>}
-          {authStatus === 'failed' && <p className="error-message">Error: {authError}</p>}
+          {authStatus === 'failed' && <p className="form-panel-error" role="alert">{authError}</p>}
         </Form>
       )}
     </Formik>

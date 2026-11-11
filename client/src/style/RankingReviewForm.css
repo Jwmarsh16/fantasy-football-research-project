@@ -1,50 +1,76 @@
 .ranking-review-form {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-  }
-
-  .form-title {
-    font-size: 20px;
-    color: #2980b9;
-    margin-bottom: 15px;
-  }
-
-  .form-group {
-    margin-bottom: 15px;
-  }
-
-  .input-field {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 2px solid #dcdcdc;
-    font-size: 14px;
-  }
-
-  .submit-button {
-    background-color: #3498db;
-    color: #fff;
-    border: none;
-    padding: 8px 15px;
-    font-size: 14px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  .submit-button:hover {
-    background-color: #2980b9;
-  }
-
-.optional-player-review {
-  margin-top: 20px;
+  padding: var(--space-4);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
 }
 
+#rank-player {
+  scroll-margin-top: calc(var(--ffrh-nav-height, 6rem) + var(--space-2));
+}
+
+.ranking-review-form h2 {
+  margin: 0 0 var(--space-2);
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-size: var(--fs-h3);
+}
+
+.ranking-review-form p {
+  margin: 0;
+}
+
+.ranking-form-status,
 .ranking-form-actions {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2) var(--space-3);
+}
+
+.ranking-review-form a {
+  color: var(--color-primary);
+}
+
+.ranking-review-form form {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-3) 0 0;
+}
+
+.player-form-field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.player-form-field label {
+  font-weight: 600;
+}
+
+.player-rank-form .ffrh-field {
+  max-width: 10rem;
+}
+
+.player-form-hint {
+  color: var(--color-muted);
+  font-size: var(--fs-small);
+}
+
+.ranking-review-form textarea {
+  resize: vertical;
+}
+
+.player-form-error {
+  color: var(--color-danger);
+  font-size: var(--fs-small);
+}
+
+.ranking-review-form form > button {
+  justify-self: start;
+}
+
+@media (max-width: 600px) {
+  .ranking-review-form {
+    padding: var(--space-3);
+  }
 }

@@ -12,7 +12,7 @@ Browse the player catalog as a guest, open a player, and sign in to return to th
 
 ![Walkthrough of guest browsing, signing in, saving a player ranking, and seeing it after a reload](docs/ffrh-demo.gif)
 
-Open **Browse Players** to search by name and combine position and team filters. Select **Compare Players** to view two players at the same position side by side. Sign in to save a rank, then open **My Rankings** on your profile to see it alongside the community average.
+Open **Browse Players** to search by name and combine position and team filters. Player pages offer **Compare this player** to start a side-by-side comparison and **Rank Player** to save a ranking. **View My Rankings** opens your board after a save, and the signed-in menu also links directly to the board.
 
 ## Local demo
 
@@ -33,8 +33,8 @@ honcho start -f Procfile.dev
 Open [http://127.0.0.1:5173](http://127.0.0.1:5173). Vite forwards `/api` requests to Gunicorn on port 5555.
 
 1. Select **Browse Players**, search or filter the catalog, and open a player profile. Use **Compare Players** to compare two players at the same position.
-2. Select **Log in** on the player profile and use `demo@example.test` with `FfrhLocalDemo123!`.
-3. The app returns you to the player profile. Save a rank, open **My Rankings** on your profile, and reload to confirm it appears there.
+2. Select **Rank Player** on the player profile and sign in with `demo@example.test` and `FfrhLocalDemo123!`.
+3. The app returns you to the player profile. Save a rank and select **View My Rankings**, then reload the board to confirm the rank appears there.
 
 The seed command adds 35 players with sample statistics plus fixture reviews and rankings. It requires a migrated file-based SQLite database and `FFRH_LOCAL_DEMO=true`. It skips a database it has already seeded and refuses to seed a database containing other app data. The default database is `server/instance/ffrh-local.db`.
 

@@ -1,21 +1,20 @@
 // src/pages/Login.jsx
 import { Link, useLocation } from 'react-router-dom';
-import '../style/LoginStyle.css';
-import '../style/LoginForm.css';
+import '../style/FormPage.css';
 import LoginForm from '../components/auth/LoginForm';
 
 function Login() {
   const { state } = useLocation();
 
   return (
-    <div className="login-page container">            {/* Wrapped in container */}
-      <h2 className="page-title">Login</h2>
+    <main className="form-page">
+      <h1 className="form-page-title">Login</h1>
       <LoginForm />
-      <p className="footer-link">                      {/* Added footer call-to-action */}
+      <p className="form-page-footer">
         Don’t have an account?{' '}
         <Link to="/register" state={state}>Register here</Link>
       </p>
-    </div>
+    </main>
   );
 }
 

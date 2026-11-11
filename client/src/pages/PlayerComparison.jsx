@@ -56,24 +56,27 @@ function PlayerComparison() {
 
   return (
     <main className="player-comparison-page container">
-      <Link className="comparison-back" to="/players">Back to players</Link>
-      <h1>Compare Players</h1>
-      <p className="comparison-intro">Compare sample stats and community rankings for two players at the same position.</p>
+      <header className="comparison-header">
+        <Link className="comparison-back" to="/players">Back to players</Link>
+        <h1>Compare Players</h1>
+        <p className="comparison-intro">Compare sample stats and community rankings for two players at the same position.</p>
+      </header>
 
       {loading ? (
         <p role="status">Loading comparison data…</p>
       ) : failed ? (
         <div className="comparison-error">
           <p role="alert">Could not load comparison data.</p>
-          <button type="button" onClick={loadComparison}>Try again</button>
+          <button type="button" className="ffrh-button ffrh-button--secondary" onClick={loadComparison}>Try again</button>
         </div>
       ) : positions.length === 0 ? (
         <p>There are no players at the same position to compare yet.</p>
       ) : (
         <div className="comparison-controls">
-          <label>
+          <label className="comparison-position">
             Position
             <select
+              className="ffrh-field"
               value={position}
               onChange={event => setSearchParams({ position: event.target.value }, { replace: true })}
             >
@@ -84,6 +87,7 @@ function PlayerComparison() {
           <label>
             First player
             <select
+              className="ffrh-field"
               disabled={!position}
               value={first?.id ?? ''}
               onChange={event => selectPlayers(event.target.value, second?.id)}
@@ -97,6 +101,7 @@ function PlayerComparison() {
           <label>
             Second player
             <select
+              className="ffrh-field"
               disabled={!position}
               value={second?.id ?? ''}
               onChange={event => selectPlayers(first?.id, event.target.value)}

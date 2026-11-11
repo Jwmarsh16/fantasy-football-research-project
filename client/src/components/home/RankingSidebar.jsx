@@ -36,7 +36,7 @@ function RankingSidebar() {
           {showingPersonal ? 'Your Top 5' : 'Community Top 5'}
         </h2>
         {userId && (
-          <button type="button" className="ranking-toggle" onClick={() => setShowPersonal(value => !value)}>
+          <button type="button" className="ffrh-button ffrh-button--secondary" onClick={() => setShowPersonal(value => !value)}>
             {showingPersonal ? 'Show Community Top 5' : 'Show Your Top 5'}
           </button>
         )}
@@ -48,7 +48,7 @@ function RankingSidebar() {
       ) : failed ? (
         <div className="ranking-state">
           <p role="alert">Could not load rankings.</p>
-          <button type="button" className="ranking-toggle" onClick={loadRankings}>Try again</button>
+          <button type="button" className="ffrh-button ffrh-button--secondary" onClick={loadRankings}>Try again</button>
         </div>
       ) : topPlayers.length === 0 ? (
         <p className="ranking-state">{showingPersonal ? 'You haven’t ranked any players yet.' : 'No rankings yet.'}</p>

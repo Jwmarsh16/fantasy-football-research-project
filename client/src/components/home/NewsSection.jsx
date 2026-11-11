@@ -1,15 +1,13 @@
-// src/components/home/NewsSection.jsx
-import React from 'react';
 import '../../style/NewsSection.css';
 
 const NewsSection = ({ articles }) => {
   return (
-    <div className="news-section shadow rounded transition container">
-      <h3 className="news-title">Fantasy Football News & Updates</h3>
+    <section className="news-section" aria-labelledby="home-news-title">
+      <h2 className="news-title" id="home-news-title">Fantasy Football News & Updates</h2>
       <ul className="news-list">
         {articles.map((article) => (
-          <li key={article.id} className="news-item shadow rounded transition">
-            <h4 className="news-article-title">{article.title}</h4>
+          <li key={article.id} className="news-item">
+            <h3 className="news-article-title">{article.title}</h3>
             <p className="news-article-meta">
               <span className="news-article-category">
                 <strong>Category:</strong> {article.category}
@@ -20,7 +18,7 @@ const NewsSection = ({ articles }) => {
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   );
 };
 
