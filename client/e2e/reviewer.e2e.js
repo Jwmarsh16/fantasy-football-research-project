@@ -176,6 +176,25 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
   const nav = await openPrimaryNavigation(page);
   await nav.getByRole('link', { name: 'My Rankings', exact: true }).click();
   await expect(rankedPlayer).toBeVisible();
+
+  await page.goto('/players');
+  for (const playerName of ['Patrick Mahomes', 'Josh Allen']) {
+    const playerRow = page.getByRole('row', { name: new RegExp(playerName) });
+    await playerRow.getByRole('button', { name: 'Add to Team' }).click();
+    await expect(playerRow.getByRole('button', { name: 'Added', exact: true })).toBeVisible();
+  }
+  await page.goto(boardUrl);
+  await page.getByRole('button', { name: 'My Team', exact: true }).click();
+  const myTeam = page.getByRole('region', { name: 'My Team' });
+  await expect(myTeam.getByText('No starters selected')).toBeVisible();
+  const bench = myTeam.getByRole('table', { name: 'Bench (2)' });
+  const roundedRank = bench.getByRole('row', { name: /Patrick Mahomes/ }).getByRole('cell', { name: /^\d+\.\d{2}$/ });
+  const paddedRank = bench.getByRole('row', { name: /Josh Allen/ }).getByRole('cell', { name: '17.40', exact: true });
+  await expect(roundedRank).toBeVisible();
+  await expect(paddedRank).toBeVisible();
+  const rankBounds = await paddedRank.boundingBox();
+  expect(rankBounds.x + rankBounds.width).toBeLessThanOrEqual(page.viewportSize().width);
+
   await openPrimaryNavigation(page);
   await logout.click();
   await expect(logout).toBeHidden();

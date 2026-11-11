@@ -1,5 +1,5 @@
 // src/components/profile/MyTeam.jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRoster } from '../../redux/slices/teamSlice';
 import '../../style/MyTeam.css';
@@ -18,7 +18,7 @@ function MyTeam({ userId }) {
   }, [dispatch, userId]);
 
   if (status === 'loading') {
-    return <p className="myteam-loading">Loading your team...</p>;
+    return <p className="myteam-message" role="status">Loading your team...</p>;
   }
 
   if (status === 'failed') {
@@ -27,78 +27,56 @@ function MyTeam({ userId }) {
       typeof error === 'string'
         ? error
         : error?.message || JSON.stringify(error);
-    return <p className="myteam-error">Error: {msg}</p>;
+    return <p className="myteam-message myteam-error" role="alert">Error: {msg}</p>;
   }
 
-  // Split starters vs bench
-  const starters = roster.filter(entry => entry.is_starter);
-  const bench = roster.filter(entry => !entry.is_starter);
+  const groups = [
+    {
+      name: 'Starters',
+      headingId: 'myteam-starters',
+      entries: roster.filter(entry => entry.is_starter),
+      emptyMessage: 'No starters selected',
+    },
+    {
+      name: 'Bench',
+      headingId: 'myteam-bench',
+      entries: roster.filter(entry => !entry.is_starter),
+      emptyMessage: 'No bench players',
+    },
+  ];
 
   return (
     <div className="myteam-container">
-      <h4 className="myteam-section-title">Starters ({starters.length})</h4>
-      <table className="myteam-table">
-        <thead>
-          <tr>
-            <th>Slot</th>
-            <th>Player</th>
-            <th>Position</th>
-            <th>Team</th>
-            <th>Avg Rank</th>
-          </tr>
-        </thead>
-        <tbody>
-          {starters.length > 0 ? (
-            starters.map(r => (
-              <tr key={r.id}>
-                <td>{r.slot}</td>
-                <td>{r.player.name}</td>
-                <td>{r.player.position}</td>
-                <td>{r.player.team}</td>
-                <td>{r.player.average_rank ?? '—'}</td>
-              </tr>
-            ))
+      {groups.map(({ name, headingId, entries, emptyMessage }) => (
+        <section key={headingId}>
+          <h4 id={headingId} className="myteam-section-title">{name} ({entries.length})</h4>
+          {entries.length ? (
+            <table className="myteam-table" aria-labelledby={headingId}>
+              <thead>
+                <tr>
+                  <th scope="col">Slot</th>
+                  <th scope="col">Player</th>
+                  <th scope="col">Avg rank</th>
+                </tr>
+              </thead>
+              <tbody>
+                {entries.map(({ id, slot, player }) => (
+                  <tr key={id}>
+                    <td>{slot}</td>
+                    <th scope="row">
+                      <span className="myteam-player-name">{player.name}</span>
+                      <span className="myteam-player-meta">{player.position} · {player.team}</span>
+                    </th>
+                    <td>{Number.isFinite(player.average_rank) ? player.average_rank.toFixed(2) : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : (
-            <tr>
-              <td colSpan="5" style={{ textAlign: 'center', fontStyle: 'italic' }}>
-                No starters selected
-              </td>
-            </tr>
+            <p className="myteam-message">{emptyMessage}</p>
           )}
-        </tbody>
-      </table>
-
-      <h4 className="myteam-section-title">Bench ({bench.length})</h4>
-      <table className="myteam-table">
-        <thead>
-          <tr>
-            <th>Slot</th>
-            <th>Player</th>
-            <th>Position</th>
-            <th>Team</th>
-            <th>Avg Rank</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bench.length > 0 ? (
-            bench.map(r => (
-              <tr key={r.id}>
-                <td>{r.slot}</td>
-                <td>{r.player.name}</td>
-                <td>{r.player.position}</td>
-                <td>{r.player.team}</td>
-                <td>{r.player.average_rank ?? '—'}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" style={{ textAlign: 'center', fontStyle: 'italic' }}>
-                No bench players
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+        </section>
+      ))}
     </div>
   );
 }

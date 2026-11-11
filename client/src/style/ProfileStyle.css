@@ -67,6 +67,7 @@
 }
 
 .reviews-rankings-section,
+.myteam-section,
 .rankings-section {
   padding: var(--space-4);
   border-radius: var(--radius-large);
@@ -146,6 +147,7 @@
   }
 
   .reviews-rankings-section,
+  .myteam-section,
   .rankings-section {
     padding: var(--space-3);
   }

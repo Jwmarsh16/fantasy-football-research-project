@@ -204,24 +204,26 @@ function Profile() {
       <div className="container">
         <div className="profile-page profile-layout">
           {/* Sidebar */}
-          <aside className={ownsProfile ? 'profile-sidebar profile-sidebar--owner' : 'profile-sidebar'}>
-            <ProfileMenu
-              currentUser={currentUser}
-              parsedUserId={parsedUserId}
-              showMenu={showMenu}
-              setShowMenu={setShowMenu}
-              handleDeleteProfile={handleDeleteProfile}
-            />
-            <UserInfoCard
-              avatarUrl={avatarUrl}
-              forceUpdate={forceUpdate}
-              userDetails={userDetails}
-              currentUser={currentUser}
-              parsedUserId={parsedUserId}
-              dispatch={dispatch}
-              fetchUsers={fetchUsers}
-              setUserDetails={setUserDetails}
-            />
+          <aside className="profile-sidebar">
+            <div className="user-info">
+              <UserInfoCard
+                avatarUrl={avatarUrl}
+                forceUpdate={forceUpdate}
+                userDetails={userDetails}
+                currentUser={currentUser}
+                parsedUserId={parsedUserId}
+                dispatch={dispatch}
+                fetchUsers={fetchUsers}
+                setUserDetails={setUserDetails}
+              />
+              <ProfileMenu
+                currentUser={currentUser}
+                parsedUserId={parsedUserId}
+                showMenu={showMenu}
+                setShowMenu={setShowMenu}
+                handleDeleteProfile={handleDeleteProfile}
+              />
+            </div>
           </aside>
 
           {/* Main content */}
@@ -262,10 +264,10 @@ function Profile() {
 
             {/* Tab content */}
             {activeTab === 'myteam' && (
-              <div className="myteam-section">
-                <h3 className="section-title">My Team</h3>
+              <section className="myteam-section" aria-labelledby="myteam-title">
+                <h3 id="myteam-title" className="section-title">My Team</h3>
                 <MyTeam userId={parsedUserId} />
-              </div>
+              </section>
             )}
 
             {activeTab === 'rankings' && <MyRankings />}
