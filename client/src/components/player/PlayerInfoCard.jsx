@@ -1,15 +1,24 @@
+import { teamAbbreviations, teamColors } from '../../constants/teamColors';
 import '../../style/PlayerInfoCard.css';
 
-// The first four metrics in each category also appear in the season highlights.
 const categories = [
   {
     key: 'passing',
     title: 'Passing',
     positions: ['QB'],
     metrics: [
-      ['yds', 'Yards'], ['td', 'Touchdowns'], ['int', 'Interceptions'], ['qbr', 'QBR'],
-      ['cmp_pct', 'CMP%'], ['cmp', 'Completions'], ['att', 'Attempts'], ['avg', 'Yards / attempt'],
-      ['lng', 'Longest pass'], ['sack', 'Sacks taken'], ['rtg', 'Passer rating'], ['gp', 'GP'],
+      ['gp', 'GP', 'Games played'],
+      ['cmp', 'CMP', 'Completions'],
+      ['att', 'ATT', 'Attempts'],
+      ['cmp_pct', 'CMP%', 'Completion rate'],
+      ['yds', 'YDS', 'Passing yards'],
+      ['avg', 'AVG', 'Yards per attempt'],
+      ['td', 'TD', 'Touchdowns'],
+      ['int', 'INT', 'Interceptions'],
+      ['lng', 'LNG', 'Longest pass'],
+      ['sack', 'SACK', 'Sacks taken'],
+      ['rtg', 'RTG', 'Passer rating'],
+      ['qbr', 'QBR', 'Total QBR'],
     ],
   },
   {
@@ -17,8 +26,14 @@ const categories = [
     title: 'Rushing',
     positions: ['QB', 'RB'],
     metrics: [
-      ['yds', 'Yards'], ['td', 'Touchdowns'], ['avg', 'Yards / carry'], ['lng', 'Longest rush'],
-      ['car', 'Carries'], ['fd', 'First downs'], ['fum', 'Fumbles'], ['gp', 'GP'],
+      ['gp', 'GP', 'Games played'],
+      ['car', 'CAR', 'Carries'],
+      ['yds', 'YDS', 'Rushing yards'],
+      ['avg', 'AVG', 'Yards per carry'],
+      ['td', 'TD', 'Touchdowns'],
+      ['lng', 'LNG', 'Longest rush'],
+      ['fd', 'FD', 'First downs'],
+      ['fum', 'FUM', 'Fumbles'],
     ],
   },
   {
@@ -26,17 +41,27 @@ const categories = [
     title: 'Receiving',
     positions: ['RB', 'WR', 'TE'],
     metrics: [
-      ['yds', 'Yards'], ['td', 'Touchdowns'], ['avg', 'Yards / catch'], ['lng', 'Longest catch'],
-      ['rec', 'Receptions'], ['tgts', 'Targets'], ['fd', 'First downs'], ['fum', 'Fumbles'], ['gp', 'GP'],
+      ['gp', 'GP', 'Games played'],
+      ['rec', 'REC', 'Receptions'],
+      ['tgts', 'TGTS', 'Targets'],
+      ['yds', 'YDS', 'Receiving yards'],
+      ['avg', 'AVG', 'Yards per catch'],
+      ['td', 'TD', 'Touchdowns'],
+      ['lng', 'LNG', 'Longest catch'],
+      ['fd', 'FD', 'First downs'],
+      ['fum', 'FUM', 'Fumbles'],
     ],
   },
 ];
 
 const statFormatter = new Intl.NumberFormat('en-US');
+const decimalFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const decimalMetrics = new Set(['avg', 'cmp_pct', 'rtg', 'qbr']);
 
 function formatStat(key, value) {
   if (!Number.isFinite(value)) return '—';
-  const formatted = statFormatter.format(value);
+  const formatter = decimalMetrics.has(key) ? decimalFormatter : statFormatter;
+  const formatted = formatter.format(value);
   return key === 'cmp_pct' ? `${formatted}%` : formatted;
 }
 
@@ -48,15 +73,6 @@ function hasCategoryData({ metrics, positions, values }, position) {
   return !isSeedPlaceholder && categoryMetrics.some(([key]) => Number.isFinite(values[key]));
 }
 
-function getSharedValue(groups, key) {
-  const value = groups[0]?.values[key];
-  return groups.every(({ values }) => values[key] === value) ? value : null;
-}
-
-function formatSeasonTeam(season, team) {
-  return [season && `${season} season`, team].filter(Boolean).join(' · ');
-}
-
 function PlayerInfoCard({ player }) {
   const { position, height, weight, birthdate, college, draft_info, status, stats } = player;
   const pos = position.toUpperCase();
@@ -64,17 +80,6 @@ function PlayerInfoCard({ player }) {
     ...category,
     values: stats?.[category.key] ?? {},
   })).filter(group => hasCategoryData(group, pos));
-
-  let primaryCategory = 'rushing';
-  if (pos === 'QB') primaryCategory = 'passing';
-  else if (pos === 'WR' || pos === 'TE') primaryCategory = 'receiving';
-
-  const summaryGroup = groups.find(({ key }) => key === primaryCategory);
-  const summaryMetrics = summaryGroup?.metrics.slice(0, 4)
-    .filter(([key]) => Number.isFinite(summaryGroup.values[key])) ?? [];
-  const sharedSeason = getSharedValue(groups, 'season');
-  const sharedTeam = getSharedValue(groups, 'team');
-  const sharedContext = formatSeasonTeam(sharedSeason, sharedTeam);
 
   const bio = [
     ['Height / Weight', height && weight && `${height} / ${weight}`],
@@ -85,60 +90,74 @@ function PlayerInfoCard({ player }) {
   ].filter(([, value]) => Boolean(value));
 
   return (
-    <section className="player-info-card" aria-labelledby="player-info-title">
-      <h2 id="player-info-title">Stats and bio</h2>
-      {sharedContext && <p className="player-stats-context">{sharedContext}</p>}
-      <div className="player-info-overview">
-        {summaryMetrics.length > 0 && (
-          <div>
-            <h3>{summaryGroup.title} highlights</h3>
-            <dl className="player-summary-stats">
-              {summaryMetrics.map(([key, label]) => (
-                <div key={key}>
-                  <dt>{label}</dt>
-                  <dd>{formatStat(key, summaryGroup.values[key])}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        )}
-        {bio.length > 0 && (
-          <div>
-            <h3>Player bio</h3>
-            <dl className="player-bio">
-              {bio.map(([label, value]) => (
-                <div key={label}>
-                  <dt>{label}</dt>
-                  <dd>{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        )}
-      </div>
-      <div className="player-stat-groups">
-        {groups.length === 0 && <p className="player-stats-context">Sample stats are unavailable for this player.</p>}
-        {groups.map(({ key, title, metrics, values }) => {
-          const titleId = `player-stat-${key}`;
-          const context = formatSeasonTeam(sharedSeason ? null : values.season, sharedTeam ? null : values.team);
+    <div className="player-info-card">
+      <section aria-labelledby="player-info-title">
+        <h2 id="player-info-title">Stats</h2>
+        <div className="player-stat-groups">
+          {groups.length === 0 && <p className="player-stats-empty">Sample stats are unavailable for this player.</p>}
+          {groups.map(({ key, title, metrics, values }) => {
+            const titleId = `player-stat-${key}`;
+            const team = typeof values.team === 'string' ? values.team.trim() : '';
+            const teamCode = teamAbbreviations.get(team) ?? team;
 
-          return (
-            <section key={key} className="player-stat-group" aria-labelledby={titleId}>
-              <h3 id={titleId}>{title}</h3>
-              {context && <p className="player-stats-context">{context}</p>}
-              <dl className="player-stat-grid">
-                {metrics.map(([metric, label]) => (
-                  <div key={metric}>
-                    <dt>{label}</dt>
-                    <dd>{formatStat(metric, values[metric])}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-          );
-        })}
-      </div>
-    </section>
+            return (
+              <div key={key} className="player-stat-group">
+                <h3 id={titleId}>{title}</h3>
+                <table className="player-stat-table" role="table" aria-labelledby={titleId}>
+                  <thead role="rowgroup">
+                    <tr role="row">
+                      <th className="player-stat-season" scope="col" role="columnheader">Season</th>
+                      <th className="player-stat-team" scope="col" role="columnheader">Team</th>
+                      {metrics.map(([metric, abbreviation, label]) => (
+                        <th key={metric} scope="col" role="columnheader" aria-label={label} title={label}>
+                          {abbreviation}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody role="rowgroup">
+                    <tr role="row">
+                      <th className="player-stat-season" scope="row" role="rowheader">
+                        <span className="player-stat-mobile-label" aria-hidden="true">Season</span>
+                        <span>{values.season || '—'}</span>
+                      </th>
+                      <td className="player-stat-team" role="cell" aria-label={team || undefined}>
+                        <span className="player-stat-mobile-label" aria-hidden="true">Team</span>
+                        <span className="player-stat-team-value" title={team || undefined}>
+                          {teamAbbreviations.has(team) && (
+                            <span className="player-stat-team-marker" aria-hidden="true" style={{ backgroundColor: teamColors[team] }} />
+                          )}
+                          {teamCode || '—'}
+                        </span>
+                      </td>
+                      {metrics.map(([metric, , label]) => (
+                        <td key={metric} role="cell">
+                          <span className="player-stat-mobile-label" aria-hidden="true">{label}</span>
+                          <span>{formatStat(metric, values[metric])}</span>
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+      {bio.length > 0 && (
+        <section className="player-bio-section" aria-labelledby="player-bio-title">
+          <h2 id="player-bio-title">Player bio</h2>
+          <dl className="player-bio">
+            {bio.map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+    </div>
   );
 }
 

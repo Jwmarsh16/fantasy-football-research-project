@@ -2,12 +2,17 @@ import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import PlayerInfoCard from './PlayerInfoCard';
 
+function statCell(table, name) {
+  const header = table.getByRole('columnheader', { name });
+  return table.getAllByRole('row')[1].cells[header.cellIndex];
+}
+
 describe('PlayerInfoCard', () => {
-  it('formats sample stats and shows shared season and team once', () => {
+  it('renders and formats a season row under the compact stat headings', () => {
     render(<PlayerInfoCard player={{
       position: 'QB',
       stats: {
-        passing: { season: 2025, team: 'Kansas City Chiefs', gp: 14, yds: 2163, cmp_pct: 62.3, int: 0 },
+        passing: { season: 2025, team: 'Kansas City Chiefs', gp: 14, yds: 2163, avg: 7, cmp_pct: 62.3, int: 0 },
         rushing: { season: 2025, team: 'Kansas City Chiefs', gp: 15, yds: 1047 },
         receiving: {
           season: 2025, team: 'Kansas City Chiefs', gp: 12,
@@ -16,15 +21,19 @@ describe('PlayerInfoCard', () => {
       },
     }} />);
 
-    expect(screen.getByText('2025 season · Kansas City Chiefs')).toBeInTheDocument();
-    expect(screen.getAllByText(/Kansas City Chiefs/)).toHaveLength(1);
-    const passing = within(screen.getByRole('region', { name: 'Passing' }));
-    expect(passing.getByText('2,163')).toBeInTheDocument();
-    expect(passing.getByText('62.3%')).toBeInTheDocument();
-    expect(passing.getByText('Interceptions').nextElementSibling).toHaveTextContent('0');
-    expect(passing.getByText('Sacks taken').nextElementSibling).toHaveTextContent('—');
-    expect(passing.getByText('GP').nextElementSibling).toHaveTextContent('14');
-    expect(screen.queryByRole('region', { name: 'Receiving' })).toBeNull();
+    const passing = within(screen.getByRole('table', { name: 'Passing' }));
+    expect(passing.getAllByRole('columnheader').map(header => header.textContent)).toEqual([
+      'Season', 'Team', 'GP', 'CMP', 'ATT', 'CMP%', 'YDS', 'AVG', 'TD', 'INT', 'LNG', 'SACK', 'RTG', 'QBR',
+    ]);
+    expect(passing.getByRole('rowheader', { name: '2025' })).toBeInTheDocument();
+    expect(passing.getByRole('cell', { name: 'Kansas City Chiefs' })).toHaveTextContent('KC');
+    expect(statCell(passing, 'Passing yards')).toHaveTextContent('2,163');
+    expect(statCell(passing, 'Completion rate')).toHaveTextContent('62.3%');
+    expect(statCell(passing, 'Yards per attempt')).toHaveTextContent('7.0');
+    expect(statCell(passing, 'Interceptions')).toHaveTextContent('0');
+    expect(statCell(passing, 'Sacks taken')).toHaveTextContent('—');
+    expect(statCell(passing, 'Games played')).toHaveTextContent('14');
+    expect(screen.queryByRole('table', { name: 'Receiving' })).toBeNull();
   });
 
   it('keeps meaningful zeroes and nonstandard categories with their own context', () => {
@@ -33,16 +42,19 @@ describe('PlayerInfoCard', () => {
       stats: {
         receiving: { season: 2025, team: 'Buffalo Bills', rec: 0, yds: 0 },
         passing: { season: 2024, team: 'Kansas City Chiefs', att: 1, yds: 8 },
-        rushing: { yds: 0 },
+        rushing: { team: 'Legacy Team', yds: 0 },
       },
     }} />);
 
-    const passing = within(screen.getByRole('region', { name: 'Passing' }));
-    const receiving = within(screen.getByRole('region', { name: 'Receiving' }));
-    const rushing = within(screen.getByRole('region', { name: 'Rushing' }));
-    expect(passing.getByText('2024 season · Kansas City Chiefs')).toBeInTheDocument();
-    expect(receiving.getByText('2025 season · Buffalo Bills')).toBeInTheDocument();
-    expect(receiving.getByText('Receptions').nextElementSibling).toHaveTextContent('0');
-    expect(rushing.getByText('Yards').nextElementSibling).toHaveTextContent('0');
+    const passing = within(screen.getByRole('table', { name: 'Passing' }));
+    const receiving = within(screen.getByRole('table', { name: 'Receiving' }));
+    const rushing = within(screen.getByRole('table', { name: 'Rushing' }));
+    expect(passing.getByRole('rowheader', { name: '2024' })).toBeInTheDocument();
+    expect(passing.getByRole('cell', { name: 'Kansas City Chiefs' })).toHaveTextContent('KC');
+    expect(receiving.getByRole('rowheader', { name: '2025' })).toBeInTheDocument();
+    expect(receiving.getByRole('cell', { name: 'Buffalo Bills' })).toHaveTextContent('BUF');
+    expect(rushing.getByRole('cell', { name: 'Legacy Team' })).toHaveTextContent('Legacy Team');
+    expect(statCell(receiving, 'Receptions')).toHaveTextContent('0');
+    expect(statCell(rushing, 'Rushing yards')).toHaveTextContent('0');
   });
 });
