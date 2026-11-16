@@ -107,6 +107,8 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
   await expect(otherPosition).toBeHidden();
   await page.getByRole('link', { name: 'Patrick Mahomes', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Patrick Mahomes' })).toBeVisible();
+  const playerSections = page.getByRole('heading', { level: 2, name: /^(Stats|Rank this player)$/ });
+  await expect(playerSections).toHaveText(['Stats', 'Rank this player']);
   await expect(page.getByText('to save a ranking or post a review.')).toBeVisible();
   const rankPlayer = page.getByRole('link', { name: 'Rank Player', exact: true });
   await expect(rankPlayer).toBeInViewport();
@@ -133,6 +135,7 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
 
   await expect(page).toHaveURL(/\/players\/1$/);
   await expect(page.getByRole('heading', { name: 'Patrick Mahomes' })).toBeVisible();
+  await expect(playerSections).toHaveText(['Rank this player', 'Stats']);
   await expect(rankPlayer).toBeInViewport();
   await rankPlayer.click();
   const rankField = page.getByLabel('Rank', { exact: true });
