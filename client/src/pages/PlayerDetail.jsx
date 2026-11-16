@@ -149,6 +149,8 @@ function PlayerDetail() {
           </p>
         </header>
 
+        {!currentUser && <PlayerInfoCard player={player} />}
+
         <RankingReviewForm
           key={playerId}
           maxRank={players.length}
@@ -158,7 +160,7 @@ function PlayerDetail() {
           onRemoveRank={() => handleRemoveRank(savedRanking.id)}
         />
 
-        <PlayerInfoCard player={player} />
+        {currentUser && <PlayerInfoCard player={player} />}
 
         {currentUser && <PlayerReviewForm key={`review-${playerId}`} onPostReview={handlePostReview} />}
 
