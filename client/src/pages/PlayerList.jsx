@@ -51,6 +51,7 @@ function PlayerList() {
   const filterTeam = teams.includes(requestedTeam) ? requestedTeam : '';
   const filterPosition = positions.includes(requestedPosition) ? requestedPosition : '';
   const catalogSearch = filterParams.size ? `?${filterParams}` : '';
+  const compareSearch = filterPosition ? `?${new URLSearchParams({ position: filterPosition })}` : '';
 
   useEffect(() => {
     // Back and forward restore the URL's filters. Our own replaces can finish after a newer edit.
@@ -142,7 +143,9 @@ function PlayerList() {
             <strong>Portfolio demo.</strong> Player profiles and stats use sample data.
           </p>
         </div>
-        <Link className="ffrh-button" to="/players/compare" state={{ catalogSearch }}>Compare Players</Link>
+        <Link className="ffrh-button" to={`/players/compare${compareSearch}`} state={{ catalogSearch }}>
+          Compare Players
+        </Link>
       </div>
 
       <div className="player-list-controls">

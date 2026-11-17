@@ -14,6 +14,8 @@ test('guests can combine catalog filters and compare two players after refresh',
   await page.route('https://**', route => route.abort());
   await page.goto('/players');
 
+  const comparePlayers = page.getByRole('link', { name: 'Compare Players', exact: true });
+  await expect(comparePlayers).toHaveAttribute('href', '/players/compare');
   const search = page.getByRole('searchbox', { name: 'Search by player name' });
   const team = page.getByRole('combobox', { name: 'Filter by Team:' });
   await team.selectOption({ label: 'Buffalo Bills' });
@@ -49,9 +51,9 @@ test('guests can combine catalog filters and compare two players after refresh',
   await team.selectOption('Buffalo Bills');
   await page.getByRole('button', { name: 'QB', exact: true }).click();
   await search.fill('allen');
-  await page.getByRole('link', { name: 'Compare Players', exact: true }).click();
+  await comparePlayers.click();
   await expect(page.getByRole('heading', { name: 'Compare Players' })).toBeVisible();
-  await page.getByRole('combobox', { name: 'Position', exact: true }).selectOption('QB');
+  await expect(page.getByRole('combobox', { name: 'Position', exact: true })).toHaveValue('QB');
   await page.getByRole('combobox', { name: 'First player', exact: true }).selectOption({ label: 'Patrick Mahomes' });
   const secondPlayer = page.getByRole('combobox', { name: 'Second player', exact: true });
   await expect(secondPlayer.getByRole('option', { name: 'Patrick Mahomes', exact: true })).toHaveCount(0);
