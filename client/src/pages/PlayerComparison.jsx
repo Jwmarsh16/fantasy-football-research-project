@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { teamAbbreviations } from '../constants/teamColors';
 import { fetchPlayers } from '../redux/slices/playerSlice';
 import { fetchRankings } from '../redux/slices/rankingSlice';
 import { getComparisonStats } from '../utils/playerComparison';
@@ -126,16 +127,19 @@ function PlayerComparison() {
               <thead>
                 <tr>
                   <th scope="col">Metric</th>
-                  <th scope="col"><Link to={`/players/${first.id}`} state={state}>{first.name}</Link></th>
-                  <th scope="col"><Link to={`/players/${second.id}`} state={state}>{second.name}</Link></th>
+                  {[first, second].map(player => {
+                    const team = typeof player.team === 'string' ? player.team.trim() : '';
+                    const teamCode = teamAbbreviations.get(team) ?? team;
+                    return (
+                      <th key={player.id} scope="col" aria-label={team ? `${player.name}, ${team}` : undefined}>
+                        <Link to={`/players/${player.id}`} state={state}>{player.name}</Link>
+                        <span className="comparison-team-code" title={team || undefined}>{teamCode || '—'}</span>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row">Team</th>
-                  <td>{first.team}</td>
-                  <td>{second.team}</td>
-                </tr>
                 <tr>
                   <th scope="row">Community average rank</th>
                   <td>{formatAverage(firstSummary)}</td>

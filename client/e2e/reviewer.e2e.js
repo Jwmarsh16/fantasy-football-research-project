@@ -63,6 +63,11 @@ test('guests can combine catalog filters and compare two players after refresh',
   const comparison = page.getByRole('table', { name: 'Player comparison' });
   await expect(comparison.getByText('Patrick Mahomes', { exact: true })).toBeVisible();
   await expect(comparison.getByText('Josh Allen', { exact: true })).toBeVisible();
+  const mahomesHeader = comparison.getByRole('columnheader', { name: 'Patrick Mahomes, Kansas City Chiefs', exact: true });
+  const allenHeader = comparison.getByRole('columnheader', { name: 'Josh Allen, Buffalo Bills', exact: true });
+  await expect(mahomesHeader.getByText('KC', { exact: true })).toBeVisible();
+  await expect(allenHeader.getByText('BUF', { exact: true })).toBeVisible();
+  await expect(comparison.getByRole('rowheader', { name: 'Team', exact: true })).toHaveCount(0);
   for (const metric of ['Community average rank', 'Votes', 'Passing yards']) {
     await expect(comparison.getByRole('rowheader', { name: metric, exact: true })).toBeVisible();
   }
