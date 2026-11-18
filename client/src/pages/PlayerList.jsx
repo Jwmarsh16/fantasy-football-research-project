@@ -136,37 +136,38 @@ function PlayerList() {
 
   return (
     <main className="player-list-page container">
-      <div className="player-list-header">
-        <div>
-          <h1 className="player-list-title">Fantasy Football Player List</h1>
-          <p className="player-list-data-note">
-            <strong>Portfolio demo.</strong> Player profiles and stats use sample data.
-          </p>
-        </div>
-        <Link className="ffrh-button" to={`/players/compare${compareSearch}`} state={{ catalogSearch }}>
+      <header className="player-list-header">
+        <h1 className="player-list-title">Player Catalog</h1>
+        <p className="player-list-data-note">
+          <strong>Portfolio demo.</strong> Player profiles and stats use sample data.
+        </p>
+        <Link className="ffrh-button player-list-compare" to={`/players/compare${compareSearch}`} state={{ catalogSearch }}>
           Compare Players
         </Link>
-      </div>
+      </header>
 
-      <div className="player-list-controls">
-        <label className="player-list-field player-list-search">
-          Search by player name
-          <input
-            className="ffrh-field"
-            type="search"
-            value={searchQuery}
-            onChange={(event) => updateFilters({ q: event.target.value })}
+      <section className="player-list-filters" aria-label="Player filters">
+        <div className="player-list-controls">
+          <label className="player-list-field player-list-search">
+            Search by player name
+            <input
+              className="ffrh-field"
+              type="search"
+              value={searchQuery}
+              onChange={(event) => updateFilters({ q: event.target.value })}
+            />
+          </label>
+          <TeamDropdown
+            teams={teams}
+            selectedTeam={filterTeam}
+            onChange={(event) => updateFilters({ team: event.target.value })}
           />
-        </label>
-        <TeamDropdown
-          teams={teams}
-          selectedTeam={filterTeam}
-          onChange={(event) => updateFilters({ team: event.target.value })}
-        />
-        <SortControls
-          sortType={sortType}
-          onSortChange={(event) => updateFilters({ sort: event.target.value })}
-        />
+          <SortControls
+            sortType={sortType}
+            onSortChange={(event) => updateFilters({ sort: event.target.value })}
+          />
+        </div>
+
         <div className="position-filter-container" role="group" aria-label="Filter by position">
           {positions.map(position => (
             <button
@@ -180,19 +181,19 @@ function PlayerList() {
             </button>
           ))}
         </div>
-      </div>
 
-      <div className="player-list-results">
-        <p role="status">{sortedPlayers.length} of {players.length} players</p>
-        <button
-          type="button"
-          className="ffrh-button ffrh-button--secondary"
-          disabled={!['q', 'team', 'position', 'sort'].some(key => filterParams.has(key))}
-          onClick={() => updateFilters({ q: '', team: '', position: '', sort: '' })}
-        >
-          Clear Filters
-        </button>
-      </div>
+        <div className="player-list-results">
+          <p role="status">{sortedPlayers.length} of {players.length} players</p>
+          <button
+            type="button"
+            className="ffrh-button ffrh-button--secondary"
+            disabled={!['q', 'team', 'position', 'sort'].some(key => filterParams.has(key))}
+            onClick={() => updateFilters({ q: '', team: '', position: '', sort: '' })}
+          >
+            Clear Filters
+          </button>
+        </div>
+      </section>
       {rosterError && <p className="player-list-roster-error" role="alert">{rosterError}</p>}
 
       {sortedPlayers.length === 0 ? (

@@ -6,10 +6,6 @@
   padding: var(--space-4) var(--page-gutter);
 }
 
-.home-page--guest {
-  width: min(100%, 960px);
-}
-
 .home-content {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
