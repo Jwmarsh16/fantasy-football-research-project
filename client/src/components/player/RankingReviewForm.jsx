@@ -2,6 +2,7 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import * as Yup from 'yup';
+import { createRankSchema } from '../../utils/rankValidation';
 import '../../style/RankingReviewForm.css';
 
 const reviewSchema = Yup.object({
@@ -21,14 +22,6 @@ function RankingReviewForm({ maxRank, rankReady, savedRank, onSaveRank, onRemove
     );
   }
 
-  const rankSchema = Yup.object({
-    rank: Yup.number()
-      .integer('Enter a whole number')
-      .min(1, 'Rank must be at least 1')
-      .max(maxRank, `Rank must be at most ${maxRank}`)
-      .required('Required'),
-  });
-
   return (
     <section className="ranking-review-form" id="rank-player" aria-labelledby="rank-player-title" tabIndex={-1}>
       <h2 id="rank-player-title">Rank this player</h2>
@@ -41,7 +34,7 @@ function RankingReviewForm({ maxRank, rankReady, savedRank, onSaveRank, onRemove
       <Formik
         initialValues={{ rank: savedRank ?? '' }}
         enableReinitialize
-        validationSchema={rankSchema}
+        validationSchema={createRankSchema(maxRank)}
         onSubmit={async ({ rank }, { setStatus }) => {
           setStatus(undefined);
           try {

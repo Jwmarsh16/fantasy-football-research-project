@@ -162,25 +162,69 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
   await saveRanking.click();
   await expect(page.getByText('Your saved rank is 6.', { exact: true })).toBeVisible();
 
+  await page.goto('/players');
+  await otherPosition.click();
+  await rankField.fill('7');
+  await saveRanking.click();
+  await expect(page.getByText('Your saved rank is 7.', { exact: true })).toBeVisible();
+
   await page.getByRole('link', { name: 'View My Rankings', exact: true }).click();
   const rankingsBoard = page.getByRole('region', { name: 'My Rankings' });
   const rankedPlayer = rankingsBoard.getByRole('link', { name: 'Patrick Mahomes', exact: true });
-  await expect(rankedPlayer).toBeVisible();
+  const boardPlayers = rankingsBoard.getByRole('table').getByRole('link');
+  const mahomesRow = rankingsBoard.getByRole('row').filter({
+    has: page.getByRole('link', { name: 'Patrick Mahomes', exact: true }),
+  });
+  await expect(boardPlayers).toHaveText(['Patrick Mahomes', 'Christian McCaffrey']);
   const boardUrl = page.url();
+
+  const editRank = rankingsBoard.getByRole('button', { name: 'Edit rank for Patrick Mahomes', exact: true });
+  const editor = rankingsBoard.getByRole('form', { name: 'Edit rank for Patrick Mahomes', exact: true });
+  const boardRankField = editor.getByLabel('Rank for Patrick Mahomes');
+  const saveEdit = editor.getByRole('button', { name: 'Save', exact: true });
+  await editRank.click();
+  await expect(boardRankField).toBeFocused();
+  await boardRankField.fill('0');
+  await saveEdit.click();
+  await expect(editor.getByRole('alert')).toHaveText('Rank must be at least 1');
+  await editor.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(editor).toHaveCount(0);
+  await expect(editRank).toBeFocused();
+
+  await editRank.click();
+  await expect(boardRankField).toHaveValue('6');
+  await boardRankField.fill('8');
+  const failRankSave = route => route.request().method() === 'POST'
+    ? route.fulfill({ status: 500 })
+    : route.continue();
+  await page.route('**/api/rankings', failRankSave);
+  await saveEdit.click();
+  await expect(editor.getByRole('alert')).toHaveText('Could not save your ranking. Please try again.');
+  await expect(boardRankField).toHaveValue('8');
+  await expect(mahomesRow.getByRole('cell', { name: '6', exact: true })).toBeVisible();
+  await expect(boardPlayers).toHaveText(['Patrick Mahomes', 'Christian McCaffrey']);
+
+  await page.unroute('**/api/rankings', failRankSave);
+  await saveEdit.click();
+  await expect(rankingsBoard.getByRole('status')).toHaveText('Your rank for Patrick Mahomes is now 8.');
+  await expect(editor).toHaveCount(0);
+  await expect(editRank).toBeFocused();
+  await expect(page).toHaveURL(boardUrl);
+  await expect(boardPlayers).toHaveText(['Christian McCaffrey', 'Patrick Mahomes']);
+
   expect((await page.reload()).status()).toBe(200);
-  await expect(rankedPlayer).toBeVisible();
-  await expect(rankingsBoard.getByRole('row', { name: /Patrick Mahomes/ })
-    .getByRole('cell', { name: '6', exact: true })).toBeVisible();
+  await expect(boardPlayers).toHaveText(['Christian McCaffrey', 'Patrick Mahomes']);
+  await expect(mahomesRow.getByRole('cell', { name: '8', exact: true })).toBeVisible();
   await expect(rankingsBoard.getByRole('columnheader', { name: 'Community average' })).toBeVisible();
   await rankedPlayer.click();
-  await expect(rankField).toHaveValue('6');
+  await expect(rankField).toHaveValue('8');
 
   await page.route('**/api/reviews', route => route.fulfill({ status: 500 }));
   const review = page.getByLabel('Review (optional)');
   await review.fill('A review can be submitted independently.');
   await page.getByRole('button', { name: 'Post review' }).click();
   await expect(page.getByText('Could not post your review. Please try again.')).toBeVisible();
-  await expect(page.getByText('Your saved rank is 6.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Your saved rank is 8.', { exact: true })).toBeVisible();
 
   await page.unroute('**/api/reviews');
   await page.getByRole('button', { name: 'Post review' }).click();
@@ -189,7 +233,7 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
   await communityReviews.getByRole('button', { name: 'Show reviews', exact: true }).click();
   const postedReview = communityReviews.getByRole('listitem').filter({ has: page.getByText(account, { exact: true }) });
   await expect(postedReview).toContainText('A review can be submitted independently.');
-  await expect(postedReview).toContainText('Rank #6');
+  await expect(postedReview).toContainText('Rank #8');
 
   await page.goto('/');
   await page.getByRole('button', { name: 'Show Your Top 5', exact: true }).click();
