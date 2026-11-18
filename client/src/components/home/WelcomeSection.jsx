@@ -13,15 +13,18 @@ const WelcomeSection = () => {
         <p className="home-subtitle">
           I built this full-stack portfolio project with React, Flask, and PostgreSQL.
         </p>
+        <div className="welcome-actions">
+          <Link className="ffrh-button" to="/players">
+            Browse Players <span aria-hidden="true">→</span>
+          </Link>
+          {!signedIn && (
+            <p className="home-guest-note">
+              Explore the sample catalog as a guest. <Link to="/login">Log in</Link> to save rankings.
+            </p>
+          )}
+        </div>
       </div>
-      <div className="welcome-actions">
-        <Link className="ffrh-button" to="/players">Browse Players</Link>
-        {!signedIn && (
-          <p className="home-guest-note">
-            Explore the sample catalog as a guest. <Link to="/login">Log in</Link> to save rankings.
-          </p>
-        )}
-      </div>
+      <div className="welcome-art" aria-hidden="true" />
     </section>
   );
 };

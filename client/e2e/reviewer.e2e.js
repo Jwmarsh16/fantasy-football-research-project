@@ -106,7 +106,7 @@ test('a reviewer can browse as a guest, sign in, and save a rank that survives r
   await expect(browsePlayers).toBeInViewport();
   await browsePlayers.click();
   await expect(page).toHaveURL(/\/players$/);
-  await expect(page.getByRole('heading', { name: 'Fantasy Football Player List' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Player Catalog', exact: true })).toBeVisible();
   await expect(page.getByText('Portfolio demo. Player profiles and stats use sample data.')).toBeVisible();
   const otherPosition = page.getByRole('link', { name: 'Christian McCaffrey', exact: true });
   await expect(otherPosition).toBeVisible();
