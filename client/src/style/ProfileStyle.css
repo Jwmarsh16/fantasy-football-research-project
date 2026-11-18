@@ -137,6 +137,49 @@
   text-underline-offset: 3px;
 }
 
+.rankings-edit-button {
+  margin-top: var(--space-1);
+  padding-inline: var(--space-2);
+  font-size: var(--fs-small);
+}
+
+.rankings-table .rankings-editor-cell {
+  padding: var(--space-3);
+  background: var(--color-bg);
+  text-align: left;
+}
+
+.rankings-editor {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.rankings-editor label {
+  font-weight: 600;
+}
+
+.rankings-editor-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.rankings-editor-controls .ffrh-field {
+  width: 5rem;
+  max-width: 100%;
+}
+
+.rankings-editor p,
+.rankings-save-message:empty {
+  margin: 0;
+}
+
+.rankings-edit-error {
+  color: var(--color-danger);
+  font-size: var(--fs-small);
+}
+
 @media (max-width: 768px) {
   .profile-layout {
     flex-direction: column;
