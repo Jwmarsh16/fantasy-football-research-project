@@ -1,6 +1,6 @@
 # Fantasy Football Research Hub
 
-**[Live Demo](https://fantasy-football-research-hub.onrender.com)** · [45-second walkthrough](#demo-walkthrough)
+**[Live Demo](https://fantasy-football-research-hub.onrender.com)** · [Browse players](https://fantasy-football-research-hub.onrender.com/players) · [Compare quarterbacks](https://fantasy-football-research-hub.onrender.com/players/compare?position=QB) · [45-second walkthrough](#demo-walkthrough)
 
 ## Overview
 
@@ -8,11 +8,16 @@ Fantasy Football Research Hub (FFRH) is a full-stack portfolio project for resea
 
 ## Demo walkthrough
 
-Browse the player catalog as a guest, open a player, and sign in to return to their profile. Save a ranking and reload the page to see the saved rank again. The recording uses a local database with sample data.
+Explore the live demo as a guest. Player profiles and stats use sample data.
+
+1. Open **Browse Players** to search by name, combine team and position filters, and open a player's **Stats**.
+2. Select **QB** in the catalog, then **Compare Players**. The comparison opens with QB selected. Choose **Patrick Mahomes** and **Josh Allen**, then reload to confirm both selections stay in place.
+3. Open a player's profile and select **Rank Player**. Sign in, or choose **Register here** to create an account and then sign in. The app returns you to that player.
+4. Save a rank, change it, and reload the profile to confirm the updated value. Select **View My Rankings** to see it on your ranking board.
+
+The 45-second recording below shows guest browsing, signing in, and saving a ranking that survives a reload. It uses a local database with sample data.
 
 ![Walkthrough of guest browsing, signing in, saving a player ranking, and seeing it after a reload](docs/ffrh-demo.gif)
-
-Open **Browse Players** to search by name and combine position and team filters. Player pages offer **Compare this player** to start a side-by-side comparison and **Rank Player** to save a ranking. **View My Rankings** opens your board after a save, and the signed-in menu also links directly to the board.
 
 ## Local demo
 
